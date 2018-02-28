@@ -135,10 +135,10 @@
 				};
 			};
 
-			shift_register_74hc164 {
+			/*shift_register_74hc164 {
 			compatible = "74hc164";
 			gpios = <&tlmm 4 GPIO_ACTIVE_HIGH  /* DATA */
 			 	&tlmm 5 GPIO_ACTIVE_HIGH  /* CLK */>; 
-			};
+			};*/
 	};
 };
