@@ -53,6 +53,9 @@ zyxel,nbg6817)
 	ucidef_set_interface_macaddr "lan" "$(macaddr_add $hw_mac_addr 2)"
 	ucidef_set_interface_macaddr "wan" "$(macaddr_add $hw_mac_addr 3)"
 	;;
+netgear,wac510)
+	ucidef_set_interfaces_lan_wan "eth0" "eth1"
+	;;
 *)
 	echo "Unsupported hardware. Network interfaces not intialized"
 	;;
