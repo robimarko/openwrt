@@ -17,6 +17,7 @@ platform_do_upgrade() {
 	netgear,r7500 |\
 	netgear,r7500v2 |\
 	netgear,r7800 |\
+	netgear,wac510 |\
 	qcom,ap-dk04.1-c1 |\
 	qcom,ipq8064-ap148 |\
 	zyxel,nbg6817)
