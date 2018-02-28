@@ -1,0 +1,144 @@
+/* Copyright (c) 2015, The Linux Foundation. All rights reserved.
+ * Copyright (c) 2018, Robert Marko <robimarko@gmail.com>
+ *
+ * Permission to use, copy, modify, and/or distribute this software for any
+ * purpose with or without fee is hereby granted, provided that the above
+ * copyright notice and this permission notice appear in all copies.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+ * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+ * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+ * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ *
+ */
+
+#include "qcom-ipq4019-ap.dk01.1.dtsi"
+
+/ {
+	model = "Netgear WAC510";
+	compatible = "netgear,wac510", "qcom,ipq4019";
+
+	soc {
+		pinctrl@1000000 {
+			spi_0_pins: spi_0_pinmux {
+				pinmux_cs {
+					pins = "gpio54", "gpio59";
+				};
+				
+				pinconf_cs {
+					pins = "gpio54", "gpio59";
+				};
+			};
+		};
+	};
+
+	spi_0: spi@78b5000 {
+			pinctrl-0 = <&spi_0_pins>;
+			pinctrl-names = "default";
+			cs-gpios = <&tlmm 54 0>, <&tlmm 59 0>;
+			status = "ok";
+
+			mx25l25635e@0 {
+				status = "disabled";
+			};
+
+			m25p80@0 {
+				#address-cells = <1>;
+				#size-cells = <0>;
+				reg = <0>;
+				compatible = "mx25l1606e", "n25q128a11";
+				linux,modalias = "m25p80", "mx25l1606e", "n25q128a11";
+				spi-max-frequency = <24000000>;
+
+				partitions {
+					compatible = "fixed-partitions";
+					#address-cells = <1>;
+					#size-cells = <1>;
+
+					partition0@0 {
+						label = "0:SBL1";
+						reg = <0x00000000 0x00040000>;
+						read-only;
+					};
+					partition1@40000 {
+						label = "0:MIBIB";
+						reg = <0x00040000 0x00020000>;
+						read-only;
+					};
+					partition2@60000 {
+						label = "0:QSEE";
+						reg = <0x00060000 0x00060000>;
+						read-only;
+					};
+					partition3@c0000 {
+						label = "0:CDT";
+						reg = <0x000c0000 0x00010000>;
+						read-only;
+					};
+					partition4@d0000 {
+						label = "0:DDRPARAMS";
+						reg = <0x000d0000 0x00010000>;
+						read-only;
+					};
+					partition5@e0000 {
+						label = "0:APPSBLENV"; /* uboot env*/
+						reg = <0x000e0000 0x00010000>;
+						read-only;
+					};
+					partition5@f0000 {
+						label = "0:APPSBL"; /* uboot */
+						reg = <0x000f0000 0x00080000>;
+						read-only;
+					};
+					partition5@1e0000 {
+						label = "0:MANUDATA";
+						reg = <0x001e0000 0x00010000>;
+						read-only;
+					};
+					partition5@1f0000 {
+						label = "0:ART";
+						reg = <0x001f0000 0x00010000>;
+						read-only;
+					};
+				};
+			};
+
+			mt29f@1 {
+				status = "ok";
+				#address-cells = <1>;
+				#size-cells = <0>;
+				compatible = "spinand,mt29f", "w25n01gv";
+				reg = <1>;
+				spi-max-frequency = <24000000>;
+				partitions {
+					compatible = "fixed-partitions";
+					#address-cells = <1>;
+					#size-cells = <1>;
+
+					partition0@0 {
+						label = "ubi";
+						reg = <0x00000000 0x07000000>;
+					};
+					partition1@7000000 {
+						label = "var_config";
+						reg = <0x07000000 0x00f00000>;
+						read-only;
+					};
+					partition2@7f00000 {
+						label = "Oops_log";
+						reg = <0x07f00000 0x000c0000>;
+						read-only;
+					};
+				};
+			};
+
+			shift_register_74hc164 {
+			compatible = "74hc164";
+			gpios = <&tlmm 4 GPIO_ACTIVE_HIGH  /* DATA */
+			 	&tlmm 5 GPIO_ACTIVE_HIGH  /* CLK */>; 
+			};
+	};
+};
