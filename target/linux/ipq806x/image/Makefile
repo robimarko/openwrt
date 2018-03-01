@@ -168,7 +168,7 @@ TARGET_DEVICES += netgear_r7800
 define Device/netgear_wac510
 	$(call Device/FitImage)
 	$(call Device/UbiFit)
-	DEVICE_DTS := qcom-ipq4019-wac510
+	DEVICE_DTS := qcom-ipq4019-wac510-new
 	KERNEL_LOADADDR := 0x80208000
 	KERNEL_INSTALL := 1
 	KERNEL_SIZE := 4048k
