@@ -135,10 +135,24 @@
 				};
 			};
 
-			/*shift_register_74hc164 {
-			compatible = "74hc164";
-			gpios = <&tlmm 4 GPIO_ACTIVE_HIGH  /* DATA */
-			 	&tlmm 5 GPIO_ACTIVE_HIGH  /* CLK */>; 
-			};*/
+			spi-gpio {
+				#address-cells = <1>;
+				#size-cells = <1>;
+				compatible = "spi-gpio";
+
+				gpio-mosi = <&tlmm 4 GPIO_ACTIVE_HIGH>;
+				gpio-sck = <&tlmm 5 GPIO_ACTIVE_HIGH>;
+				num-chipselects = <0>;
+
+				hc595: gpio-spi-controller@0 {
+					compatible = "fairchild,74hc595";
+					reg = <0>;
+					registers-number = <2>;
+					spi-max-frequency = <100000>;
+
+					gpio-controller;
+					#gpio-cells = <2>;
+				};
+			};
 	};
 };
