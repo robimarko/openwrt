@@ -88,6 +88,22 @@ define Device/avm_fritzbox-4040
 endef
 TARGET_DEVICES += avm_fritzbox-4040
 
+define Device/compex_wpj428
+	$(call Device/FitImage)
+	DEVICE_DTS := qcom-ipq4019-wpj428
+	DEVICE_DTS_CONFIG := config@4
+	KERNEL_LOADADDR := 0x80208000
+	BLOCKSIZE := 64k
+	SUPPORTED_DEVICES := compex,wpj428
+	DEVICE_TITLE := Compex WPJ428
+	IMAGE_SIZE := 31232k
+	KERNEL_SIZE := 4096k
+	IMAGES = sysupgrade.bin
+	IMAGE/sysupgrade.bin := append-kernel | pad-to $$$${KERNEL_SIZE} | append-rootfs | pad-rootfs | append-metadata
+	DEVICE_PACKAGES := ath10k-firmware-qca4019 kmod-gpio-beeper
+endef
+TARGET_DEVICES += compex_wpj428
+
 define Device/linksys_ea8500
 	$(call Device/LegacyImage)
 	DEVICE_DTS := qcom-ipq8064-ea8500
