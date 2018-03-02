@@ -229,6 +229,13 @@
 			};
 		};
 
+		aliases {
+			led-boot = &power_amber;
+			led-failsafe = &power_amber;
+			led-running = &power_green;
+			led-upgrade = &power_amber;
+		};
+
 		gpio-leds {
 			compatible = "gpio-leds";
 
