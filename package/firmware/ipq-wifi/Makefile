@@ -13,7 +13,7 @@ endef
 define Build/Compile
 endef
 
-ALLWIFIBOARDS:=avm_fritzbox-4040 glinet_gl-b1300
+ALLWIFIBOARDS:=avm_fritzbox-4040 glinet_gl-b1300 netgear_wac510
 ALLWIFIPACKAGES:=$(foreach BOARD,$(ALLWIFIBOARDS),ipq-wifi-$(BOARD))
 
 define Package/ipq-wifi-default
@@ -49,5 +49,6 @@ endef
 
 $(eval $(call generate-ipq-wifi-package,avm_fritzbox-4040,board-avm_fritzbox-4040.bin,AVM FRITZ!Box 4040))
 $(eval $(call generate-ipq-wifi-package,glinet_gl-b1300,board-glinet_gl-b1300.bin,GL.iNet GL-B1300))
+$(eval $(call generate-ipq-wifi-package,netgear_wac510,board-netgear_wac510.bin,Netgear WAC510))
 
 $(foreach PACKAGE,$(ALLWIFIPACKAGES),$(eval $(call BuildPackage,$(PACKAGE))))
