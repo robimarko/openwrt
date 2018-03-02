@@ -334,10 +334,12 @@
 
 		wifi@a000000 {
 			status = "okay";
+			qcom,ath10k-calibration-variant = "Netgear-WAC510";
 		};
 
 		wifi@a800000 {
 			status = "okay";
+			qcom,ath10k-calibration-variant = "Netgear-WAC510";
 		};
 	};
 };
