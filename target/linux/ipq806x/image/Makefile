@@ -177,7 +177,7 @@ define Device/netgear_wac510
 	BOARD_NAME := wac510
 	SUPPORTED_DEVICES := netgear,wac510
 	DEVICE_TITLE := Netgear WAC510
-	DEVICE_PACKAGES := ath10k-firmware-qca4019 uboot-envtools kmod-gpio-nxp-74hc164
+	DEVICE_PACKAGES := ath10k-firmware-qca4019 uboot-envtools kmod-gpio-nxp-74hc164 ipq-wifi-netgear_wac510
 endef
 TARGET_DEVICES += netgear_wac510
 
