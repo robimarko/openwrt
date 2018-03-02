@@ -269,12 +269,12 @@
 		};
 
 		gpio-keys {
-		compatible = "gpio-keys";
+			compatible = "gpio-keys";
 
-		reset {
-			label = "reset";
-			gpios = <&tlmm 63 GPIO_ACTIVE_LOW>;
-			linux,code = <KEY_RESTART>;
+			reset {
+				label = "reset";
+				gpios = <&tlmm 63 GPIO_ACTIVE_LOW>;
+				linux,code = <KEY_RESTART>;
 			};
 		};
 
