@@ -272,13 +272,13 @@
 			wan {
 				label = "wac510:green:wan";
 				gpios = <&tlmm 62 GPIO_ACTIVE_HIGH>;
-				default-state = "on";
+				default-state = "off";
 			};
 
 			lan {
 				label = "wac510:green:lan";
 				gpios = <&tlmm 61 GPIO_ACTIVE_HIGH>;
-				default-state = "on";
+				default-state = "off";
 			};
 
 			act_green {
