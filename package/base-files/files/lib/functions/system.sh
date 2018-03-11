@@ -79,8 +79,6 @@ macaddr_add() {
        	nic=`echo $nic | sed 's/\://g'`
 	nic=$(printf "%06x" $((0x$nic + $val & 0xffffff)) | sed 's/^\(.\{2\}\)\(.\{2\}\)\(.\{2\}\)/\1:\2:\3/')
 	echo $oui:$nic
-	now=`date`
-	echo "$now Made $oui:$nic from $mac" >> /tmp/tim.log
 }
 
 macaddr_setbit_la()

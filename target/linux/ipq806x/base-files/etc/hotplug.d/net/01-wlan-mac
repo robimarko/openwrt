@@ -1,7 +1,5 @@
 #!/bin/sh
 
-now=`date`
-
 . /lib/functions.sh
 . /lib/functions/system.sh
 
@@ -15,11 +13,14 @@ if [ "$ACTION" == "add" ]; then
                         new_mac=$(macaddr_add $(cat /sys/class/net/eth0/address) +$offset)
                         old_mac=$(cat /sys/class/net/$INTERFACE/address)
                         if [ ! "$old_mac" == "$new_mac" ]; then
-                                echo "$now NET Resetting MAC address of $INTERFACE Offset: $offset" >> /tmp/tim.log
-                                echo "$now NET Changing mac from $old_mac to $new_mac" >> /tmp/tim.log
-                                ifconfig $INTERFACE down
-                                ifconfig $INTERFACE hw ether $new_mac
-                                ifconfig $INTERFACE up
+				cur_state=$(cat /sys/class/net/$INTERFACE/operstate)
+				if [ "$cur_state" == "up" ]; then
+                                	ifconfig $INTERFACE down
+                                	ifconfig $INTERFACE hw ether $new_mac
+                                	ifconfig $INTERFACE up
+				else
+					ifconfig $INTERFACE hw ether $new_mac
+				fi
                         fi
                 fi
                 ;;
