@@ -165,6 +165,22 @@ define Device/netgear_r7800
 endef
 TARGET_DEVICES += netgear_r7800
 
+define Device/netgear_wac510
+	$(call Device/FitImage)
+	$(call Device/UbiFit)
+	DEVICE_DTS := qcom-ipq4019-wac510
+	KERNEL_LOADADDR := 0x80208000
+	KERNEL_INSTALL := 1
+	KERNEL_SIZE := 4048k
+	BLOCKSIZE := 128k
+	PAGESIZE := 2048
+	BOARD_NAME := wac510
+	SUPPORTED_DEVICES := netgear,wac510
+	DEVICE_TITLE := Netgear WAC510
+	DEVICE_PACKAGES := ath10k-firmware-qca4019 uboot-envtools kmod-gpio-nxp-74hc164 ipq-wifi-netgear_wac510 kmod-spi-gpio
+endef
+TARGET_DEVICES += netgear_wac510
+
 define Device/glinet_gl-b1300
 	DEVICE_TITLE := GL.iNet GL-B1300
 	BOARD_NAME := gl-b1300

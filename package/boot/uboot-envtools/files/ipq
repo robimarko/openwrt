@@ -34,6 +34,7 @@ case "$board" in
 linksys,ea8500)
 	ubootenv_add_uci_config "/dev/mtd10" "0x0" "0x20000" "0x20000"
 	;;
+netgear,wac510 |\
 openmesh,a42)
 	ubootenv_add_uci_config "/dev/mtd5" "0x0" "0x10000" "0x10000"
 	;;

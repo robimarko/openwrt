@@ -57,6 +57,10 @@ case "$FIRMWARE" in
 	qcom,ap-dk01.1-c1)
 		ath10kcal_extract "ART" 4096 12064
 		;;
+	netgear,wac510)
+		ath10kcal_extract "0:ART" 4096 12064
+		ath10kcal_patch_mac $(macaddr_add $(cat /sys/class/net/eth0/address) -15)
+		;;
 	esac
 	;;
 "ath10k/pre-cal-ahb-a800000.wifi.bin")
@@ -70,6 +74,10 @@ case "$FIRMWARE" in
 	glinet,gl-b1300 |\
 	qcom,ap-dk01.1-c1)
 		ath10kcal_extract "ART" 20480 12064
+		;;
+	netgear,wac510)
+		ath10kcal_extract "0:ART" 20480 12064
+		ath10kcal_patch_mac $(macaddr_add $(cat /sys/class/net/eth0/address) +1)
 		;;
 	esac
 	;;
