@@ -18,10 +18,8 @@ ifndef IB
 endif
 
 include $(INCLUDE_DIR)/image-legacy.mk
-
-ifdef TARGET_PER_DEVICE_ROOTFS
-  include $(INCLUDE_DIR)/rootfs.mk
-endif
+include $(INCLUDE_DIR)/feeds.mk
+include $(INCLUDE_DIR)/rootfs.mk
 
 override MAKE:=$(_SINGLE)$(SUBMAKE)
 override NO_TRACE_MAKE:=$(_SINGLE)$(NO_TRACE_MAKE)
@@ -261,10 +259,7 @@ define Image/mkfs/ext4
 endef
 
 define Image/Manifest
-	$(STAGING_DIR_HOST)/bin/opkg \
-		--offline-root $(TARGET_DIR) \
-		--add-arch all:100 \
-		--add-arch $(if $(ARCH_PACKAGES),$(ARCH_PACKAGES),$(BOARD)):200 list-installed > \
+	$(call opkg,$(TARGET_DIR_ORIG)) list-installed > \
 		$(BIN_DIR)/$(IMG_PREFIX)$(if $(PROFILE_SANITIZED),-$(PROFILE_SANITIZED)).manifest
 endef
 
@@ -305,7 +300,7 @@ target-dir-%: FORCE
 			$(call opkg_package_files,$(mkfs_packages_add)))
 	-$(CP) -T $(mkfs_cur_target_dir).opkg/ $(mkfs_cur_target_dir)/etc/opkg/
 	rm -rf $(mkfs_cur_target_dir).opkg $(mkfs_cur_target_dir).conf
-	$(call prepare_rootfs,$(mkfs_cur_target_dir))
+	$(call prepare_rootfs,$(mkfs_cur_target_dir),$(TOPDIR)/files)
 
 $(KDIR)/root.%: kernel_prepare
 	$(call Image/mkfs/$(word 1,$(target_params)),$(target_params))
