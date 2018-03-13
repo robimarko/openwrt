@@ -7,8 +7,8 @@ board=$(board_name)
 
 case $board in
         netgear,wac510)
-                if [ $ACTION = ifup ]; then
-			# Toggle eth LED pin to activate eth[0,1] LEDs when the interface comes up
+                if [ $ACTION == ifup ]; then
+			                  # Toggle eth LED pin to activate eth[0,1] LEDs when the interface comes up
                         echo 0 > /sys/class/leds/wac510\:green\:eth/brightness
                         echo 1 > /sys/class/leds/wac510\:green\:eth/brightness
                 fi

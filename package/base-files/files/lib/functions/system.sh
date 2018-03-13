@@ -76,7 +76,8 @@ macaddr_add() {
 	local oui=${mac%:*:*:*}
 	local nic=${mac#*:*:*:}
 
-	nic=$(printf "%06x" $((0x${nic//:/} + $val & 0xffffff)) | sed 's/^\(.\{2\}\)\(.\{2\}\)\(.\{2\}\)/\1:\2:\3/')
+       	nic=`echo $nic | sed 's/\://g'`
+	nic=$(printf "%06x" $((0x$nic + $val & 0xffffff)) | sed 's/^\(.\{2\}\)\(.\{2\}\)\(.\{2\}\)/\1:\2:\3/')
 	echo $oui:$nic
 }
 
