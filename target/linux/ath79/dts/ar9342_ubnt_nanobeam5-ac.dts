@@ -111,6 +111,6 @@
 };
 
 &wmac {
-	status = "okay";
+	status = "disabled";
 	mtd-mac-address = <&eeprom 0x0>;
 };
