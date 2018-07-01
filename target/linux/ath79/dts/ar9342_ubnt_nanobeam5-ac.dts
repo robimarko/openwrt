@@ -4,10 +4,10 @@
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
 
-#include "ar9342.dtsi"
+#include "ar9344.dtsi"
 
 / {
-	compatible = "ubnt,nanobeam-5-ac", "qca,ar9342";
+	compatible = "ubnt,nanobeam-5-ac", "qca,ar9344";
 	model = "Ubiquiti Nanobeam 5 AC (WA)";
 
 	keys {
