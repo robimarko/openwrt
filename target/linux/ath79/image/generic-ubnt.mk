@@ -102,7 +102,7 @@ define Device/ubnt_nanobeam5-ac
   IMAGES := factory.bin sysupgrade.bin
   IMAGE/sysupgrade.bin := append-kernel | pad-to $$$$(BLOCKSIZE) | append-rootfs | pad-rootfs | append-metadata | check-size $$$$(IMAGE_SIZE)
   IMAGE/factory.bin := $$(IMAGE/sysupgrade.bin) | mkubntimage-split-wa
-  DEVICE_PACKAGES := kmod-ath10k ath10k-firmware-qca988x
+  DEVICE_PACKAGES := kmod-ath10k ath10k-firmware-qca988x rssileds
   SUPPORTED_DEVICES += ubnt,nanobeam-5-ac nanobeam-5-ac
 endef
 TARGET_DEVICES += ubnt_nanobeam5-ac
