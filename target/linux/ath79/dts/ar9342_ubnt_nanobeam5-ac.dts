@@ -7,7 +7,7 @@
 #include "ar9342.dtsi"
 
 / {
-	compatible = "ubnt,nanobeam-5-ac", "qca,ar9344";
+	compatible = "ubnt,nanobeam-5-ac", "qca,ar9342";
 	model = "Ubiquiti Nanobeam 5 AC (WA)";
 	
 	leds {
