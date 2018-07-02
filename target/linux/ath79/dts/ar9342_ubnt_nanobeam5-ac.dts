@@ -137,8 +137,3 @@
 	phy-mode = "rgmii";
 	phy-handle = <&phy4>;
 };
-
-&wmac {
-	status = "disabled";
-	mtd-mac-address = <&eeprom 0x0>;
-};
