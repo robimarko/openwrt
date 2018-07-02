@@ -9,6 +9,34 @@
 / {
 	compatible = "ubnt,nanobeam-5-ac", "qca,ar9344";
 	model = "Ubiquiti Nanobeam 5 AC (WA)";
+	
+	leds {
+		compatible = "gpio-leds";
+
+		rssi1 {
+			label = "ubnt:blue:rssi1";
+			gpios = <&gpio 11 GPIO_ACTIVE_LOW>;
+			default-state = "off";
+		};
+
+		rssi2 {
+			label = "ubnt:blue:rssi2";
+			gpios = <&gpio 16 GPIO_ACTIVE_LOW>;
+			default-state = "off";
+		};
+
+		rssi3 {
+			label = "ubnt:blue:rssi3";
+			gpios = <&gpio 13 GPIO_ACTIVE_LOW>;
+			default-state = "off";
+		};
+
+		rssi4 {
+			label = "ubnt:blue:rssi4";
+			gpios = <&gpio 14 GPIO_ACTIVE_LOW>;
+			default-state = "off";
+		};
+	};
 
 	keys {
 		compatible = "gpio-keys";
