@@ -96,7 +96,7 @@ TARGET_DEVICES += ubnt_nano-m
 
 define Device/ubnt_nanobeam5-ac
   $(Device/ubnt-wa)
-  ATH_SOC := ar9344
+  ATH_SOC := ar9342
   DEVICE_TITLE := Ubiquiti Nanobeam 5 AC (WA)
   IMAGE_SIZE := 15744k
   IMAGES := factory.bin sysupgrade.bin
