@@ -108,6 +108,13 @@ define Device/ubnt_nanobeam5-ac
 endef
 TARGET_DEVICES += ubnt_nanobeam5-ac
 
+define Device/ubnt_nanostation-ac-loco
+  $(Device/ubnt-wa)
+  DEVICE_TITLE := Ubiquiti NanoStation AC loco
+  SUPPORTED_DEVICES += ubnt,nanostation-ac-loco nanostation-ac-loco
+endef
+TARGET_DEVICES += ubnt_nanostation-ac-loco
+
 define Device/ubnt_unifi
   $(Device/ubnt-bz)
   DEVICE_TITLE := Ubiquiti UniFi
