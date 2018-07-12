@@ -71,6 +71,12 @@ define Device/ubnt-wa
   UBNT_TYPE := WA
   UBNT_CHIP := ar934x
   UBNT_BOARD := WA
+  ATH_SOC := ar9342
+  IMAGE_SIZE := 15744k
+  IMAGES := factory.bin sysupgrade.bin
+  IMAGE/sysupgrade.bin := append-kernel | pad-to $$$$(BLOCKSIZE) | append-rootfs | pad-rootfs | append-metadata | check-size $$$$(IMAGE_SIZE)
+  IMAGE/factory.bin := $$(IMAGE/sysupgrade.bin) | mkubntimage-split-wa
+  DEVICE_PACKAGES := kmod-ath10k ath10k-firmware-qca988x
 endef
 
 define Device/ubnt_bullet-m
@@ -96,13 +102,8 @@ TARGET_DEVICES += ubnt_nano-m
 
 define Device/ubnt_nanobeam5-ac
   $(Device/ubnt-wa)
-  ATH_SOC := ar9342
   DEVICE_TITLE := Ubiquiti Nanobeam 5 AC (WA)
-  IMAGE_SIZE := 15744k
-  IMAGES := factory.bin sysupgrade.bin
-  IMAGE/sysupgrade.bin := append-kernel | pad-to $$$$(BLOCKSIZE) | append-rootfs | pad-rootfs | append-metadata | check-size $$$$(IMAGE_SIZE)
-  IMAGE/factory.bin := $$(IMAGE/sysupgrade.bin) | mkubntimage-split-wa
-  DEVICE_PACKAGES := kmod-ath10k ath10k-firmware-qca988x rssileds
+  DEVICE_PACKAGES := rssileds
   SUPPORTED_DEVICES += ubnt,nanobeam-5-ac nanobeam-5-ac
 endef
 TARGET_DEVICES += ubnt_nanobeam5-ac
