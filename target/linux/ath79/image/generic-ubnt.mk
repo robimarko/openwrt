@@ -24,8 +24,22 @@ define Build/mkubntimage-split
 	rm $@.old1 $@.old2 )
 endef
 
-# UBNT_BOARD e.g. one of (XS2, XS5, RS, XM)
-# UBNT_TYPE e.g. one of (BZ, XM, XW)
+# similar to the UBNT XM devices the newer UBNT WA devices need a split image. But it expects
+# a higher firmware version or else it won't update
+define Build/mkubntimage-split-wa
+	-[ -f $@ ] && ( \
+	dd if=$@ of=$@.old1 bs=1024k count=1; \
+	dd if=$@ of=$@.old2 bs=1024k skip=1; \
+	$(STAGING_DIR_HOST)/bin/mkfwimage \
+		-B $(UBNT_BOARD) -v $(UBNT_TYPE).$(UBNT_CHIP).v8.5.0-$(VERSION_DIST)-$(REVISION) \
+		-k $@.old1 \
+		-r $@.old2 \
+		-o $@; \
+	rm $@.old1 $@.old2 )
+endef
+
+# UBNT_BOARD e.g. one of (XS2, XS5, RS, XM, WA)
+# UBNT_TYPE e.g. one of (BZ, XM, XW, WA)
 # UBNT_CHIP e.g. one of (ar7240, ar933x, ar934x)
 define Device/ubnt
   DEVICE_PACKAGES := kmod-usb-core kmod-usb2
@@ -52,6 +66,19 @@ define Device/ubnt-bz
   ATH_SOC := ar7241
 endef
 
+define Device/ubnt-wa
+  $(Device/ubnt)
+  UBNT_TYPE := WA
+  UBNT_CHIP := ar934x
+  UBNT_BOARD := WA
+  ATH_SOC := ar9342
+  IMAGE_SIZE := 15744k
+  IMAGES := factory.bin sysupgrade.bin
+  IMAGE/sysupgrade.bin := append-kernel | pad-to $$$$(BLOCKSIZE) | append-rootfs | pad-rootfs | append-metadata | check-size $$$$(IMAGE_SIZE)
+  IMAGE/factory.bin := $$(IMAGE/sysupgrade.bin) | mkubntimage-split-wa
+  DEVICE_PACKAGES := kmod-ath10k ath10k-firmware-qca988x
+endef
+
 define Device/ubnt_bullet-m
   $(Device/ubnt-xm)
   DEVICE_TITLE := Ubiquiti Bullet-M
@@ -73,6 +100,21 @@ define Device/ubnt_nano-m
 endef
 TARGET_DEVICES += ubnt_nano-m
 
+define Device/ubnt_nanobeam5-ac
+  $(Device/ubnt-wa)
+  DEVICE_TITLE := Ubiquiti Nanobeam 5 AC (WA)
+  DEVICE_PACKAGES := rssileds
+  SUPPORTED_DEVICES += ubnt,nanobeam-5-ac nanobeam-5-ac
+endef
+TARGET_DEVICES += ubnt_nanobeam5-ac
+
+define Device/ubnt_nanostation-ac-loco
+  $(Device/ubnt-wa)
+  DEVICE_TITLE := Ubiquiti NanoStation AC loco
+  SUPPORTED_DEVICES += ubnt,nanostation-ac-loco nanostation-ac-loco
+endef
+TARGET_DEVICES += ubnt_nanostation-ac-loco
+
 define Device/ubnt_unifi
   $(Device/ubnt-bz)
   DEVICE_TITLE := Ubiquiti UniFi
@@ -87,7 +129,6 @@ define Device/ubnt_unifiac
   IMAGE/sysupgrade.bin := append-kernel | pad-to $$$$(BLOCKSIZE) | append-rootfs | pad-rootfs | append-metadata | check-size $$$$(IMAGE_SIZE)
   DEVICE_PACKAGES := kmod-ath10k ath10k-firmware-qca988x
 endef
-
 
 define Device/ubnt_unifiac-lite
   $(Device/ubnt_unifiac)
