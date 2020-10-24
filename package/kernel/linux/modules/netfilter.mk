@@ -155,7 +155,7 @@ define KernelPackage/nf-flow
   DEPENDS:=+kmod-nf-conntrack
   FILES:= \
 	$(LINUX_DIR)/net/netfilter/nf_flow_table.ko \
-	$(LINUX_DIR)/net/netfilter/nf_flow_table_hw.ko
+	$(if $(CONFIG_LINUX_5_4),$(LINUX_DIR)/net/netfilter/nf_flow_table_hw.ko)
   AUTOLOAD:=$(call AutoProbe,nf_flow_table nf_flow_table_hw)
 endef
 

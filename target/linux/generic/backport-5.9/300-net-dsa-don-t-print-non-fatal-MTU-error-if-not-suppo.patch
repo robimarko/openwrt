@@ -1,0 +1,27 @@
+From: Vladimir Oltean <olteanv@gmail.com>
+Date: Tue, 8 Sep 2020 02:25:56 +0300
+Subject: [PATCH] net: dsa: don't print non-fatal MTU error if not supported
+
+Commit 72579e14a1d3 ("net: dsa: don't fail to probe if we couldn't set
+the MTU") changed, for some reason, the "err && err != -EOPNOTSUPP"
+check into a simple "err". This causes the MTU warning to be printed
+even for drivers that don't have the MTU operations implemented.
+Fix that.
+
+Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+---
+
+--- a/net/dsa/slave.c
++++ b/net/dsa/slave.c
+@@ -1784,7 +1784,7 @@ int dsa_slave_create(struct dsa_port *po
+ 	rtnl_lock();
+ 	ret = dsa_slave_change_mtu(slave_dev, ETH_DATA_LEN);
+ 	rtnl_unlock();
+-	if (ret)
++	if (ret && ret != -EOPNOTSUPP)
+ 		dev_warn(ds->dev, "nonfatal error %d setting MTU on port %d\n",
+ 			 ret, port->index);
+ 
