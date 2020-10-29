@@ -1,0 +1,31 @@
+From 949766e0a32aa9671e4a9a2d4bc1491a42f9743a Mon Sep 17 00:00:00 2001
+From: Kathiravan T <kathirav@codeaurora.org>
+Date: Mon, 31 Aug 2020 13:57:08 +0530
+Subject: [PATCH] arm64: dts: ipq8074: enable watchdog support
+
+Enable watchdog support for the IPQ8074 SoCs.
+
+Signed-off-by: Kathiravan T <kathirav@codeaurora.org>
+Link: https://lore.kernel.org/r/1598862428-13996-1-git-send-email-kathirav@codeaurora.org
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+---
+ arch/arm64/boot/dts/qcom/ipq8074.dtsi | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+--- a/arch/arm64/boot/dts/qcom/ipq8074.dtsi
++++ b/arch/arm64/boot/dts/qcom/ipq8074.dtsi
+@@ -498,6 +498,14 @@
+ 				     <GIC_PPI 1 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>;
+ 		};
+ 
++		watchdog: watchdog@b017000 {
++			compatible = "qcom,kpss-wdt";
++			reg = <0xb017000 0x1000>;
++			interrupts = <GIC_SPI 3 IRQ_TYPE_EDGE_RISING>;
++			clocks = <&sleep_clk>;
++			timeout-sec = <30>;
++		};
++
+ 		timer@b120000 {
+ 			#address-cells = <1>;
+ 			#size-cells = <1>;
