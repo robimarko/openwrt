@@ -6,7 +6,7 @@ define Device/Default
 	KERNEL_DEPENDS = $$(wildcard $(DEVICE_DTS_DIR)/$$(DEVICE_DTS).dts)
 	KERNEL_INITRAMFS_PREFIX := $$(IMG_PREFIX)-$(1)-initramfs
 	KERNEL_PREFIX := $$(IMAGE_PREFIX)
-	KERNEL_LOADADDR := 0x41080000
+	KERNEL_LOADADDR := 0x41000000
 	DEVICE_DTS_DIR := $(DTS_DIR)/qcom
 	DEVICE_DTS = $$(SOC)-$(lastword $(subst _, ,$(1)))
 	SUPPORTED_DEVICES := $(subst _,$(comma),$(1))
