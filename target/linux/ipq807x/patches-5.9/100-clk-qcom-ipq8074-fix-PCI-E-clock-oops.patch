@@ -13,8 +13,6 @@ Signed-off-by: Robert Marko <robert.marko@sartura.hr>
  drivers/clk/qcom/gcc-ipq8074.c | 11 +++++------
  1 file changed, 5 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/clk/qcom/gcc-ipq8074.c b/drivers/clk/qcom/gcc-ipq8074.c
-index ef2c9c4cf9ab..ddeae7b9c27f 100644
 --- a/drivers/clk/qcom/gcc-ipq8074.c
 +++ b/drivers/clk/qcom/gcc-ipq8074.c
 @@ -4329,8 +4329,7 @@ struct clk_rcg2 pcie0_rchng_clk_src = {
@@ -27,7 +25,7 @@ index ef2c9c4cf9ab..ddeae7b9c27f 100644
  		.num_parents = 2,
  		.ops = &clk_rcg2_ops,
  	},
-@@ -4344,8 +4343,8 @@ static struct clk_branch gcc_pcie0_rchng_clk = {
+@@ -4344,8 +4343,8 @@ static struct clk_branch gcc_pcie0_rchng
  		.enable_mask = BIT(1),
  		.hw.init = &(struct clk_init_data){
  			.name = "gcc_pcie0_rchng_clk",
@@ -38,7 +36,7 @@ index ef2c9c4cf9ab..ddeae7b9c27f 100644
  			},
  			.num_parents = 1,
  			.flags = CLK_SET_RATE_PARENT,
-@@ -4362,8 +4361,8 @@ static struct clk_branch gcc_pcie0_axi_s_bridge_clk = {
+@@ -4362,8 +4361,8 @@ static struct clk_branch gcc_pcie0_axi_s
  		.enable_mask = BIT(0),
  		.hw.init = &(struct clk_init_data){
  			.name = "gcc_pcie0_axi_s_bridge_clk",
@@ -49,6 +47,3 @@ index ef2c9c4cf9ab..ddeae7b9c27f 100644
  			},
  			.num_parents = 1,
  			.flags = CLK_SET_RATE_PARENT,
--- 
-2.28.0
-
