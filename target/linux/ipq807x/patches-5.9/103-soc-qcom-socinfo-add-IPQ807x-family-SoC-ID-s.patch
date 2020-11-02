@@ -1,0 +1,35 @@
+From 03e0a191e836385113fbb9291ac392d276e9c2fc Mon Sep 17 00:00:00 2001
+From: Robert Marko <robert.marko@sartura.hr>
+Date: Mon, 2 Nov 2020 20:51:48 +0100
+Subject: [PATCH] soc: qcom: socinfo: add IPQ807x family SoC ID-s
+
+This adds the entries for the IPQ807x SoC family models.
+
+Signed-off-by: Robert Marko <robert.marko@sartura.hr>
+---
+ drivers/soc/qcom/socinfo.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+--- a/drivers/soc/qcom/socinfo.c
++++ b/drivers/soc/qcom/socinfo.c
+@@ -221,8 +221,20 @@ static const struct soc_id soc_id[] = {
+ 	{ 312, "APQ8096SG" },
+ 	{ 318, "SDM630" },
+ 	{ 321, "SDM845" },
++	{ 323, "IPQ8074" },
+ 	{ 341, "SDA845" },
++	{ 342, "IPQ8072" },
++	{ 343, "IPQ8076" },
++	{ 344, "IPQ8078" },
+ 	{ 356, "SM8250" },
++	{ 375, "IPQ8070" },
++	{ 376, "IPQ8071" },
++	{ 389, "IPQ8072A" },
++	{ 390, "IPQ8074A" },
++	{ 391, "IPQ8076A" },
++	{ 392, "IPQ8078A" },
++	{ 395, "IPQ8070A" },
++	{ 396, "IPQ8071A" },
+ };
+ 
+ static const char *socinfo_machine(struct device *dev, unsigned int id)
