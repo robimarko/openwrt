@@ -1,0 +1,29 @@
+From c63d8e48723f25a83f72d368f80a257568b0caa8 Mon Sep 17 00:00:00 2001
+From: Robert Marko <robert.marko@sartura.hr>
+Date: Mon, 2 Nov 2020 21:54:27 +0100
+Subject: [PATCH] arm64: dts: ipq8074: add PRNG support
+
+This adds the PRNG node that enables PRNG support on
+IPQ8074 boards.
+
+Signed-off-by: Robert Marko <robert.marko@sartura.hr>
+---
+ arch/arm64/boot/dts/qcom/ipq8074.dtsi | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+--- a/arch/arm64/boot/dts/qcom/ipq8074.dtsi
++++ b/arch/arm64/boot/dts/qcom/ipq8074.dtsi
+@@ -226,6 +226,13 @@
+ 			status = "disabled";
+ 		};
+ 
++		prng: qrng@e1000 {
++			compatible = "qcom,prng-ee";
++			reg = <0xe3000 0x1000>;
++			clocks = <&gcc GCC_PRNG_AHB_CLK>;
++			clock-names = "core";
++		};
++
+ 		tlmm: pinctrl@1000000 {
+ 			compatible = "qcom,ipq8074-pinctrl";
+ 			reg = <0x01000000 0x300000>;
