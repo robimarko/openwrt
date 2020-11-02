@@ -1,0 +1,28 @@
+From 34befb60a60ab36de19e7902a1fee0b9f0fccd36 Mon Sep 17 00:00:00 2001
+From: Robert Marko <robert.marko@sartura.hr>
+Date: Mon, 2 Nov 2020 19:55:40 +0100
+Subject: [PATCH] arm64: dts: ipq8074: enable SCM
+
+This enables SCM support on IPQ8074 boards.
+No clocks are needed for it.
+
+Signed-off-by: Robert Marko <robert.marko@sartura.hr>
+---
+ arch/arm64/boot/dts/qcom/ipq8074.dtsi | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+--- a/arch/arm64/boot/dts/qcom/ipq8074.dtsi
++++ b/arch/arm64/boot/dts/qcom/ipq8074.dtsi
+@@ -76,6 +76,12 @@
+ 		method = "smc";
+ 	};
+ 
++	firmware {
++		scm {
++			compatible = "qcom,scm-ipq8074", "qcom,scm";
++		};
++	};
++
+ 	soc: soc {
+ 		#address-cells = <0x1>;
+ 		#size-cells = <0x1>;
