@@ -1,0 +1,62 @@
+From 2bbee1b92783814341510428248e478ad84afdc2 Mon Sep 17 00:00:00 2001
+From: Robert Marko <robert.marko@sartura.hr>
+Date: Mon, 2 Nov 2020 20:04:50 +0100
+Subject: [PATCH] arm64: dts: ipq8074: enable SMEM
+
+This enables SMEM on IPQ8074 boards.
+
+Signed-off-by: Robert Marko <robert.marko@sartura.hr>
+---
+ arch/arm64/boot/dts/qcom/ipq8074.dtsi | 28 +++++++++++++++++++++++++++
+ 1 file changed, 28 insertions(+)
+
+--- a/arch/arm64/boot/dts/qcom/ipq8074.dtsi
++++ b/arch/arm64/boot/dts/qcom/ipq8074.dtsi
+@@ -76,12 +76,35 @@
+ 		method = "smc";
+ 	};
+ 
++	reserved-memory {
++		#address-cells = <2>;
++		#size-cells = <2>;
++		ranges;
++
++		smem_region: memory@4ab00000 {
++			no-map;
++			reg = <0x0 0x4ab00000 0x0 0x00100000>;
++		};
++	};
++
+ 	firmware {
+ 		scm {
+ 			compatible = "qcom,scm-ipq8074", "qcom,scm";
+ 		};
+ 	};
+ 
++	tcsr_mutex: hwlock {
++		compatible = "qcom,tcsr-mutex";
++		syscon = <&tcsr_mutex_regs 0 0x80>;
++		#hwlock-cells = <1>;
++	};
++
++	smem {
++		compatible = "qcom,smem";
++		memory-region = <&smem_region>;
++		hwlocks = <&tcsr_mutex 0>;
++	};
++
+ 	soc: soc {
+ 		#address-cells = <0x1>;
+ 		#size-cells = <0x1>;
+@@ -260,6 +283,11 @@
+ 			#reset-cells = <0x1>;
+ 		};
+ 
++		tcsr_mutex_regs: syscon@193d000 {
++			compatible = "syscon";
++			reg = <0x01905000 0x8000>;
++		};
++
+ 		sdhc_1: sdhci@7824900 {
+ 			compatible = "qcom,sdhci-msm-v4";
+ 			reg = <0x7824900 0x500>, <0x7824000 0x800>;
