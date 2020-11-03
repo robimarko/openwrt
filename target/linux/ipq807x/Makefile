@@ -13,6 +13,7 @@ KERNEL_TESTING_PATCHVER:=5.9
 
 include $(INCLUDE_DIR)/target.mk
 DEFAULT_PACKAGES += \
-	kmod-leds-gpio kmod-gpio-button-hotplug
+	kmod-leds-gpio kmod-gpio-button-hotplug \
+	ath11k-firmware-ipq8074
 
 $(eval $(call BuildTarget))
