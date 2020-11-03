@@ -1,0 +1,54 @@
+From 09071fb51eff7d3667b71b74a44cacc52ac99aa8 Mon Sep 17 00:00:00 2001
+From: Govind Singh <govinds@codeaurora.org>
+Date: Thu, 30 Jul 2020 17:44:02 +0530
+Subject: [PATCH 2/4] dt-bindings: remoteproc: qcom: Add Q6V5 Modem PIL binding
+ for QCS404
+
+Add a new modem compatible string for Qualcomm QCS404 SoCs
+
+Signed-off-by: Govind Singh <govinds@codeaurora.org>
+Signed-off-by: Gokul Sriram Palanisamy <gokulsri@codeaurora.org>
+Acked-by: Rob Herring <robh@kernel.org>
+---
+ .../devicetree/bindings/remoteproc/qcom,q6v5.txt         | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+--- a/Documentation/devicetree/bindings/remoteproc/qcom,q6v5.txt
++++ b/Documentation/devicetree/bindings/remoteproc/qcom,q6v5.txt
+@@ -9,6 +9,7 @@ on the Qualcomm Hexagon core.
+ 	Definition: must be one of:
+ 		    "qcom,q6v5-pil",
+ 		    "qcom,ipq8074-wcss-pil"
++		    "qcom,qcs404-wcss-pil"
+ 		    "qcom,msm8916-mss-pil",
+ 		    "qcom,msm8974-mss-pil"
+ 		    "qcom,msm8996-mss-pil"
+@@ -39,6 +40,7 @@ on the Qualcomm Hexagon core.
+ 		    string:
+ 	qcom,q6v5-pil:
+ 	qcom,ipq8074-wcss-pil:
++	qcom,qcs404-wcss-pil:
+ 	qcom,msm8916-mss-pil:
+ 	qcom,msm8974-mss-pil:
+ 		    must be "wdog", "fatal", "ready", "handover", "stop-ack"
+@@ -67,6 +69,11 @@ on the Qualcomm Hexagon core.
+ 	Definition: The clocks needed depend on the compatible string:
+ 	qcom,ipq8074-wcss-pil:
+ 		    no clock names required
++	qcom,qcs404-wcss-pil:
++		    must be "xo", "gcc_abhs_cbcr", "gcc_abhs_cbcr",
++		    "gcc_axim_cbcr", "lcc_ahbfabric_cbc", "tcsr_lcc_cbc",
++		    "lcc_abhs_cbc", "lcc_tcm_slave_cbc", "lcc_abhm_cbc",
++		    "lcc_axim_cbc", "lcc_bcr_sleep"
+ 	qcom,q6v5-pil:
+ 	qcom,msm8916-mss-pil:
+ 	qcom,msm8974-mss-pil:
+@@ -154,6 +161,8 @@ For the compatible string below the foll
+ 	qcom,msm8916-mss-pil:
+ 	qcom,msm8974-mss-pil:
+ 		    no power-domain names required
++	qcom,qcs404-wcss-pil:
++		    must be "cx"
+ 	qcom,msm8996-mss-pil:
+ 	qcom,msm8998-mss-pil:
+ 		    must be "cx", "mx"
