@@ -1,0 +1,24 @@
+From fded4d13b58f02b8bb4c7c4639669126c78de2e7 Mon Sep 17 00:00:00 2001
+From: Robert Marko <robert.marko@sartura.hr>
+Date: Wed, 4 Nov 2020 14:03:23 +0100
+Subject: [PATCH] ath10k-ct: fix building on 5.9
+
+uninitialized_var was dropped in newer kernels, so lets remove it
+in order to compile under 5.9.
+
+Signed-off-by: Robert Marko <robert.marko@sartura.hr>
+---
+ ath10k-5.4/core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- a/ath10k-5.8/core.c
++++ b/ath10k-5.8/core.c
+@@ -2750,7 +2750,7 @@ static int ath10k_init_uart(struct ath10
+ 
+ static int ath10k_init_hw_params(struct ath10k *ar)
+ {
+-	const struct ath10k_hw_params *uninitialized_var(hw_params);
++	const struct ath10k_hw_params *hw_params;
+ 	int i;
+ 
+ 	for (i = 0; i < ARRAY_SIZE(ath10k_hw_params_list); i++) {
