@@ -1,0 +1,39 @@
+From 5aae47cb6eea9fb085d7442b8e5c2d138e3354df Mon Sep 17 00:00:00 2001
+From: Robert Marko <robert.marko@sartura.hr>
+Date: Wed, 4 Nov 2020 15:43:31 +0100
+Subject: [PATCH] arm64: dts: ipq8074: enable SPMI bus
+
+This enables the SPMI bus on IPQ807x series boards.
+
+Signed-off-by: Robert Marko <robert.marko@sartura.hr>
+---
+ arch/arm64/boot/dts/qcom/ipq8074.dtsi | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
+
+--- a/arch/arm64/boot/dts/qcom/ipq8074.dtsi
++++ b/arch/arm64/boot/dts/qcom/ipq8074.dtsi
+@@ -830,6 +830,24 @@
+ 			status = "disabled";
+ 		};
+ 
++		spmi_bus: spmi@200f000 {
++			compatible = "qcom,spmi-pmic-arb";
++			reg = <0x200f000 0x1000>,
++				<0x2400000 0x800000>,
++				<0x2c00000 0x800000>,
++				<0x3800000 0x200000>,
++				<0x200a000 0x000700>;
++			reg-names = "core", "chnls", "obsrvr", "intr", "cnfg";
++			interrupts = <GIC_SPI 190 IRQ_TYPE_LEVEL_HIGH>;
++			interrupt-names = "periph_irq";
++			qcom,ee = <0>;
++			qcom,channel = <0>;
++			#address-cells = <2>;
++			#size-cells = <0>;
++			interrupt-controller;
++			#interrupt-cells = <4>;
++		};
++
+ 		apcs_glb: mailbox@b111000 {
+ 			compatible = "qcom,ipq8074-apcs-apps-global";
+ 			reg = <0x0b111000 0x1000>;
