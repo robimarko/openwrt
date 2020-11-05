@@ -92,7 +92,7 @@ Signed-off-by: Sivaprakash Murugesan <sivaprak@codeaurora.org>
  };
  
  struct qcom_pcie;
-@@ -1250,6 +1279,134 @@ static void qcom_pcie_post_deinit_2_7_0(
+@@ -1263,6 +1292,134 @@ static void qcom_pcie_post_deinit_2_7_0(
  	clk_disable_unprepare(res->pipe_clk);
  }
  
@@ -227,7 +227,7 @@ Signed-off-by: Sivaprakash Murugesan <sivaprak@codeaurora.org>
  static int qcom_pcie_link_up(struct dw_pcie *pci)
  {
  	u16 val = readw(pci->dbi_base + PCIE20_CAP + PCI_EXP_LNKSTA);
-@@ -1359,6 +1516,14 @@ static const struct qcom_pcie_ops ops_2_
+@@ -1372,6 +1529,14 @@ static const struct qcom_pcie_ops ops_2_
  	.post_deinit = qcom_pcie_post_deinit_2_7_0,
  };
  
@@ -242,7 +242,7 @@ Signed-off-by: Sivaprakash Murugesan <sivaprak@codeaurora.org>
  static const struct dw_pcie_ops dw_pcie_ops = {
  	.link_up = qcom_pcie_link_up,
  };
-@@ -1399,6 +1564,15 @@ static int qcom_pcie_probe(struct platfo
+@@ -1412,6 +1577,15 @@ static int qcom_pcie_probe(struct platfo
  		goto err_pm_runtime_put;
  	}
  
@@ -258,7 +258,7 @@ Signed-off-by: Sivaprakash Murugesan <sivaprak@codeaurora.org>
  	pcie->gen = of_pci_get_max_link_speed(pdev->dev.of_node);
  	if (pcie->gen < 0)
  		pcie->gen = 2;
-@@ -1476,6 +1650,7 @@ static const struct of_device_id qcom_pc
+@@ -1489,6 +1663,7 @@ static const struct of_device_id qcom_pc
  	{ .compatible = "qcom,pcie-ipq4019", .data = &ops_2_4_0 },
  	{ .compatible = "qcom,pcie-qcs404", .data = &ops_2_4_0 },
  	{ .compatible = "qcom,pcie-sdm845", .data = &ops_2_7_0 },

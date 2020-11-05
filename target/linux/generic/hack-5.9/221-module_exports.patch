@@ -56,7 +56,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  	}								\
  									\
  	/* __*init sections */						\
-@@ -959,6 +969,8 @@
+@@ -962,6 +972,8 @@
  	/DISCARD/ : {							\
  	EXIT_DISCARDS							\
  	EXIT_CALL							\
