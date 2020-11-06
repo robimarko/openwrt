@@ -15,6 +15,6 @@ include $(INCLUDE_DIR)/target.mk
 DEFAULT_PACKAGES += \
 	kmod-leds-gpio kmod-gpio-button-hotplug \
 	ath11k-firmware-ipq8074 kmod-ath11k \
-	wpad-basic-wolfssl
+	wpad-basic-wolfssl kmod-usb-dwc3-qcom
 
 $(eval $(call BuildTarget))
