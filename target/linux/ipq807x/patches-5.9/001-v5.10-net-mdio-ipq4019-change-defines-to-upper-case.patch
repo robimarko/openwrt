@@ -1,0 +1,38 @@
+From af51d71004953390d3badbb84b10e33f40f9fa4c Mon Sep 17 00:00:00 2001
+From: Robert Marko <robert.marko@sartura.hr>
+Date: Fri, 18 Sep 2020 21:57:00 +0200
+Subject: [PATCH 1/2] net: mdio-ipq4019: change defines to upper case
+
+In the commit adding the IPQ4019 MDIO driver, defines for timeout and sleep partially used lower case.
+Lets change it to upper case in line with the rest of driver defines.
+
+Signed-off-by: Robert Marko <robert.marko@sartura.hr>
+Cc: Luka Perkov <luka.perkov@sartura.hr>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+---
+ drivers/net/phy/mdio-ipq4019.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+--- a/drivers/net/phy/mdio-ipq4019.c
++++ b/drivers/net/phy/mdio-ipq4019.c
+@@ -21,8 +21,8 @@
+ #define MDIO_CMD_ACCESS_CODE_READ	0
+ #define MDIO_CMD_ACCESS_CODE_WRITE	1
+ 
+-#define ipq4019_MDIO_TIMEOUT	10000
+-#define ipq4019_MDIO_SLEEP		10
++#define IPQ4019_MDIO_TIMEOUT	10000
++#define IPQ4019_MDIO_SLEEP		10
+ 
+ struct ipq4019_mdio_data {
+ 	void __iomem	*membase;
+@@ -35,7 +35,7 @@ static int ipq4019_mdio_wait_busy(struct
+ 
+ 	return readl_poll_timeout(priv->membase + MDIO_CMD_REG, busy,
+ 				  (busy & MDIO_CMD_ACCESS_BUSY) == 0,
+-				  ipq4019_MDIO_SLEEP, ipq4019_MDIO_TIMEOUT);
++				  IPQ4019_MDIO_SLEEP, IPQ4019_MDIO_TIMEOUT);
+ }
+ 
+ static int ipq4019_mdio_read(struct mii_bus *bus, int mii_id, int regnum)
