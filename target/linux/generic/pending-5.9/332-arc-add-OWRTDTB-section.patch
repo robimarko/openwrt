@@ -23,7 +23,7 @@ Signed-off-by: Evgeniy Didin <Evgeniy.Didin@synopsys.com>
 
 --- a/arch/arc/kernel/head.S
 +++ b/arch/arc/kernel/head.S
-@@ -73,6 +73,16 @@
+@@ -88,6 +88,16 @@
  	DSP_EARLY_INIT
  .endm
  
