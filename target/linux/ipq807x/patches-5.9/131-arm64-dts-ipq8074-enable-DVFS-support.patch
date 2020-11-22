@@ -1,0 +1,111 @@
+From 200ce904e7d309dee6f03048195be3e87e1ca695 Mon Sep 17 00:00:00 2001
+From: Robert Marko <robert.marko@sartura.hr>
+Date: Sun, 22 Nov 2020 17:33:02 +0100
+Subject: [PATCH] arm64: dts: ipq8074: enable DVFS support
+
+This adds basic DVFS support for IPQ8071 CPU-s.
+
+Signed-off-by: Robert Marko <robert.marko@sartura.hr>
+---
+ arch/arm64/boot/dts/qcom/ipq8074.dtsi | 45 ++++++++++++++++++++++++++-
+ 1 file changed, 44 insertions(+), 1 deletion(-)
+
+--- a/arch/arm64/boot/dts/qcom/ipq8074.dtsi
++++ b/arch/arm64/boot/dts/qcom/ipq8074.dtsi
+@@ -5,6 +5,7 @@
+ 
+ #include <dt-bindings/interrupt-controller/arm-gic.h>
+ #include <dt-bindings/clock/qcom,gcc-ipq8074.h>
++#include <dt-bindings/clock/qcom,apss-ipq.h>
+ #include <dt-bindings/spmi/spmi.h>
+ 
+ / {
+@@ -35,6 +36,10 @@
+ 			reg = <0x0>;
+ 			next-level-cache = <&L2_0>;
+ 			enable-method = "psci";
++			clocks = <&apcs_glb APCS_ALIAS0_CORE_CLK>;
++			clock-names = "cpu";
++			operating-points-v2 = <&cpu_opp_table>;
++			cpu-supply = <&s3>;
+ 		};
+ 
+ 		CPU1: cpu@1 {
+@@ -43,6 +48,10 @@
+ 			enable-method = "psci";
+ 			reg = <0x1>;
+ 			next-level-cache = <&L2_0>;
++			clocks = <&apcs_glb APCS_ALIAS0_CORE_CLK>;
++			clock-names = "cpu";
++			operating-points-v2 = <&cpu_opp_table>;
++			cpu-supply = <&s3>;
+ 		};
+ 
+ 		CPU2: cpu@2 {
+@@ -51,6 +60,10 @@
+ 			enable-method = "psci";
+ 			reg = <0x2>;
+ 			next-level-cache = <&L2_0>;
++			clocks = <&apcs_glb APCS_ALIAS0_CORE_CLK>;
++			clock-names = "cpu";
++			operating-points-v2 = <&cpu_opp_table>;
++			cpu-supply = <&s3>;
+ 		};
+ 
+ 		CPU3: cpu@3 {
+@@ -59,6 +72,10 @@
+ 			enable-method = "psci";
+ 			reg = <0x3>;
+ 			next-level-cache = <&L2_0>;
++			clocks = <&apcs_glb APCS_ALIAS0_CORE_CLK>;
++			clock-names = "cpu";
++			operating-points-v2 = <&cpu_opp_table>;
++			cpu-supply = <&s3>;
+ 		};
+ 
+ 		L2_0: l2-cache {
+@@ -67,6 +84,22 @@
+ 		};
+ 	};
+ 
++	cpu_opp_table: cpu_opp_table {
++		compatible = "operating-points-v2";
++		opp-shared;
++
++		opp-1017600000 {
++			opp-hz = /bits/ 64 <1017600000>;
++			opp-microvolt = <696000>;
++			clock-latency-ns = <200000>;
++		};
++		opp-1382400000 {
++			opp-hz = /bits/ 64 <1382400000>;
++			opp-microvolt = <816000>;
++			clock-latency-ns = <200000>;
++		};
++	};
++
+ 	pmu {
+ 		compatible = "arm,cortex-a53-pmu";
+ 		interrupts = <GIC_PPI 7 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_HIGH)>;
+@@ -1231,10 +1264,20 @@
+ 		apcs_glb: mailbox@b111000 {
+ 			compatible = "qcom,ipq8074-apcs-apps-global";
+ 			reg = <0x0b111000 0x1000>;
+-
++			#clock-cells = <1>;
++			clocks = <&a53pll>, <&xo>;
++			clock-names = "pll", "xo";
+ 			#mbox-cells = <1>;
+ 		};
+ 
++		a53pll: clock@b116000 {
++			compatible = "qcom,ipq6018-a53pll";
++			reg = <0x0b116000 0x40>;
++			#clock-cells = <0>;
++			clocks = <&xo>;
++			clock-names = "xo";
++		};
++
+ 		q6v5_wcss: q6v5_wcss@cd00000 {
+ 			compatible = "qcom,ipq8074-wcss-pil";
+ 			reg = <0x0cd00000 0x4040>,

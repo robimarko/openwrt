@@ -1,0 +1,25 @@
+From 3fca59062743cc98dd0066b8c04aa6d50dff654b Mon Sep 17 00:00:00 2001
+From: Robert Marko <robert.marko@sartura.hr>
+Date: Sun, 22 Nov 2020 20:16:54 +0100
+Subject: [PATCH 1/2] mailbox: qcom: Add IPQ8074 clock name
+
+IPQ8074 uses the same APSS clock name like IPQ6018,
+so lets add the clock name in order to later add DVFS support
+to IPQ8074.
+
+Signed-off-by: Robert Marko <robert.marko@sartura.hr>
+---
+ drivers/mailbox/qcom-apcs-ipc-mailbox.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- a/drivers/mailbox/qcom-apcs-ipc-mailbox.c
++++ b/drivers/mailbox/qcom-apcs-ipc-mailbox.c
+@@ -34,7 +34,7 @@ static const struct qcom_apcs_ipc_data i
+ };
+ 
+ static const struct qcom_apcs_ipc_data ipq8074_apcs_data = {
+-	.offset = 8, .clk_name = NULL
++	.offset = 8, .clk_name = "qcom,apss-ipq6018-clk"
+ };
+ 
+ static const struct qcom_apcs_ipc_data msm8916_apcs_data = {
