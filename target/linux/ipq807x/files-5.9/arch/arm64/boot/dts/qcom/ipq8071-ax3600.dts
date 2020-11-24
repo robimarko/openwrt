@@ -54,13 +54,13 @@
 			gpios = <&tlmm 43 GPIO_ACTIVE_HIGH>;
 		};
 
-		network-yellow {
-			label = "yellow:network";
+		internet-yellow {
+			label = "yellow:internet";
 			gpios = <&tlmm 22 GPIO_ACTIVE_HIGH>;
 		};
 
-		network-blue {
-			label = "blue:network";
+		internet-blue {
+			label = "blue:internet";
 			gpios = <&tlmm 21 GPIO_ACTIVE_HIGH>;
 		};
 
