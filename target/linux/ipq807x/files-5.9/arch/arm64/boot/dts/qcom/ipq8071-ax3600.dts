@@ -24,7 +24,7 @@
 
 	chosen {
 		stdout-path = "serial0:115200n8";
-		bootargs-append = " swiotlb=1";
+		bootargs-append = " swiotlb=1 root=/dev/ubiblock0_1";
 	};
 
 	keys {
