@@ -56,6 +56,32 @@ define Device/edimax_cax1800
 endef
 TARGET_DEVICES += edimax_cax1800
 
+define Device/netgear_sxk80
+	$(call Device/FitImage)
+	$(call Device/UbiFit)
+	DEVICE_VENDOR := Netgear
+	DEVICE_DTS_CONFIG := config@hk01
+	BLOCKSIZE := 128k
+	PAGESIZE := 2048
+	SOC := ipq8074
+	IMAGE/sysupgrade.bin/squashfs := append-rootfs | pad-to 64k | \
+		sysupgrade-tar rootfs=$$$$@ | append-metadata
+endef
+
+define Device/netgear_sxr80
+	$(call Device/netgear_sxk80)
+	DEVICE_MODEL := SXR80
+	DEVICE_PACKAGES += ipq-wifi-netgear_sxr80
+endef
+TARGET_DEVICES += netgear_sxr80
+
+define Device/netgear_sxs80
+	$(call Device/netgear_sxk80)
+	DEVICE_MODEL := SXS80
+	DEVICE_PACKAGES += ipq-wifi-netgear_sxs80
+endef
+TARGET_DEVICES += netgear_sxs80
+
 define Device/qnap_301w
 	$(call Device/FitImage)
 	DEVICE_VENDOR := QNAP
