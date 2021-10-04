@@ -92,7 +92,7 @@ Signed-off-by: Johannes Berg <johannes.berg@intel.com>
  
  	u8 needed_rx_chains;
  	enum ieee80211_smps_mode smps_mode;
-@@ -2093,6 +2094,11 @@ ieee80211_he_op_ie_to_bss_conf(struct ie
+@@ -2092,6 +2093,11 @@ ieee80211_he_op_ie_to_bss_conf(struct ie
  
  /* S1G */
  void ieee80211_s1g_sta_rate_init(struct sta_info *sta);
@@ -114,7 +114,7 @@ Signed-off-by: Johannes Berg <johannes.berg@intel.com>
  	}
  
  	spin_lock_irqsave(&local->queue_stop_reason_lock, flags);
-@@ -1070,6 +1071,7 @@ int ieee80211_add_virtual_monitor(struct
+@@ -1054,6 +1055,7 @@ int ieee80211_add_virtual_monitor(struct
  	}
  
  	skb_queue_head_init(&sdata->skb_queue);
@@ -122,8 +122,8 @@ Signed-off-by: Johannes Berg <johannes.berg@intel.com>
  	INIT_WORK(&sdata->work, ieee80211_iface_work);
  
  	return 0;
-@@ -1442,6 +1444,24 @@ static void ieee80211_if_setup_no_queue(
- #endif
+@@ -1422,6 +1424,24 @@ static void ieee80211_if_setup_no_queue(
+ 	dev->priv_flags |= IFF_NO_QUEUE;
  }
  
 +static void ieee80211_iface_process_status(struct ieee80211_sub_if_data *sdata,
@@ -147,7 +147,7 @@ Signed-off-by: Johannes Berg <johannes.berg@intel.com>
  static void ieee80211_iface_work(struct work_struct *work)
  {
  	struct ieee80211_sub_if_data *sdata =
-@@ -1519,6 +1539,16 @@ static void ieee80211_iface_work(struct
+@@ -1499,6 +1519,16 @@ static void ieee80211_iface_work(struct
  				WARN_ON(1);
  				break;
  			}
@@ -164,7 +164,7 @@ Signed-off-by: Johannes Berg <johannes.berg@intel.com>
  		} else if (ieee80211_is_ext(mgmt->frame_control)) {
  			if (sdata->vif.type == NL80211_IFTYPE_STATION)
  				ieee80211_sta_rx_queued_ext(sdata, skb);
-@@ -1574,6 +1604,12 @@ static void ieee80211_iface_work(struct
+@@ -1554,6 +1584,12 @@ static void ieee80211_iface_work(struct
  		kfree_skb(skb);
  	}
  
@@ -177,7 +177,7 @@ Signed-off-by: Johannes Berg <johannes.berg@intel.com>
  	/* then other type-dependent work */
  	switch (sdata->vif.type) {
  	case NL80211_IFTYPE_STATION:
-@@ -1637,6 +1677,7 @@ static void ieee80211_setup_sdata(struct
+@@ -1617,6 +1653,7 @@ static void ieee80211_setup_sdata(struct
  	}
  
  	skb_queue_head_init(&sdata->skb_queue);

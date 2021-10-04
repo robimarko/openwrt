@@ -433,7 +433,7 @@ Signed-off-by: Johannes Berg <johannes.berg@intel.com>
  	struct list_head assigned_chanctx_list; /* protected by chanctx_mtx */
  	struct list_head reserved_chanctx_list; /* protected by chanctx_mtx */
  
-@@ -1900,6 +1908,9 @@ void ieee80211_csa_finalize_work(struct
+@@ -1899,6 +1907,9 @@ void ieee80211_csa_finalize_work(struct
  int ieee80211_channel_switch(struct wiphy *wiphy, struct net_device *dev,
  			     struct cfg80211_csa_settings *params);
  
@@ -453,7 +453,7 @@ Signed-off-by: Johannes Berg <johannes.berg@intel.com>
  
  	cancel_delayed_work_sync(&sdata->dfs_cac_timer_work);
  
-@@ -1639,6 +1640,7 @@ static void ieee80211_setup_sdata(struct
+@@ -1619,6 +1620,7 @@ static void ieee80211_setup_sdata(struct
  	INIT_WORK(&sdata->work, ieee80211_iface_work);
  	INIT_WORK(&sdata->recalc_smps, ieee80211_recalc_smps_work);
  	INIT_WORK(&sdata->csa_finalize_work, ieee80211_csa_finalize_work);

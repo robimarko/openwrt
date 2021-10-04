@@ -87,7 +87,7 @@
  	CFG80211_TESTMODE_CMD(ieee80211_testmode_cmd)
 --- a/net/mac80211/ieee80211_i.h
 +++ b/net/mac80211/ieee80211_i.h
-@@ -1435,6 +1435,7 @@ struct ieee80211_local {
+@@ -1434,6 +1434,7 @@ struct ieee80211_local {
  	int dynamic_ps_forced_timeout;
  
  	int user_power_level; /* in dBm, for all interfaces */
@@ -119,7 +119,7 @@
  	if (local->hw.conf.power_level != power) {
  		changed |= IEEE80211_CONF_CHANGE_POWER;
  		local->hw.conf.power_level = power;
-@@ -665,6 +671,7 @@ struct ieee80211_hw *ieee80211_alloc_hw_
+@@ -663,6 +669,7 @@ struct ieee80211_hw *ieee80211_alloc_hw_
  					 IEEE80211_RADIOTAP_MCS_HAVE_BW;
  	local->hw.radiotap_vht_details = IEEE80211_RADIOTAP_VHT_KNOWN_GI |
  					 IEEE80211_RADIOTAP_VHT_KNOWN_BANDWIDTH;
@@ -137,7 +137,7 @@
  };
  
  /* policy for the key attributes */
-@@ -3322,6 +3323,20 @@ static int nl80211_set_wiphy(struct sk_b
+@@ -3320,6 +3321,20 @@ static int nl80211_set_wiphy(struct sk_b
  		if (result)
  			return result;
  	}

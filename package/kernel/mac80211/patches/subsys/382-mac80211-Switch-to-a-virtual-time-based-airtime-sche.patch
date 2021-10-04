@@ -447,7 +447,7 @@ Signed-off-by: Johannes Berg <johannes.berg@intel.com>
  	u32 aql_threshold;
  	atomic_t aql_total_pending_airtime;
  
-@@ -1581,6 +1612,125 @@ static inline bool txq_has_queue(struct
+@@ -1580,6 +1611,125 @@ static inline bool txq_has_queue(struct
  	return !(skb_queue_empty(&txqi->frags) && !txqi->tin.backlog_packets);
  }
  
@@ -573,7 +573,7 @@ Signed-off-by: Johannes Berg <johannes.berg@intel.com>
  static inline int ieee80211_bssid_match(const u8 *raddr, const u8 *addr)
  {
  	return ether_addr_equal(raddr, addr) ||
-@@ -1821,6 +1971,14 @@ int ieee80211_tx_control_port(struct wip
+@@ -1820,6 +1970,14 @@ int ieee80211_tx_control_port(struct wip
  			      u64 *cookie);
  int ieee80211_probe_mesh_link(struct wiphy *wiphy, struct net_device *dev,
  			      const u8 *buf, size_t len);
@@ -590,7 +590,7 @@ Signed-off-by: Johannes Berg <johannes.berg@intel.com>
  void ieee80211_apply_htcap_overrides(struct ieee80211_sub_if_data *sdata,
 --- a/net/mac80211/iface.c
 +++ b/net/mac80211/iface.c
-@@ -2088,6 +2088,9 @@ int ieee80211_if_add(struct ieee80211_lo
+@@ -2067,6 +2067,9 @@ int ieee80211_if_add(struct ieee80211_lo
  		}
  	}
  
@@ -602,7 +602,7 @@ Signed-off-by: Johannes Berg <johannes.berg@intel.com>
  	sdata->ap_power_level = IEEE80211_UNSET_POWER_LEVEL;
 --- a/net/mac80211/main.c
 +++ b/net/mac80211/main.c
-@@ -693,10 +693,13 @@ struct ieee80211_hw *ieee80211_alloc_hw_
+@@ -691,10 +691,13 @@ struct ieee80211_hw *ieee80211_alloc_hw_
  	spin_lock_init(&local->queue_stop_reason_lock);
  
  	for (i = 0; i < IEEE80211_NUM_ACS; i++) {
@@ -783,7 +783,7 @@ Signed-off-by: Johannes Berg <johannes.berg@intel.com>
  	 * Aggregation information, locked with lock.
 --- a/net/mac80211/status.c
 +++ b/net/mac80211/status.c
-@@ -972,6 +972,25 @@ static void __ieee80211_tx_status(struct
+@@ -970,6 +970,25 @@ static void __ieee80211_tx_status(struct
  		if (!(info->flags & IEEE80211_TX_CTL_INJECTED) && acked)
  			ieee80211_frame_acked(sta, skb);
  
