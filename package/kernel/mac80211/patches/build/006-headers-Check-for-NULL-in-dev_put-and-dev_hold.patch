@@ -1,0 +1,38 @@
+From d44432d6c6c7560263507e9be69b69fe5311ea75 Mon Sep 17 00:00:00 2001
+From: Hauke Mehrtens <hauke@hauke-m.de>
+Date: Tue, 19 Oct 2021 01:12:44 +0200
+Subject: [PATCH] headers: Check for NULL in dev_put() and dev_hold()
+
+Since kernel 5.15 the dev_put() and dev_hold() functions check if the
+given dev is not NULL before accessing the pointer. Previously the code
+to check for NULL was in the calling function. Add this check for NULL
+because some checks were already removed from the driver code.
+
+Signed-off-by: Hauke Mehrtens <hauke@hauke-m.de>
+---
+ backport/backport-include/linux/netdevice.h | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
+
+--- a/backport-include/linux/netdevice.h
++++ b/backport-include/linux/netdevice.h
+@@ -151,4 +151,20 @@ struct rtnl_link_stats64 *
+ bp_dev_get_tstats64(struct net_device *dev, struct rtnl_link_stats64 *s);
+ #endif /* < 4.11 */
+ 
++#if LINUX_VERSION_IS_LESS(5,15,0)
++static inline void backport_dev_put(struct net_device *dev)
++{
++	if (dev)
++		dev_put(dev);
++}
++#define dev_put LINUX_BACKPORT(dev_put)
++
++static inline void backport_dev_hold(struct net_device *dev)
++{
++	if (dev)
++		dev_hold(dev);
++}
++#define dev_hold LINUX_BACKPORT(dev_hold)
++#endif /* < 5.15 */
++
+ #endif /* __BACKPORT_NETDEVICE_H */
