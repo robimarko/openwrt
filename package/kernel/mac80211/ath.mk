@@ -310,11 +310,14 @@ define KernelPackage/ath11k/config
                depends on PACKAGE_kmod-ath11k
                default y if TARGET_ipq807x
 
+<<<<<<< HEAD
        config ATH11K_MEM_PROFILE_512M
                bool "Enable 512MB profile"
                depends on PACKAGE_kmod-ath11k
                default y if TARGET_ipq807x_generic_DEVICE_redmi_ax6 || TARGET_ipq807x_generic_DEVICE_xiaomi_ax3600
 
+=======
+>>>>>>> 9f3185e116770031b1501fb1cec62c4206b212dd
 endef
 
 define KernelPackage/ath11k-ahb
