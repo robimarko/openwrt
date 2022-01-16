@@ -1,0 +1,20 @@
+From: Dirk Buchwalder <buchwalder@posteo.de>
+Date: Sun, 16 Jan 2022 13:58:46 +0200
+Subject: [PATCH] arm64: dts: qcom: ipq8074: fix sddc1 core clk
+
+change sdcc1_apps_clk_src to clk_rcg2_floor_ops
+to prevent mmc overclocking as qcom clk framework 
+round up the requested frequency by default for sddc1
+
+Signed-off-by: Dirk Buchwalder <buchwalder@posteo.de>
+--- a/drivers/clk/qcom/gcc-ipq8074.c
++++ b/drivers/clk/qcom/gcc-ipq8074.c
+@@ -1074,7 +1074,7 @@ static struct clk_rcg2 sdcc1_apps_clk_sr
+ 		.name = "sdcc1_apps_clk_src",
+ 		.parent_names = gcc_xo_gpll0_gpll2_gpll0_out_main_div2,
+ 		.num_parents = 4,
+-		.ops = &clk_rcg2_ops,
++		.ops = &clk_rcg2_floor_ops,
+ 	},
+ };
+ 
