@@ -1,0 +1,377 @@
+// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+
+/dts-v1/;
+
+#include "armada-7040.dtsi"
+#include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/input/input.h>
+
+/ {
+	model = "MikroTik RB5009";
+	compatible = "mikrotik,rb5009", "marvell,armada7040",
+		     "marvell,armada-ap806-quad", "marvell,armada-ap806";
+
+	chosen {
+		stdout-path = "serial0:115200n8";
+	};
+
+	memory@0 {
+		device_type = "memory";
+		reg = <0x0 0x0 0x0 0x40000000>;
+	};
+
+	aliases {
+		led-boot = &led_user;
+		led-failsafe = &led_user;
+		led-running = &led_user;
+		led-upgrade = &led_user;
+	};
+
+	sfp_i2c: sfp-i2c {
+		compatible = "i2c-gpio";
+		sda-gpios = <&cp0_gpio1 0 (GPIO_ACTIVE_HIGH|GPIO_OPEN_DRAIN)>;
+		scl-gpios = <&cp0_gpio1 1 (GPIO_ACTIVE_HIGH|GPIO_OPEN_DRAIN)>;
+	};
+
+	keys {
+		compatible = "gpio-keys";
+
+		reset {
+			label = "reset";
+			gpios = <&cp0_gpio1 28 GPIO_ACTIVE_LOW>;
+			linux,code = <KEY_RESTART>;
+		};
+	};
+
+	leds {
+		compatible = "gpio-leds";
+
+		led_user: user {
+			label = "green:user";
+			gpios = <&cp0_gpio2 26 GPIO_ACTIVE_LOW>;
+		};
+
+		sfp {
+			label = "green:sfp";
+			gpios = <&cp0_gpio2 25 GPIO_ACTIVE_LOW>;
+		};
+
+		hdr1 {
+			label = "blue:hdr1";
+			gpios = <&cp0_gpio1 4 GPIO_ACTIVE_LOW>;
+		};
+
+		hdr2 {
+			label = "blue:hdr2";
+			gpios = <&cp0_gpio2 19 GPIO_ACTIVE_LOW>;
+		};
+	};
+
+	sfp: sfp {
+		compatible = "sff,sfp";
+		i2c-bus = <&sfp_i2c>;
+	};
+};
+
+&uart0 {
+	status = "okay";
+
+	pinctrl-0 = <&uart0_pins>;
+	pinctrl-names = "default";
+};
+
+
+&spi0 {
+	status = "okay";
+
+	spi-flash@0 {
+		#address-cells = <1>;
+		#size-cells = <1>;
+		compatible = "jedec,spi-nor";
+		reg = <0>;
+		spi-max-frequency = <20000000>;
+
+		partitions {
+			compatible = "fixed-partitions";
+			#address-cells = <1>;
+			#size-cells = <1>;
+
+			partition@0 {
+				label = "ATF";
+				reg = <0x0 0x95c04>;
+				read-only;
+			};
+			partition@1 {
+				label = "backup_RouterBOOT";
+				reg = <0x95c04 0x193FC>;
+				read-only;
+			};
+			hard_config: partition@2 {
+				label = "hard_config";
+				reg = <0xaf000 0x1000>;
+				read-only;
+			};
+			partition@3 {
+				label = "RouterBOOT";
+				reg = <0xb0000 0x10000>;
+			};
+			partition@4 {
+				label = "soft_config";
+				reg = <0xc0000 0x10000>;
+			};
+			partition@5 {
+				label = "DTS";
+				reg = <0xd0000 0x10000>;
+				read-only;
+			};
+			partition@6 {
+				label = "free_space";
+				reg = <0xe0000 0x20000>;
+			};
+			partition@7 {
+				compatible = "denx,fit";
+				label = "firmware";
+				reg = <0x100000 0xf00000>;
+			};
+			partition@8 {
+				label = "first_1M";
+				reg = <0x0 0x100000>;
+			};
+		};
+	};
+};
+
+&cp0_nand_controller {
+	status = "okay";
+
+	nand@0 {
+		reg = <0>;
+		nand-rb = <0>;
+		nand-ecc-mode = "hw";
+		nand-ecc-strength = <4>;
+		nand-ecc-step-size = <512>;
+		nand-on-flash-bbt;
+
+		partitions {
+			compatible = "fixed-partitions";
+			#address-cells = <1>;
+			#size-cells = <1>;
+
+			partition@0 {
+				label = "RouterBoard NAND Boot";
+				reg = <0x0 0x800000>;
+			};
+
+			partition@800000 {
+				label = "RouterBoard NAND Main";
+				reg = <0x800000 0x3f800000>;
+			};
+		};
+	};
+};
+
+&cp0_gpio2 {
+	enable-usb-power {
+		gpio-hog;
+		gpios = <23 GPIO_ACTIVE_HIGH>;
+		output-high;
+		line-name = "enable USB power";
+	};
+
+	enable-leds-power {
+		gpio-hog;
+		gpios = <27 GPIO_ACTIVE_HIGH>;
+		output-high;
+		line-name = "enable LED-s power";
+	};
+};
+
+&cp0_usb3_1 {
+	status = "okay";
+};
+
+&cp0_i2c0 {
+	status = "okay";
+	clock-frequency = <100000>;
+};
+
+&cp0_mdio {
+	status = "okay";
+};
+
+&cp0_ethernet {
+	status = "okay";
+};
+
+&cp0_eth0 {
+	/* This port is connected to 88E6393X switch */
+	status = "okay";
+	phy-mode = "10gbase-r";
+	managed = "in-band-status";
+	nvmem-cells = <&macaddr_hard>;
+	nvmem-cell-names = "mac-address";
+	mac-address-increment = <0>;
+};
+
+&cp0_mdio {
+	status = "okay";
+
+	switch@0 {
+		/* Actual device is MV88E6393X */
+		compatible = "marvell,mv88e6190";
+		#address-cells = <1>;
+		#size-cells = <0>;
+		reg = <0>;
+		//strict-cpu-mode = <1>;
+		//reset-gpios = <&cp0_gpio2 2 GPIO_ACTIVE_HIGH>;
+
+		ports {
+			#address-cells = <1>;
+			#size-cells = <0>;
+
+			port@0 {
+				reg = <0>;
+				label = "cpu";
+				ethernet = <&cp0_eth0>;
+			};
+
+			port@1 {
+				reg = <1>;
+				label = "p8";
+				phy-handle = <&switch0phy1>;
+				nvmem-cells = <&macaddr_hard>;
+				nvmem-cell-names = "mac-address";
+				mac-address-increment = <7>;
+			};
+
+			port@2 {
+				reg = <2>;
+				label = "p7";
+				phy-handle = <&switch0phy2>;
+				nvmem-cells = <&macaddr_hard>;
+				nvmem-cell-names = "mac-address";
+				mac-address-increment = <6>;
+			};
+
+			port@3 {
+				reg = <3>;
+				label = "p6";
+				phy-handle = <&switch0phy3>;
+				nvmem-cells = <&macaddr_hard>;
+				nvmem-cell-names = "mac-address";
+				mac-address-increment = <5>;
+			};
+
+			port@4 {
+				reg = <4>;
+				label = "p5";
+				phy-handle = <&switch0phy4>;
+				nvmem-cells = <&macaddr_hard>;
+				nvmem-cell-names = "mac-address";
+				mac-address-increment = <4>;
+			};
+
+			port@5 {
+				reg = <5>;
+				label = "p4";
+				phy-handle = <&switch0phy5>;
+				nvmem-cells = <&macaddr_hard>;
+				nvmem-cell-names = "mac-address";
+				mac-address-increment = <3>;
+			};
+
+			port@6 {
+				reg = <6>;
+				label = "p3";
+				phy-handle = <&switch0phy6>;
+				nvmem-cells = <&macaddr_hard>;
+				nvmem-cell-names = "mac-address";
+				mac-address-increment = <2>;
+			};
+
+			port@7 {
+				reg = <7>;
+				label = "p2";
+				phy-handle = <&switch0phy7>;
+				nvmem-cells = <&macaddr_hard>;
+				nvmem-cell-names = "mac-address";
+				mac-address-increment = <1>;
+			};
+
+			port@9 {
+				reg = <9>;
+				label = "p1";
+				phy-mode = "sgmii";
+				phy-handle = <&switch0phy9>;
+				managed = "in-band-status";
+				nvmem-cells = <&macaddr_hard>;
+				nvmem-cell-names = "mac-address";
+				mac-address-increment = <0>;
+			};
+
+			port@a {
+				reg = <10>;
+				label = "sfp";
+				phy-mode = "10gbase-r";
+				managed = "in-band-status";
+				sfp = <&sfp>;
+				nvmem-cells = <&macaddr_hard>;
+				nvmem-cell-names = "mac-address";
+				mac-address-increment = <8>;
+			};
+		};
+
+		mdio {
+			#address-cells = <1>;
+			#size-cells = <0>;
+
+			switch0phy1: switch0phy1@1 {
+				reg = <0x1>;
+			};
+
+			switch0phy2: switch0phy2@2 {
+				reg = <0x2>;
+			};
+
+			switch0phy3: switch0phy3@3 {
+				reg = <0x3>;
+			};
+
+			switch0phy4: switch0phy4@4 {
+				reg = <0x4>;
+			};
+
+			switch0phy5: switch0phy5@5 {
+				reg = <0x5>;
+			};
+
+			switch0phy6: switch0phy6@6 {
+				reg = <0x6>;
+			};
+
+			switch0phy7: switch0phy7@7 {
+				reg = <0x7>;
+			};
+		};
+
+		mdio1 {
+			compatible = "marvell,mv88e6xxx-mdio-external";
+			#address-cells = <1>;
+			#size-cells = <0>;
+
+			switch0phy9: switch0phy9@0 {
+				reg = <0>;
+			};
+		};
+	};
+};
+
+&hard_config {
+	compatible = "nvmem-cells";
+	#address-cells = <1>;
+	#size-cells = <1>;
+
+	macaddr_hard: macaddr@10 {
+		reg = <0x10 0x6>;
+	};
+};
