@@ -58,6 +58,7 @@
 
 #define RB_SOFTCONFIG_VER		"0.05"
 #define RB_SC_PR_PFX			"[rb_softconfig] "
+#define SOFT_CONF_FIXED_SIZE 0x1000
 
 #define RB_SC_HAS_WRITE_SUPPORT	true
 #define RB_SC_WMODE			S_IWUSR
@@ -636,7 +637,7 @@ static ssize_t sc_commit_store(struct kobject *kobj, struct kobj_attribute *attr
 
 	write_lock(&sc_bufrwl);
 	if (!flush)	// reread
-		ret = mtd_read(mtd, 0, mtd->size, &bytes_rw, sc_buf);
+		ret = mtd_read(mtd, 0, sc_buflen, &bytes_rw, sc_buf);
 	else {	// crc32 + commit
 		/*
 		 * CRC32 is computed on the entire buffer, excluding the CRC
@@ -658,7 +659,7 @@ static ssize_t sc_commit_store(struct kobject *kobj, struct kobj_attribute *attr
 		ei.len = mtd->size;
 		ret = mtd_erase(mtd, &ei);
 		if (!ret)
-			ret = mtd_write(mtd, 0, mtd->size, &bytes_rw, sc_buf);
+			ret = mtd_write(mtd, 0, sc_buflen, &bytes_rw, sc_buf);
 
 		/*
 		 * Handling mtd_write() failure here is a tricky situation. The
@@ -708,7 +709,7 @@ int rb_softconfig_init(struct kobject *rb_kobj, struct mtd_info *mtd)
 	if (ret)
 		return -ENODEV;
 
-	sc_buflen = mtd->size;
+	sc_buflen = mtd->size > SOFT_CONF_FIXED_SIZE ? SOFT_CONF_FIXED_SIZE : mtd->size;
 	sc_buf = kmalloc(sc_buflen, GFP_KERNEL);
 	if (!sc_buf) {
 		__put_mtd_device(mtd);
