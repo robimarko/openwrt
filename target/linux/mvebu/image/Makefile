@@ -151,6 +151,18 @@ define Build/uDPU-firmware
 		-f $(KDIR_TMP)/$(DEVICE_IMG_PREFIX)-firmware.tgz -C $@-fw .
 endef
 
+define Device/FitImageLzma
+  KERNEL_SUFFIX := -fit-uImage.itb
+  KERNEL := kernel-bin | lzma | fit lzma $$(KDIR)/image-$$(DEVICE_DTS).dtb | pad-to 64k
+  KERNEL_NAME := Image
+endef
+
+define Build/aux-loader
+  -[ -f "$@" ] && [ -f "bin/aux-loader.elf" ] &&	\
+ 	cat "bin/aux-loader.elf" "$@" > "$@.tmp" &&	\
+ 	cat "$@.tmp" > "$@" && rm -f "$@.tmp"
+endef
+
 define Device/Default
   PROFILES := Default
   DEVICE_DTS = $$(SOC)-$(lastword $(subst _, ,$(1)))
