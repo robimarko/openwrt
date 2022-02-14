@@ -38,8 +38,7 @@ platform_do_upgrade() {
 		legacy_sdcard_do_upgrade "$1"
 		;;
 	mikrotik,rb5009)
-		PART_NAME=firmware
-		default_do_upgrade "$1"
+		nand_do_upgrade "$1"
 		;;
 	*)
 		default_do_upgrade "$1"

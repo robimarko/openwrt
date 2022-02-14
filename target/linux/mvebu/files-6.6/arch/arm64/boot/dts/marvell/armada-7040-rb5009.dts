@@ -129,8 +129,7 @@
 				reg = <0xe0000 0x20000>;
 			};
 			partition@7 {
-				compatible = "denx,fit";
-				label = "firmware";
+				label = "kernel";
 				reg = <0x100000 0xf00000>;
 			};
 			partition@8 {
@@ -158,13 +157,8 @@
 			#size-cells = <1>;
 
 			partition@0 {
-				label = "RouterBoard NAND Boot";
-				reg = <0x0 0x800000>;
-			};
-
-			partition@800000 {
-				label = "RouterBoard NAND Main";
-				reg = <0x800000 0x3f800000>;
+				label = "ubi";
+				reg = <0x0 0x40000000>;
 			};
 		};
 	};

@@ -56,17 +56,13 @@ define Device/mikrotik_rb5009
   DEVICE_DTS := armada-7040-rb5009
   DEVICE_DTS_DIR := $(DTS_DIR)/marvell
   $(call Device/FitImageLzma)
+  $(Device/NAND-128K)
   DEVICE_VENDOR := MikroTik
   DEVICE_MODEL := RB5009
   SOC := armada-7040
   KERNEL_LOADADDR := 0x22000000
   KERNEL_INITRAMFS = $$(KERNEL) | aux-loader
   KERNEL_INITRAMFS_SUFFIX := -fit-uImage.elf
-  BLOCKSIZE := 64k
-  IMAGE_SIZE := 15360k
-  IMAGES := sysupgrade.bin
-  IMAGE/sysupgrade.bin := append-kernel | pad-to $$(BLOCKSIZE) | \
-  	append-rootfs | pad-rootfs | check-size | append-metadata
   DEVICE_PACKAGES += kmod-i2c-gpio
 endef
 TARGET_DEVICES += mikrotik_rb5009
