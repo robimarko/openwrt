@@ -17,16 +17,50 @@ jobs:
 
             - name: Generate config for IPQ807x Generic
               run: |
-                echo "CONFIG_TARGET_ipq807x=y" > .config
-                echo "CONFIG_TARGET_ipq807x_generic=y\n" >> .config
-                echo "CONFIG_TARGET_MULTI_PROFILE=y\n" >> .config
-                echo "CONFIG_TARGET_ALL_PROFILES=y\n" >> .config
-                echo "CONFIG_TARGET_PER_DEVICE_ROOTFS=y\n" >> .config
-                echo "CONFIG_TARGET_ROOTFS_INITRAMFS=y\n" >> .config
-                echo "CONFIG_TARGET_INITRAMFS_COMPRESSION_ZSTD=y\n" >> .config
-                echo "CONFIG_PACKAGE_luci=y\n" >> .config
-                echo "CONFIG_PACKAGE_kmod-qca-nss-dp=y\n" >> .config
-                echo "CONFIG_PACKAGE_qca-ssdk-shell=y\n" >> .config
+               echo "CONFIG_TARGET_ipq807x=y\n" > .config
+               echo "CONFIG_TARGET_ipq807x_generic=y\n" >> .config
+               echo "CONFIG_TARGET_ipq807x_generic_DEVICE_xiaomi_ax3600=y\n" >> .config
+               echo "CONFIG_TARGET_PER_DEVICE_ROOTFS=n\n" >> .config
+               echo "CONFIG_PACKAGE_cgi-io=y\n" >> .config
+               echo "CONFIG_PACKAGE_kmod-qca-nss-dp=y\n" >> .config
+               echo "CONFIG_PACKAGE_kmod-qca-ssdk-nohnat=y\n" >> .config
+               echo "CONFIG_PACKAGE_libiwinfo-lua=y\n" >> .config
+               echo "CONFIG_PACKAGE_liblua=y\n" >> .config
+               echo "CONFIG_PACKAGE_liblucihttp=y\n" >> .config
+               echo "CONFIG_PACKAGE_liblucihttp-lua=y\n" >> .config
+               echo "CONFIG_PACKAGE_libubus-lua=y\n" >> .config
+               echo "CONFIG_PACKAGE_lua=y\n" >> .config
+               echo "CONFIG_PACKAGE_luci=y\n" >> .config
+               echo "CONFIG_PACKAGE_luci-app-firewall=y\n" >> .config
+               echo "CONFIG_PACKAGE_luci-app-opkg=y\n" >> .config
+               echo "CONFIG_PACKAGE_luci-base=y\n" >> .config
+               echo "CONFIG_PACKAGE_luci-lib-base=y\n" >> .config
+               echo "CONFIG_PACKAGE_luci-lib-ip=y\n" >> .config
+               echo "CONFIG_PACKAGE_luci-lib-jsonc=y\n" >> .config
+               echo "CONFIG_PACKAGE_luci-lib-nixio=y\n" >> .config
+               echo "CONFIG_PACKAGE_luci-mod-admin-full=y\n" >> .config
+               echo "CONFIG_PACKAGE_luci-mod-network=y\n" >> .config
+               echo "CONFIG_PACKAGE_luci-mod-status=y\n" >> .config
+               echo "CONFIG_PACKAGE_luci-mod-system=y\n" >> .config
+               echo "CONFIG_PACKAGE_luci-proto-ipv6=y\n" >> .config
+               echo "CONFIG_PACKAGE_luci-proto-ppp=y\n" >> .config
+               echo "CONFIG_PACKAGE_luci-theme-bootstrap=y\n" >> .config
+               echo "CONFIG_PACKAGE_qca-ssdk-shell=y\n" >> .config
+               echo "CONFIG_PACKAGE_rpcd=y\n" >> .config
+               echo "CONFIG_PACKAGE_rpcd-mod-file=y\n" >> .config
+               echo "CONFIG_PACKAGE_rpcd-mod-iwinfo=y\n" >> .config
+               echo "CONFIG_PACKAGE_rpcd-mod-luci=y\n" >> .config
+               echo "CONFIG_PACKAGE_rpcd-mod-rrdns=y\n" >> .config
+               echo "CONFIG_PACKAGE_uhttpd=y\n" >> .config
+               echo "CONFIG_PACKAGE_uhttpd-mod-ubus=y\n" >> .config
+               echo "CONFIG_TARGET_ALL_PROFILES=y\n" >> .config
+               echo "CONFIG_TARGET_INITRAMFS_COMPRESSION_ZSTD=y\n" >> .config
+               echo "CONFIG_PACKAGE_luci-app-upnp=y\n" >> .config
+               echo "CONFIG_PACKAGE_luci-i18n-upnp-en=y\n" >> .config
+               echo "CONFIG_PACKAGE_prometheus=y\n" >> .config
+               echo "CONFIG_PACKAGE_prometheus-node-exporter-lua=y\n" >> .config
+               echo "CONFIG_PACKAGE_prometheus-statsd-exporter=y\n" >> .config
+
                 make defconfig
 
             - name: Download package sources
