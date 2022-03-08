@@ -1,0 +1,114 @@
+name: Build IPQ807x
+on: [push]
+
+jobs:
+    build:
+        name: Prepare and build IPQ807x generic images
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v2
+
+            - name: Update and install feeds
+              run: |
+                ./scripts/feeds update -a
+                ./scripts/feeds install -a
+
+            - name: Generate config for IPQ807x Generic
+              run: |
+               echo "CONFIG_TARGET_ipq807x=y\n" > .config
+               echo "CONFIG_TARGET_ipq807x_generic=y\n" >> .config
+               echo "CONFIG_TARGET_ipq807x_generic_DEVICE_xiaomi_ax3600=y\n" >> .config
+               echo "CONFIG_TARGET_PER_DEVICE_ROOTFS=n\n" >> .config
+               echo "CONFIG_PACKAGE_cgi-io=y\n" >> .config
+               echo "CONFIG_PACKAGE_kmod-qca-nss-dp=y\n" >> .config
+               echo "CONFIG_PACKAGE_kmod-qca-ssdk-nohnat=y\n" >> .config
+               echo "CONFIG_PACKAGE_libiwinfo-lua=y\n" >> .config
+               echo "CONFIG_PACKAGE_liblua=y\n" >> .config
+               echo "CONFIG_PACKAGE_liblucihttp=y\n" >> .config
+               echo "CONFIG_PACKAGE_liblucihttp-lua=y\n" >> .config
+               echo "CONFIG_PACKAGE_libubus-lua=y\n" >> .config
+               echo "CONFIG_PACKAGE_lua=y\n" >> .config
+               echo "CONFIG_PACKAGE_luci=y\n" >> .config
+               echo "CONFIG_PACKAGE_luci-app-firewall=y\n" >> .config
+               echo "CONFIG_PACKAGE_luci-app-opkg=y\n" >> .config
+               echo "CONFIG_PACKAGE_luci-base=y\n" >> .config
+               echo "CONFIG_PACKAGE_luci-lib-base=y\n" >> .config
+               echo "CONFIG_PACKAGE_luci-lib-ip=y\n" >> .config
+               echo "CONFIG_PACKAGE_luci-lib-jsonc=y\n" >> .config
+               echo "CONFIG_PACKAGE_luci-lib-nixio=y\n" >> .config
+               echo "CONFIG_PACKAGE_luci-mod-admin-full=y\n" >> .config
+               echo "CONFIG_PACKAGE_luci-mod-network=y\n" >> .config
+               echo "CONFIG_PACKAGE_luci-mod-status=y\n" >> .config
+               echo "CONFIG_PACKAGE_luci-mod-system=y\n" >> .config
+               echo "CONFIG_PACKAGE_luci-proto-ipv6=y\n" >> .config
+               echo "CONFIG_PACKAGE_luci-proto-ppp=y\n" >> .config
+               echo "CONFIG_PACKAGE_luci-theme-bootstrap=y\n" >> .config
+               echo "CONFIG_PACKAGE_qca-ssdk-shell=y\n" >> .config
+               echo "CONFIG_PACKAGE_rpcd=y\n" >> .config
+               echo "CONFIG_PACKAGE_rpcd-mod-file=y\n" >> .config
+               echo "CONFIG_PACKAGE_rpcd-mod-iwinfo=y\n" >> .config
+               echo "CONFIG_PACKAGE_rpcd-mod-luci=y\n" >> .config
+               echo "CONFIG_PACKAGE_rpcd-mod-rrdns=y\n" >> .config
+               echo "CONFIG_PACKAGE_uhttpd=y\n" >> .config
+               echo "CONFIG_PACKAGE_uhttpd-mod-ubus=y\n" >> .config
+               echo "CONFIG_TARGET_ALL_PROFILES=y\n" >> .config
+               echo "CONFIG_TARGET_INITRAMFS_COMPRESSION_ZSTD=y\n" >> .config
+               echo "CONFIG_PACKAGE_luci-app-upnp=y\n" >> .config
+               echo "CONFIG_PACKAGE_luci-i18n-upnp-en=y\n" >> .config
+               echo "CONFIG_PACKAGE_prometheus=y\n" >> .config
+               echo "CONFIG_PACKAGE_prometheus-node-exporter-lua=y\n" >> .config
+               echo "CONFIG_PACKAGE_prometheus-statsd-exporter=y\n" >> .config
+
+                make defconfig
+
+            - name: Download package sources
+              run: make download V=s
+
+            - name: Build tools
+              run: |
+                make tools/install -j$(nproc) V=s || \
+                make tools/install V=s
+
+            - name: Build toolchain
+              run: |
+                make toolchain/install -j$(nproc) V=s || \
+                make toolchain/install V=s
+
+            - name: Build target images
+              run: |
+                make -j$(nproc) V=s || \
+                make V=s
+
+            - name: TAR output
+              run: tar -cvf ipq807xx-images.tar bin/targets/ipq807x/generic
+
+            - name: Upload artifacts
+              uses: actions/upload-artifact@v2
+              with:
+                name: ipq807x-images
+                path: ipq807xx-images.tar
+
+    release:
+          name: Make a release
+          runs-on: ubuntu-latest
+          needs: build
+
+          steps:
+            - name: Download the image artifacts
+              uses: actions/download-artifact@v2
+              with:
+                name: ipq807x-images
+
+            - name: Extract the image artifacts
+              run: tar xf ipq807xx-images.tar
+
+            - name: Create a release
+              uses: "marvinpinto/action-automatic-releases@latest"
+              with:
+                repo_token: "${{ secrets.GITHUB_TOKEN }}"
+                prerelease: true
+                title: "Updated prebuilt images"
+                automatic_release_tag: "ipq807x-latest"
+                files: bin/targets/ipq807x/generic/*

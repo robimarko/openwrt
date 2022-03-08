@@ -1,0 +1,31 @@
+From a0709a0d9e55443947b9e222a03ba3653b11f680 Mon Sep 17 00:00:00 2001
+From: Kathiravan T <quic_kathirav@quicinc.com>
+Date: Fri, 11 Feb 2022 17:44:15 +0530
+Subject: [PATCH] arm64: dts: qcom: ipq8074: fix the sleep clock frequency
+
+Sleep clock frequency should be 32768Hz. Lets fix it.
+
+Cc: stable@vger.kernel.org
+Fixes: 41dac73e243d ("arm64: dts: Add ipq8074 SoC and HK01 board support")
+Link: https://lore.kernel.org/all/e2a447f8-6024-0369-f698-2027b6edcf9e@codeaurora.org/
+Signed-off-by: Kathiravan T <quic_kathirav@quicinc.com>
+---
+ arch/arm64/boot/dts/qcom/ipq8074.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm64/boot/dts/qcom/ipq8074.dtsi b/arch/arm64/boot/dts/qcom/ipq8074.dtsi
+index 94de2bd6596f..452a81d288f4 100644
+--- a/arch/arm64/boot/dts/qcom/ipq8074.dtsi
++++ b/arch/arm64/boot/dts/qcom/ipq8074.dtsi
+@@ -13,7 +13,7 @@ / {
+ 	clocks {
+ 		sleep_clk: sleep_clk {
+ 			compatible = "fixed-clock";
+-			clock-frequency = <32000>;
++			clock-frequency = <32768>;
+ 			#clock-cells = <0>;
+ 		};
+ 
+-- 
+2.35.1
+

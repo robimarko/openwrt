@@ -1,0 +1,41 @@
+From 971b961336361f7e65663b21c83b2299ed936448 Mon Sep 17 00:00:00 2001
+From: Dirk Buchwalder <buchwalder@posteo.de>
+Date: Sun, 16 Jan 2022 13:58:46 +0200
+Subject: [PATCH] clk: qcom: ipq8074: Use floor ops for SDCC1 clock
+
+Use floor ops on SDCC1 APPS clock in order to round down selected clock
+frequency and avoid overclocking SD/eMMC cards.
+
+For example, currently HS200 cards were failling tuning as they were
+actually being clocked at 384MHz instead of 192MHz.
+This caused some boards to disable 1.8V I/O and force the eMMC into the
+standard HS mode (50MHz) and that appeared to work despite the eMMC being
+overclocked to 96Mhz in that case.
+
+There was a previous commit to use floor ops on SDCC clocks, but it looks
+to have only covered SDCC2 clock.
+
+Fixes: 9607f6224b39 ("clk: qcom: ipq8074: add PCIE, USB and SDCC clocks")
+
+Signed-off-by: Dirk Buchwalder <buchwalder@posteo.de>
+Signed-off-by: Robert Marko <robimarko@gmail.com>
+---
+ drivers/clk/qcom/gcc-ipq8074.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/clk/qcom/gcc-ipq8074.c b/drivers/clk/qcom/gcc-ipq8074.c
+index 1e493f19fa44..c24e33321f72 100644
+--- a/drivers/clk/qcom/gcc-ipq8074.c
++++ b/drivers/clk/qcom/gcc-ipq8074.c
+@@ -1074,7 +1074,7 @@ static struct clk_rcg2 sdcc1_apps_clk_src = {
+ 		.name = "sdcc1_apps_clk_src",
+ 		.parent_names = gcc_xo_gpll0_gpll2_gpll0_out_main_div2,
+ 		.num_parents = 4,
+-		.ops = &clk_rcg2_ops,
++		.ops = &clk_rcg2_floor_ops,
+ 	},
+ };
+ 
+-- 
+2.35.1
+

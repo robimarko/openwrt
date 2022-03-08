@@ -1,0 +1,87 @@
+From c51880fed757c4f4dbad1f1f8124f73c576febf2 Mon Sep 17 00:00:00 2001
+From: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
+Date: Mon, 3 Jan 2022 03:03:15 +0000
+Subject: [PATCH 1/2] mtd: rawnand: qcom: Fix clock sequencing in
+ qcom_nandc_probe()
+
+Interacting with a NAND chip on an IPQ6018 I found that the qcomsmem NAND
+partition parser was returning -EPROBE_DEFER waiting for the main smem
+driver to load.
+
+This caused the board to reset. Playing about with the probe() function
+shows that the problem lies in the core clock being switched off before the
+nandc_unalloc() routine has completed.
+
+If we look at how qcom_nandc_remove() tears down allocated resources we see
+the expected order is
+
+qcom_nandc_unalloc(nandc);
+
+clk_disable_unprepare(nandc->aon_clk);
+clk_disable_unprepare(nandc->core_clk);
+
+dma_unmap_resource(&pdev->dev, nandc->base_dma, resource_size(res),
+		   DMA_BIDIRECTIONAL, 0);
+
+Tweaking probe() to both bring up and tear-down in that order removes the
+reset if we end up deferring elsewhere.
+
+Fixes: c76b78d8ec05 ("mtd: nand: Qualcomm NAND controller driver")
+Signed-off-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
+Reviewed-by: Manivannan Sadhasivam <mani@kernel.org>
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Link: https://lore.kernel.org/linux-mtd/20220103030316.58301-2-bryan.odonoghue@linaro.org
+---
+ drivers/mtd/nand/raw/qcom_nandc.c | 14 ++++++--------
+ 1 file changed, 6 insertions(+), 8 deletions(-)
+
+--- a/drivers/mtd/nand/raw/qcom_nandc.c
++++ b/drivers/mtd/nand/raw/qcom_nandc.c
+@@ -2,7 +2,6 @@
+ /*
+  * Copyright (c) 2016, The Linux Foundation. All rights reserved.
+  */
+-
+ #include <linux/clk.h>
+ #include <linux/slab.h>
+ #include <linux/bitops.h>
+@@ -3063,10 +3062,6 @@ static int qcom_nandc_probe(struct platf
+ 	if (dma_mapping_error(dev, nandc->base_dma))
+ 		return -ENXIO;
+ 
+-	ret = qcom_nandc_alloc(nandc);
+-	if (ret)
+-		goto err_nandc_alloc;
+-
+ 	ret = clk_prepare_enable(nandc->core_clk);
+ 	if (ret)
+ 		goto err_core_clk;
+@@ -3075,6 +3070,10 @@ static int qcom_nandc_probe(struct platf
+ 	if (ret)
+ 		goto err_aon_clk;
+ 
++	ret = qcom_nandc_alloc(nandc);
++	if (ret)
++		goto err_nandc_alloc;
++
+ 	ret = qcom_nandc_setup(nandc);
+ 	if (ret)
+ 		goto err_setup;
+@@ -3086,15 +3085,14 @@ static int qcom_nandc_probe(struct platf
+ 	return 0;
+ 
+ err_setup:
++	qcom_nandc_unalloc(nandc);
++err_nandc_alloc:
+ 	clk_disable_unprepare(nandc->aon_clk);
+ err_aon_clk:
+ 	clk_disable_unprepare(nandc->core_clk);
+ err_core_clk:
+-	qcom_nandc_unalloc(nandc);
+-err_nandc_alloc:
+ 	dma_unmap_resource(dev, res->start, resource_size(res),
+ 			   DMA_BIDIRECTIONAL, 0);
+-
+ 	return ret;
+ }
+ 

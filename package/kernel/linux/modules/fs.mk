@@ -70,7 +70,6 @@ define KernelPackage/fs-btrfs
   DEPENDS:=+kmod-lib-crc32c +kmod-lib-lzo +kmod-lib-zlib-inflate +kmod-lib-zlib-deflate +kmod-lib-raid6 +kmod-lib-xor +kmod-lib-zstd
   KCONFIG:=\
 	CONFIG_BTRFS_FS \
-	CONFIG_BTRFS_FS_POSIX_ACL=n \
 	CONFIG_BTRFS_FS_CHECK_INTEGRITY=n
   FILES:=\
 	$(LINUX_DIR)/fs/btrfs/btrfs.ko
@@ -88,24 +87,31 @@ define KernelPackage/fs-cifs
   SUBMENU:=$(FS_MENU)
   TITLE:=CIFS support
   KCONFIG:= \
+	CONFIG_SMBFS_COMMON@ge5.15 \
 	CONFIG_CIFS \
 	CONFIG_CIFS_DFS_UPCALL=n \
 	CONFIG_CIFS_UPCALL=n
-  FILES:=$(LINUX_DIR)/fs/cifs/cifs.ko
+  FILES:= \
+	$(LINUX_DIR)/fs/smbfs_common/cifs_arc4.ko@ge5.15 \
+	$(LINUX_DIR)/fs/smbfs_common/cifs_md4.ko@ge5.15 \
+	$(LINUX_DIR)/fs/cifs/cifs.ko
   AUTOLOAD:=$(call AutoLoad,30,cifs)
   $(call AddDepends/nls)
   DEPENDS+= \
-    +kmod-crypto-md4 \
+    +(LINUX_5_4||LINUX_5_10):kmod-crypto-md4\
     +kmod-crypto-md5 \
     +kmod-crypto-sha256 \
     +kmod-crypto-sha512 \
     +kmod-crypto-cmac \
     +kmod-crypto-hmac \
-    +kmod-crypto-arc4 \
+    +(LINUX_5_4||LINUX_5_10):kmod-crypto-arc4 \
     +kmod-crypto-aead \
     +kmod-crypto-ccm \
     +kmod-crypto-ecb \
-    +kmod-crypto-des
+    +kmod-crypto-des \
+    +(LINUX_5_15):kmod-asn1-decoder \
+    +(LINUX_5_15):kmod-oid-registry \
+    +(LINUX_5_15):kmod-dnsresolver
 endef
 
 define KernelPackage/fs-cifs/description
@@ -240,10 +246,21 @@ endef
 $(eval $(call KernelPackage,fs-f2fs))
 
 
+define KernelPackage/fs-netfs
+  SUBMENU:=$(FS_MENU)
+  TITLE:=Network Filesystems support
+  DEPENDS:=@LINUX_5_15
+  KCONFIG:= CONFIG_NETFS_SUPPORT
+  FILES:=$(LINUX_DIR)/fs/netfs/netfs.ko
+  AUTOLOAD:=$(call AutoLoad,28,netfs)
+endef
+
+$(eval $(call KernelPackage,fs-netfs))
+
 define KernelPackage/fs-fscache
   SUBMENU:=$(FS_MENU)
   TITLE:=General filesystem local cache manager
-  DEPENDS:=
+  DEPENDS:=+kmod-fs-netfs
   KCONFIG:=\
 	CONFIG_FSCACHE=m \
 	CONFIG_FSCACHE_STATS=y \
@@ -378,9 +395,20 @@ endef
 $(eval $(call KernelPackage,fs-nfs))
 
 
+define KernelPackage/fs-nfs-ssc
+  SUBMENU:=$(FS_MENU)
+  TITLE:=Common NFS filesystem SSC Helper module
+  KCONFIG:= CONFIG_NFS_V4_2=y@ge5.15
+  FILES:= $(LINUX_DIR)/fs/nfs_common/nfs_ssc.ko@ge5.10
+  AUTOLOAD:=$(call AutoLoad,30,nfs_ssc)
+endef
+
+$(eval $(call KernelPackage,fs-nfs-ssc))
+
 define KernelPackage/fs-nfs-common
   SUBMENU:=$(FS_MENU)
   TITLE:=Common NFS filesystem modules
+  DEPENDS:=+kmod-oid-registry +LINUX_5_10:kmod-fs-nfs-ssc
   KCONFIG:= \
 	CONFIG_LOCKD \
 	CONFIG_SUNRPC \
@@ -388,8 +416,7 @@ define KernelPackage/fs-nfs-common
   FILES:= \
 	$(LINUX_DIR)/fs/lockd/lockd.ko \
 	$(LINUX_DIR)/net/sunrpc/sunrpc.ko \
-	$(LINUX_DIR)/fs/nfs_common/grace.ko \
-	$(LINUX_DIR)/fs/nfs_common/nfs_ssc.ko@ge5.10
+	$(LINUX_DIR)/fs/nfs_common/grace.ko
   AUTOLOAD:=$(call AutoLoad,30,grace sunrpc lockd)
 endef
 
@@ -413,10 +440,9 @@ define KernelPackage/fs-nfs-common-rpcsec
 	CONFIG_SUNRPC_GSS \
 	CONFIG_RPCSEC_GSS_KRB5
   FILES:= \
-	$(LINUX_DIR)/lib/oid_registry.ko \
 	$(LINUX_DIR)/net/sunrpc/auth_gss/auth_rpcgss.ko \
 	$(LINUX_DIR)/net/sunrpc/auth_gss/rpcsec_gss_krb5.ko
-  AUTOLOAD:=$(call AutoLoad,31,oid_registry auth_rpcgss rpcsec_gss_krb5)
+  AUTOLOAD:=$(call AutoLoad,31,auth_rpcgss rpcsec_gss_krb5)
 endef
 
 define KernelPackage/fs-nfs-common-rpcsec/description
@@ -445,7 +471,7 @@ $(eval $(call KernelPackage,fs-nfs-v3))
 define KernelPackage/fs-nfs-v4
   SUBMENU:=$(FS_MENU)
   TITLE:=NFS4 filesystem client support
-  DEPENDS:=+kmod-fs-nfs
+  DEPENDS:=+kmod-fs-nfs +LINUX_5_15:kmod-fs-nfs-ssc
   KCONFIG:= \
 	CONFIG_NFS_V4=y
   FILES:= \
@@ -497,6 +523,27 @@ define KernelPackage/fs-ntfs/description
 endef
 
 $(eval $(call KernelPackage,fs-ntfs))
+
+
+define KernelPackage/pstore
+  SUBMENU:=$(FS_MENU)
+  TITLE:=Pstore file system
+  DEFAULT:=m if ALL_KMODS
+  KCONFIG:= \
+	CONFIG_PSTORE \
+	CONFIG_PSTORE_COMPRESS=y \
+	CONFIG_PSTORE_COMPRESS_DEFAULT="deflate" \
+	CONFIG_PSTORE_DEFLATE_COMPRESS=y \
+	CONFIG_PSTORE_DEFLATE_COMPRESS_DEFAULT=y
+  FILES:= $(LINUX_DIR)/fs/pstore/pstore.ko
+  AUTOLOAD:=$(call AutoLoad,30,pstore,1)
+endef
+
+define KernelPackage/pstore/description
+ Kernel module for pstore filesystem support
+endef
+
+$(eval $(call KernelPackage,pstore))
 
 
 define KernelPackage/fs-reiserfs
@@ -596,3 +643,18 @@ define KernelPackage/fuse/description
 endef
 
 $(eval $(call KernelPackage,fuse))
+
+
+define KernelPackage/fs-ntfs3
+  SUBMENU:=$(FS_MENU)
+  TITLE:=Ntfs3 support
+  KCONFIG:= CONFIG_NTFS3_FS CONFIG_NTFS3_FS_POSIX_ACL=y
+  FILES:=$(LINUX_DIR)/fs/ntfs3/ntfs3.ko
+  AUTOLOAD:=$(call AutoLoad,80,ntfs3)
+endef
+
+define KernelPackage/fuse/description
+ Kernel module for new NTFS3 filesystem support
+endef
+
+$(eval $(call KernelPackage,fs-ntfs3))

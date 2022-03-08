@@ -35,6 +35,7 @@ tools-$(CONFIG_TARGET_mxs) += elftosb sdimage
 tools-$(CONFIG_TARGET_tegra) += cbootimage cbootimage-configs
 tools-$(CONFIG_USES_MINOR) += kernel2minor
 tools-$(CONFIG_USE_SPARSE) += sparse
+tools-$(CONFIG_USE_LLVM_BUILD) += llvm-bpf
 
 # builddir dependencies
 $(curdir)/autoconf/compile := $(curdir)/m4/compile
@@ -45,6 +46,7 @@ $(curdir)/bison/compile := $(curdir)/flex/compile
 $(curdir)/cbootimage/compile += $(curdir)/automake/compile
 $(curdir)/cmake/compile += $(curdir)/libressl/compile $(curdir)/ninja/compile
 $(curdir)/dosfstools/compile := $(curdir)/autoconf/compile $(curdir)/automake/compile
+$(curdir)/expat/compile := $(curdir)/cmake/compile
 $(curdir)/e2fsprogs/compile := $(curdir)/libtool/compile
 $(curdir)/fakeroot/compile := $(curdir)/libtool/compile
 $(curdir)/findutils/compile := $(curdir)/bison/compile
@@ -56,10 +58,11 @@ $(curdir)/isl/compile := $(curdir)/gmp/compile
 $(curdir)/libressl/compile := $(curdir)/pkgconf/compile
 $(curdir)/libtool/compile := $(curdir)/m4/compile $(curdir)/autoconf/compile $(curdir)/automake/compile $(curdir)/missing-macros/compile
 $(curdir)/lzma-old/compile := $(curdir)/zlib/compile
+$(curdir)/llvm-bpf/compile := $(curdir)/cmake/compile
 $(curdir)/make-ext4fs/compile := $(curdir)/zlib/compile
 $(curdir)/meson/compile := $(curdir)/ninja/compile
 $(curdir)/missing-macros/compile := $(curdir)/autoconf/compile
-$(curdir)/mkimage/compile += $(curdir)/libressl/compile
+$(curdir)/mkimage/compile += $(curdir)/bison/compile $(curdir)/libressl/compile
 $(curdir)/mklibs/compile := $(curdir)/libtool/compile
 $(curdir)/mpc/compile := $(curdir)/mpfr/compile $(curdir)/gmp/compile
 $(curdir)/mpfr/compile := $(curdir)/gmp/compile
@@ -72,17 +75,20 @@ $(curdir)/sdcc/compile := $(curdir)/bison/compile
 $(curdir)/squashfs/compile := $(curdir)/lzma-old/compile
 $(curdir)/squashfskit4/compile := $(curdir)/xz/compile $(curdir)/zlib/compile
 $(curdir)/zlib/compile := $(curdir)/cmake/compile
-$(curdir)/zstd/compile := $(curdir)/cmake/compile
+$(curdir)/zstd/compile := $(curdir)/meson/compile
 
 ifneq ($(HOST_OS),Linux)
   $(curdir)/squashfskit4/compile += $(curdir)/coreutils/compile
   tools-y += coreutils
 endif
+ifeq ($(HOST_OS),Darwin)
+  tools-y += bash
+endif
 
 ifneq ($(CONFIG_CCACHE)$(CONFIG_SDK),)
 $(foreach tool, $(filter-out xz zstd pkgconf patch ninja meson libressl cmake,$(tools-y)), $(eval $(curdir)/$(tool)/compile += $(curdir)/ccache/compile))
 tools-y += ccache
-$(curdir)/ccache/compile := $(curdir)/zstd/compile
+$(curdir)/ccache/compile := $(curdir)/cmake/compile $(curdir)/zstd/compile
 endif
 
 # in case there is no patch tool on the host we need to make patch tool a
@@ -123,6 +129,9 @@ define PrepareStaging
 	); done
 endef
 
+$(BIN_DIR):
+	mkdir -p $@
+
 # preparatory work
 $(STAGING_DIR)/.prepared: $(TMP_DIR)/.build
 	$(call PrepareStaging,$(STAGING_DIR))
@@ -143,8 +152,8 @@ endif
 
 endif
 
-$(curdir)//prepare = $(STAGING_DIR)/.prepared $(STAGING_DIR_HOST)/.prepared
-$(curdir)//compile = $(STAGING_DIR)/.prepared $(STAGING_DIR_HOST)/.prepared
+$(curdir)//prepare = $(STAGING_DIR)/.prepared $(STAGING_DIR_HOST)/.prepared $(BIN_DIR)
+$(curdir)//compile = $(STAGING_DIR)/.prepared $(STAGING_DIR_HOST)/.prepared $(BIN_DIR)
 
 # prerequisites for the individual targets
 $(curdir)/ := .config prereq

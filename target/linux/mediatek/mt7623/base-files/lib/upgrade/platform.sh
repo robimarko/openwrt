@@ -1,9 +1,7 @@
-
 REQUIRE_IMAGE_METADATA=1
-RAMFS_COPY_BIN='blockdev'
 
-# Full system upgrade including preloader for MediaTek SoCs on eMMC or SD
-mtk_mmc_full_upgrade() {
+# Legacy full system upgrade including preloader for MediaTek SoCs on eMMC or SD
+legacy_mtk_mmc_full_upgrade() {
 	local diskdev partdev diff oldrecovery
 
 	if grep -q root=/dev/mmcblk0p2 /proc/cmdline; then
@@ -26,7 +24,7 @@ mtk_mmc_full_upgrade() {
 	fi
 	sync
 
-	if [ "$SAVE_PARTITIONS" = "1" ]; then
+	if [ "$UPGRADE_OPT_SAVE_PARTITIONS" = "1" ]; then
 		get_partitions "/dev/$diskdev" bootdisk
 
 		#extract the boot sector from the image
@@ -83,25 +81,18 @@ platform_do_upgrade() {
 	local board=$(board_name)
 
 	case "$board" in
-	bananapi,bpi-r2)
+	bananapi,bpi-r2|\
+	unielec,u7623-02)
 		export_bootdevice
-		export_partdevice rootdev 0
 		export_partdevice fitpart 3
 		[ "$fitpart" ] || return 1
-		dd if=/dev/zero of=/dev/$fitpart bs=4096 count=1 2>/dev/null
-		blockdev --rereadpt /dev/$rootdev
-		get_image "$1" | dd of=/dev/$fitpart
-		blockdev --rereadpt /dev/$rootdev
-		local datapart=$(get_partition_by_name $rootdev "rootfs_data")
-		[ "$datapart" ] || return 0
-		dd if=/dev/zero of=/dev/$datapart bs=4096 count=1 2>/dev/null
-		echo $datapart > /tmp/sysupgrade.datapart
+		EMMC_KERN_DEV="/dev/$fitpart"
+		emmc_do_upgrade "$1"
 		;;
-
 	unielec,u7623-02-emmc-512m)
 		local magic="$(get_magic_long "$1")"
 		if [ "$magic" = "53444d4d" ]; then
-			mtk_mmc_full_upgrade "$1"
+			legacy_mtk_mmc_full_upgrade "$1"
 		else # Old partial image starting with uImage
 			# Keep the persistent random mac address (if it exists)
 			recoverydev=mmcblk0p1
@@ -127,17 +118,14 @@ platform_do_upgrade() {
 	esac
 }
 
-PART_NAME=firmware
-
 platform_check_image() {
-	local board=$(board_name)
 	local magic="$(get_magic_long "$1")"
-	local diskdev partdev diff
 
 	[ "$#" -gt 1 ] && return 1
 
-	case "$board" in
-	bananapi,bpi-r2)
+	case "$(board_name)" in
+	bananapi,bpi-r2|\
+	unielec,u7623-02)
 		[ "$magic" != "d00dfeed" ] && {
 			echo "Invalid image type."
 			return 1
@@ -147,19 +135,17 @@ platform_check_image() {
 		# Can always upgrade to the new-style full image
 		[ "$magic" = "53444d4d" ] && return 0
 
+		# need to update to new bootchain via full image first
+		[ "$magic" = "d00dfeed" ] && {
+			echo "Please use full eMMC image to update bootloader first."
+			return 1
+		}
+
 		# Legacy uImage directly at 0xA00 on the eMMC.
 		[ "$magic" != "27051956" ] && {
 			echo "Invalid image type."
 			return 1
 		}
-		rootpart=$(cat /proc/cmdline)
-		rootpart="${rootpart##*root=}"
-		rootpart="${rootpart%% *}"
-		[ "$rootpart" != "/dev/mmcblk0p2" ] && {
-			echo "Cannot downgrade to legacy image."
-			return 1
-		}
-		return 0
 		;;
 	*)
 		echo "Sysupgrade is not supported on your board yet."
@@ -170,18 +156,11 @@ platform_check_image() {
 	return 0
 }
 
-platform_copy_config_mmc() {
-	[ -e "$UPGRADE_BACKUP" ] || return
-	local datapart=$(cat /tmp/sysupgrade.datapart)
-	[ "$datapart" ] || echo "no rootfs_data partition, cannot keep configuration." >&2
-	dd if="$UPGRADE_BACKUP" of=/dev/$datapart
-	sync
-}
-
 platform_copy_config() {
 	case "$(board_name)" in
-	bananapi,bpi-r2)
-		platform_copy_config_mmc
+	bananapi,bpi-r2|\
+	unielec,u7623-02)
+		emmc_copy_config
 		;;
 	unielec,u7623-02-emmc-512m)
 		# platform_do_upgrade() will have set $recoverydev

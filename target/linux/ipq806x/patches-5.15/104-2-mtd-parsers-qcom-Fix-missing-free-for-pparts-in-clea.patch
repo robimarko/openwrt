@@ -1,0 +1,32 @@
+From 0917995af3ad71ccaf41c73ad8fbf2b18a076a91 Mon Sep 17 00:00:00 2001
+From: Ansuel Smith <ansuelsmth@gmail.com>
+Date: Sun, 16 Jan 2022 04:14:01 +0100
+Subject: [PATCH 2/2] mtd: parsers: qcom: Fix missing free for pparts in
+ cleanup
+
+Mtdpart doesn't free pparts when a cleanup function is declared.
+Add missing free for pparts in cleanup function for smem to fix the
+leak.
+
+Fixes: 10f3b4d79958 ("mtd: parsers: qcom: Fix leaking of partition name")
+Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+---
+ drivers/mtd/parsers/qcomsmempart.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/mtd/parsers/qcomsmempart.c b/drivers/mtd/parsers/qcomsmempart.c
+index f4fc7635c1f3..32ddfea70142 100644
+--- a/drivers/mtd/parsers/qcomsmempart.c
++++ b/drivers/mtd/parsers/qcomsmempart.c
+@@ -173,6 +173,8 @@ static void parse_qcomsmem_cleanup(const struct mtd_partition *pparts,
+ 
+ 	for (i = 0; i < nr_parts; i++)
+ 		kfree(pparts[i].name);
++
++	kfree(pparts);
+ }
+ 
+ static const struct of_device_id qcomsmem_of_match_table[] = {
+-- 
+2.33.1
+

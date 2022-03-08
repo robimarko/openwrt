@@ -22,7 +22,7 @@ bananapi,bpi-r64)
 	export_partdevice rootdev 0
 	case "$rootdev" in
 	mmc*)
-		local envdev=/dev/$(get_partition_by_name $rootdev ubootenv)
+		local envdev=$(find_mmc_part "ubootenv" $rootdev)
 		ubootenv_add_uci_config "$envdev" "0x0" "0x80000" "0x80000" "1"
 		ubootenv_add_uci_config "$envdev" "0x80000" "0x80000" "0x80000" "1"
 		;;
@@ -34,6 +34,9 @@ bananapi,bpi-r64)
 	;;
 buffalo,wsr-2533dhp2)
 	ubootenv_add_uci_config "/dev/mtd3" "0x0" "0x1000" "0x20000"
+	;;
+ruijie,rg-ew3200gx-pro)
+	ubootenv_add_uci_config "/dev/mtd3" "0x0" "0x20000" "0x20000"
 	;;
 ubnt,unifi-6-lr-ubootmod)
 	ubootenv_add_uci_config "/dev/mtd2" "0x0" "0x4000" "0x10000"
