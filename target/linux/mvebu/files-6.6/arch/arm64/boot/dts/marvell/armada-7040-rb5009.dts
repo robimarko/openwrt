@@ -70,6 +70,11 @@
 	sfp: sfp {
 		compatible = "sff,sfp";
 		i2c-bus = <&sfp_i2c>;
+		mod-def0-gpios = <&cp0_gpio1 11 GPIO_ACTIVE_LOW>;
+		los-gpios = <&cp0_gpio1 2 GPIO_ACTIVE_HIGH>;
+		tx-fault-gpios = <&cp0_gpio1 6 GPIO_ACTIVE_HIGH>;
+		tx-disable-gpios = <&cp0_gpio1 5 GPIO_ACTIVE_HIGH>;
+		rate-select0-gpios = <&cp0_gpio1 3 GPIO_ACTIVE_HIGH>;
 	};
 };
 
