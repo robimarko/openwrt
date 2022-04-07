@@ -19,14 +19,55 @@ jobs:
               run: |
                 echo "CONFIG_TARGET_ipq807x=y" > .config
                 echo "CONFIG_TARGET_ipq807x_generic=y\n" >> .config
-                echo "CONFIG_TARGET_MULTI_PROFILE=y\n" >> .config
-                echo "CONFIG_TARGET_ALL_PROFILES=y\n" >> .config
+                echo 'CONFIG_TARGET_ipq807x_generic_DEVICE_xiaomi_ax3600=y' >> .config
+                #echo 'CONFIG_HAS_SUBTARGETS=y' >> .config
+                echo 'CONFIG_TARGET_BOARD="ipq807x"' >> .config
+                echo 'CONFIG_TARGET_SUBTARGET="generic"' >> .config
+                echo 'CONFIG_TARGET_PROFILE="DEVICE_xiaomi_ax3600"' >> .config
+                #echo 'CONFIG_ALL_KMODS=y\n' >> .config
                 echo "CONFIG_TARGET_PER_DEVICE_ROOTFS=y\n" >> .config
                 echo "CONFIG_TARGET_ROOTFS_INITRAMFS=y\n" >> .config
                 echo "CONFIG_TARGET_INITRAMFS_COMPRESSION_ZSTD=y\n" >> .config
+                echo 'CONFIG_TARGET_ROOTFS_SQUASHFS=y' >> .config
+                echo 'CONFIG_TARGET_SQUASHFS_BLOCK_SIZE=256' >> .config
+                echo 'CONFIG_TARGET_UBIFS_FREE_SPACE_FIXUP=y' >> .config
+                echo 'CONFIG_TARGET_OPTIMIZATION="-Os -pipe -mcpu=cortex-a53"' >> .config
                 echo "CONFIG_PACKAGE_luci=y\n" >> .config
+                echo "CONFIG_PACKAGE_luci-base=y\n" >> .config
+                echo "CONFIG_PACKAGE_luci-compat=y\n" >> .config
+                echo "CONFIG_PACKAGE_luci-app-firewall=y\n" >> .config
+                echo "CONFIG_PACKAGE_luci-app-openvpn=y\n" >> .config
+                echo "CONFIG_PACKAGE_openssl-util=y\n" >> .config
+                echo "CONFIG_PACKAGE_openvpn-openssl=y\n" >> .config
+                echo "CONFIG_LIBCURL_OPENSSL=y\n" >> .config
+                #echo "CONFIG_PACKAGE_luci-app-wireguard=y\n" >> .config
+                echo "CONFIG_PACKAGE_luci-app-adblock=y\n" >> .config
+                echo "CONFIG_PACKAGE_nss-firmware-ipq8074=y" >> .config
+                echo "CONFIG_PACKAGE_dnsmasq=n" >> .config
+                echo "CONFIG_PACKAGE_dnsmasq-full=y" >> .config
+                echo "CONFIG_PACKAGE_tor=y\n" >> .config
+                echo "CONFIG_PACKAGE_tor-geoip=y\n" >> .config
+                echo "CONFIG_PACKAGE_ipset=y\n" >> .config
                 echo "CONFIG_PACKAGE_kmod-qca-nss-dp=y\n" >> .config
                 echo "CONFIG_PACKAGE_qca-ssdk-shell=y\n" >> .config
+                #echo "CONFIG_PACKAGE_kmod-qca-ssdk-nohnat=y" >> .config
+                echo "CONFIG_PACKAGE_kmod-tun=y\n" >> .config
+                echo "CONFIG_PACKAGE_kmod-wireguard=y\n" >> .config
+                echo "CONFIG_PACKAGE_openvpn-wolfssl=y\n" >> .config
+                echo "CONFIG_PACKAGE_wireguard-tools=y\n" >> .config
+                echo "CONFIG_PACKAGE_iptables-legacy=y\n" >> .config
+                echo "CONFIG_PACKAGE_iptables-mod-ipopt=y\n" >> .config
+                echo "CONFIG_PACKAGE_kmod-ipt-offload=y\n" >> .config
+                echo "CONFIG_PACKAGE_irqbalance=y\n" >> .config
+                echo "CONFIG_PACKAGE_wpad-wolfssl=y\n" >> .config
+                echo "CONFIG_PACKAGE_wget-ssl=y\n" >> .config
+                echo "CONFIG_PACKAGE_kmod-ifb=y\n" >> .config
+                echo "CONFIG_PACKAGE_kmod-ipt-core=y\n" >> .config
+                echo "CONFIG_PACKAGE_kmod-ipt-ipopt=y\n" >> .config
+                echo "CONFIG_PACKAGE_kmod-lib-textsearch=y\n" >> .config
+                echo "CONFIG_PACKAGE_kmod-nf-ipt=y\n" >> .config
+                echo "CONFIG_PACKAGE_kmod-nf-nathelper=y\n" >> .config
+                echo "CONFIG_PACKAGE_kmod-nf-nathelper-extra=y\n" >> .config
                 make defconfig
 
             - name: Download package sources
