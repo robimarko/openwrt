@@ -18,9 +18,12 @@ jobs:
             - name: Generate config for IPQ807x Generic
               run: |
                 echo "CONFIG_TARGET_ipq807x=y" > .config
-                echo "CONFIG_TARGET_ipq807x_generic=y" >> .config
-                #echo "CONFIG_TARGET_ipq807x_generic_DEVICE_xiaomi_ax3600=y" >> .config
-                #echo "CONFIG_TARGET_ALL_PROFILES=y\n" >> .config
+                echo "CONFIG_TARGET_ipq807x_generic=y\n" >> .config
+                echo 'CONFIG_TARGET_ipq807x_generic_DEVICE_xiaomi_ax3600=y' >> .config
+                # echo 'CONFIG_HAS_SUBTARGETS=y' >> .config
+                echo 'CONFIG_TARGET_SUBTARGET="generic"' >> .config
+                echo 'CONFIG_TARGET_BOARD="ipq807x"' >> .config
+                echo 'CONFIG_TARGET_PROFILE="DEVICE_xiaomi_ax3600"' >> .config
                 echo "CONFIG_TARGET_PER_DEVICE_ROOTFS=y\n" >> .config
                 echo "CONFIG_TARGET_ROOTFS_INITRAMFS=y\n" >> .config
                 echo "CONFIG_TARGET_INITRAMFS_COMPRESSION_ZSTD=y\n" >> .config
@@ -31,6 +34,7 @@ jobs:
                 echo "CONFIG_PACKAGE_kmod-qca-nss-dp=y\n" >> .config
                 echo "CONFIG_PACKAGE_qca-ssdk-shell=y\n" >> .config
                 make defconfig
+                
             - name: Download package sources
               run: make download V=s
 
