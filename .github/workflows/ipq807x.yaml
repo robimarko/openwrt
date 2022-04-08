@@ -27,7 +27,7 @@ jobs:
                 echo "CONFIG_PACKAGE_luci=y\n" >> .config
                 echo "CONFIG_PACKAGE_kmod-qca-nss-dp=y\n" >> .config
                 echo "CONFIG_PACKAGE_qca-ssdk-shell=y\n" >> .config
-                echo 'CONFIG_ALL_KMODS=y' >> .config
+                echo "CONFIG_ALL_KMODS=y" >> .config
                 make defconfig
             - name: Download package sources
               run: make download V=s
