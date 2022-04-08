@@ -24,8 +24,10 @@ jobs:
                 echo "CONFIG_TARGET_PER_DEVICE_ROOTFS=y\n" >> .config
                 echo "CONFIG_TARGET_ROOTFS_INITRAMFS=y\n" >> .config
                 echo "CONFIG_TARGET_INITRAMFS_COMPRESSION_ZSTD=y\n" >> .config
-                echo "CONFIG_ALL_KMODS=y" >> .config
                 echo "CONFIG_PACKAGE_luci=y\n" >> .config
+                echo "CONFIG_PACKAGE_luci-app-openvpn=y\n" >> .config
+                echo "CONFIG_PACKAGE_openvpn-openssl=y\n" >> .config
+                echo "CONFIG_PACKAGE_kmod-tun=y\n" >> .config
                 echo "CONFIG_PACKAGE_kmod-qca-nss-dp=y\n" >> .config
                 echo "CONFIG_PACKAGE_qca-ssdk-shell=y\n" >> .config
                 make defconfig
