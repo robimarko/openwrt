@@ -55,6 +55,11 @@ jobs:
                 echo "CONFIG_PACKAGE_kmod-nft-offload=y" >> .config
                 echo "CONFIG_NETFILTER_NETLINK=m" >> .config
                 echo "CONFIG_NETFILTER_NETLINK_HOOK=m" >> .config
+                # wpad full
+                echo "CONFIG_PACKAGE_curl=y" >> .config
+                echo "CONFIG_PACKAGE_wpad-mini=n" >> .config
+                echo "CONFIG_PACKAGE_wpad-basic-wolfssl=n" >> .config
+                echo "CONFIG_PACKAGE_wpad-wolfssl=y" >> .config
                 make defconfig
                 
             - name: Download package sources
