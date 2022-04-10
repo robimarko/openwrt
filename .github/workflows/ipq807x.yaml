@@ -36,6 +36,7 @@ jobs:
                 echo "CONFIG_PACKAGE_luci-app-wireguard=y" >> .config
                 echo "CONFIG_PACKAGE_luci-app-upnp=y" >> .config
                 echo "CONFIG_PACKAGE_luci-mod-dashboard=y" >> .config
+                echo "CONFIG_PACKAGE_luci-app-adblock=y" >> .config
                 echo "CONFIG_PACKAGE_less=n" >> .config
                 # services and tools
                 echo "CONFIG_PACKAGE_openvpn-openssl=y\n" >> .config
@@ -48,6 +49,7 @@ jobs:
                 echo "CONFIG_PACKAGE_tor-geoip=y\n" >> .config
                 echo "CONFIG_PACKAGE_ipset=y\n" >> .config
                 echo "CONFIG_PACKAGE_wireguard-tools=y\n" >> .config
+                echo "CONFIG_PACKAGE_coreutils-sort=y\n" >> .config
                 #firmware
                 echo "CONFIG_PACKAGE_kmod-qca-nss-dp=y\n" >> .config
                 # echo "CONFIG_PACKAGE_kmod-qca-nss-crypto=y\n" >> .config
