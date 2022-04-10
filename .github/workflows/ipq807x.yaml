@@ -60,7 +60,6 @@ jobs:
                 echo "CONFIG_PACKAGE_kmod-qca-ssdk-nohnat=y\n" >> .config
                 echo "CONFIG_PACKAGE_qca-ssdk-shell=y\n" >> .config
                 # firewall4
-                echo "CONFIG_IPTABLES_NFTABLES=y" >> .config
                 echo "CONFIG_PACKAGE_firewall=n" >> .config
                 echo "CONFIG_PACKAGE_ip6tables=n" >> .config
                 echo "CONFIG_PACKAGE_iptables=n" >> .config
