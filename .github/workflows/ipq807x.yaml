@@ -32,10 +32,22 @@ jobs:
                 echo "CONFIG_PACKAGE_luci-ssl=y" >> .config
                 echo "CONFIG_PACKAGE_luci-compat=y" >> .config
                 echo "CONFIG_PACKAGE_luci-app-openvpn=y\n" >> .config
+                echo "CONFIG_PACKAGE_luci-mod-dashboard=y" >> .config
+                echo "CONFIG_PACKAGE_luci-app-wireguard=y" >> .config
+                echo "CONFIG_PACKAGE_luci-app-upnp=y" >> .config
+                echo "CONFIG_PACKAGE_luci-mod-dashboard=y" >> .config
+                echo "CONFIG_PACKAGE_less=n" >> .config
                 # services and tools
                 echo "CONFIG_PACKAGE_openvpn-openssl=y\n" >> .config
                 echo "CONFIG_PACKAGE_kmod-wireguard=y\n" >> .config
                 echo "CONFIG_PACKAGE_kmod-tun=y\n" >> .config
+                echo "CONFIG_PACKAGE_miniupnpd=y" >> .config
+                echo "CONFIG_PACKAGE_dnsmasq=n" >> .config
+                echo "CONFIG_PACKAGE_dnsmasq-full=y" >> .config
+                echo "CONFIG_PACKAGE_tor=y\n" >> .config
+                echo "CONFIG_PACKAGE_tor-geoip=y\n" >> .config
+                echo "CONFIG_PACKAGE_ipset=y\n" >> .config
+                echo "CONFIG_PACKAGE_wireguard-tools=y\n" >> .config
                 #firmware
                 echo "CONFIG_PACKAGE_kmod-qca-nss-dp=y\n" >> .config
                 # echo "CONFIG_PACKAGE_kmod-qca-nss-crypto=y\n" >> .config
@@ -46,6 +58,7 @@ jobs:
                 echo "CONFIG_PACKAGE_kmod-qca-ssdk-nohnat=y\n" >> .config
                 echo "CONFIG_PACKAGE_qca-ssdk-shell=y\n" >> .config
                 # firewall4
+                echo "CONFIG_IPTABLES_NFTABLES=y" >> .config
                 echo "CONFIG_PACKAGE_firewall=n" >> .config
                 echo "CONFIG_PACKAGE_ip6tables=n" >> .config
                 echo "CONFIG_PACKAGE_iptables=n" >> .config
@@ -53,8 +66,22 @@ jobs:
                 echo "CONFIG_PACKAGE_firewall4=y" >> .config
                 echo "CONFIG_PACKAGE_nftables=y" >> .config
                 echo "CONFIG_PACKAGE_kmod-nft-offload=y" >> .config
+                echo "CONFIG_PACKAGE_kmod-nft-conntrack=y" >> .config
+                echo "CONFIG_PACKAGE_kmod-nft-flow=y" >> .config
+                echo "CONFIG_PACKAGE_kmod-nft-ipt=y" >> .config
+                echo "CONFIG_PACKAGE_kmod-nft-nat=y" >> .config
+                echo "CONFIG_PACKAGE_kmod-nft-reject=y" >> .config
                 echo "CONFIG_NETFILTER_NETLINK=m" >> .config
                 echo "CONFIG_NETFILTER_NETLINK_HOOK=m" >> .config
+                 # IPv6 support 
+                echo "CONFIG_PACKAGE_luci-proto-ipv6=y" >> .config
+                echo "CONFIG_PACKAGE_kmod-nft-ipt6=y" >> .config
+                echo "CONFIG_PACKAGE_kmod-nft-reject6=y" >> .config
+                echo "CONFIG_PACKAGE_kmod-nft-conntrack6=y" >> .config
+                echo "CONFIG_PACKAGE_6in4=y" >> .config
+                echo "CONFIG_PACKAGE_6to4=y" >> .config
+                echo "CONFIG_PACKAGE_6rd=y" >> .config
+                echo "CONFIG_PACKAGE_kmod-sit=y" >> .config       
                 # wpad full
                 echo "CONFIG_PACKAGE_curl=y" >> .config
                 echo "CONFIG_PACKAGE_wpad-mini=n" >> .config
