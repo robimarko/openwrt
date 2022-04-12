@@ -39,10 +39,10 @@ jobs:
                 echo "CONFIG_PACKAGE_luci-app-adblock=y" >> .config
                 echo "CONFIG_PACKAGE_less=n" >> .config
                 # services and tools
-                echo "CONFIG_PACKAGE_openvpn-openssl=y\n" >> .config
+                echo "CONFIG_PACKAGE_openvpn-openssl=y" >> .config
                 echo "CONFIG_PACKAGE_kmod-wireguard=y\n" >> .config
-                echo "CONFIG_PACKAGE_kmod-tun=y\n" >> .config
-                echo "CONFIG_PACKAGE_miniupnpd=y" >> .config
+                echo "CONFIG_PACKAGE_kmod-tun=y" >> .config
+                # echo "CONFIG_PACKAGE_miniupnpd=y" >> .config
                 echo "CONFIG_PACKAGE_dnsmasq=n" >> .config
                 echo "CONFIG_PACKAGE_dnsmasq-full=y" >> .config
                 echo "CONFIG_PACKAGE_tor=y\n" >> .config
@@ -60,9 +60,8 @@ jobs:
                 echo "CONFIG_PACKAGE_kmod-qca-ssdk-nohnat=y\n" >> .config
                 echo "CONFIG_PACKAGE_qca-ssdk-shell=y\n" >> .config
                 # firewall34
-                echo "CONFIG_PACKAGE_firewall=y" >> .config
-                echo "CONFIG_PACKAGE_iptables=y" >> .config
-                echo "CONFIG_PACKAGE_ip6tables=y" >> .config
+                echo "CONFIG_PACKAGE_iptables-legacy=y" >> .config
+                # echo "CONFIG_PACKAGE_ip6tables-legacy=y" >> .config
                 echo "CONFIG_PACKAGE_kmod-ipt-core=y" >> .config
                 echo "CONFIG_PACKAGE_kmod-ipt-offload=y" >> .config
                 echo "CONFIG_PACKAGE_kmod-ipt-extra=y" >> .config
@@ -87,11 +86,11 @@ jobs:
                 #echo "CONFIG_PACKAGE_kmod-nft-reject=y" >> .config
                 #echo "CONFIG_NETFILTER_NETLINK=m" >> .config
                 #echo "CONFIG_NETFILTER_NETLINK_HOOK=m" >> .config
-                 # IPv6 support 
-                echo "CONFIG_PACKAGE_luci-proto-ipv6=y" >> .config
-                #echo "CONFIG_PACKAGE_kmod-nft-ipt6=y" >> .config
-                #echo "CONFIG_PACKAGE_kmod-nft-reject6=y" >> .config
-                #echo "CONFIG_PACKAGE_kmod-nft-conntrack6=y" >> .config
+                # IPv6 support 
+                # echo "CONFIG_PACKAGE_luci-proto-ipv6=y" >> .config
+                # echo "CONFIG_PACKAGE_kmod-nft-ipt6=y" >> .config
+                # echo "CONFIG_PACKAGE_kmod-nft-reject6=y" >> .config
+                # echo "CONFIG_PACKAGE_kmod-nft-conntrack6=y" >> .config
                 echo "CONFIG_PACKAGE_6in4=y" >> .config
                 echo "CONFIG_PACKAGE_6to4=y" >> .config
                 echo "CONFIG_PACKAGE_6rd=y" >> .config
