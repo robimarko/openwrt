@@ -1,6 +1,8 @@
 name: Build IPQ807x
   
-on: [push]
+on:
+ workflow_dispatch:
+  push:
 
 jobs:
     build:
