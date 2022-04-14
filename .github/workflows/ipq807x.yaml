@@ -40,7 +40,6 @@ jobs:
                 echo "CONFIG_PACKAGE_luci-app-upnp=y" >> .config
                 echo "CONFIG_PACKAGE_luci-mod-dashboard=y" >> .config
                 echo "CONFIG_PACKAGE_luci-app-adblock=y" >> .config
-                echo "CONFIG_PACKAGE_less=n" >> .config
                 # services and tools
                 echo "CONFIG_PACKAGE_openvpn-openssl=y" >> .config
                 echo "CONFIG_PACKAGE_kmod-wireguard=y\n" >> .config
