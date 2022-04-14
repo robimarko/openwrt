@@ -1,7 +1,7 @@
-
-name: Build IPQ807x
 on: 
   workflow_dispatch:
+  
+name: Build IPQ807x
   
 on: [push]
 
