@@ -71,7 +71,7 @@ jobs:
                 echo "CONFIG_PACKAGE_kmod-ipt-ipset=y" >> .config
                 echo "CONFIG_PACKAGE_kmod-ipt-ipopt=y" >> .config
                 echo "CONFIG_PACKAGE_kmod-ipt-fullconenat=y" >> .config
-                echo "CONFIG_PACKAGE_kmod-ipt-nat=y" >> .config
+                # echo "CONFIG_PACKAGE_kmod-ipt-nat=n" >> .config
                 echo "CONFIG_PACKAGE_kmod-ipt-nat-extra=y" >> .config
                 echo "CONFIG_PACKAGE_kmod-ipt-raw=y" >> .config
                 echo "CONFIG_PACKAGE_kmod-ipt-tproxy=y" >> .config
@@ -82,13 +82,14 @@ jobs:
                 #echo "CONFIG_PACKAGE_kmod-iptunnel6=y" >> .config
                 echo "CONFIG_PACKAGE_firewall4=y" >> .config
                 echo "CONFIG_PACKAGE_nftables=y" >> .config
-                echo "CONFIG_PACKAGE_kmod-nft-core=y" >> .config
+                echo "CONFIG_PACKAGE_ucode=y" >> .config
+                echo "CONFIG_PACKAGE_ucode-mod-fs=y" >> .config
+                echo "CONFIG_PACKAGE_ucode-mod-uci=y" >> .config
+                echo "CONFIG_PACKAGE_ucode-mod-ubus=y" >> .config
                 echo "CONFIG_PACKAGE_kmod-nf-nat=y" >> .config
                 echo "CONFIG_PACKAGE_kmod-nfnetlink=y" >> .config
                 echo "CONFIG_PACKAGE_kmod-nf-reject=y" >> .config
-                echo "CONFIG_PACKAGE_kmod-nf-reject6=y" >> .config
                 echo "CONFIG_PACKAGE_kmod-nf-conntrack=y" >> .config
-                echo "CONFIG_PACKAGE_kmod-nf-conntrack6=y" >> .config
                 echo "CONFIG_DEFAULT_kmod-nf-nathelper=y" >> .config
                 echo "CONFIG_DEFAULT_kmod-nf-nathelper-extra=y" >> .config
                 echo "CONFIG_DEFAULT_kmod-nft-core=y" >> .config
@@ -98,6 +99,8 @@ jobs:
                 echo "CONFIG_PACKAGE_kmod-nft-ipt=y" >> .config
                 echo "CONFIG_PACKAGE_kmod-nft-nat=y" >> .config
                 echo "CONFIG_PACKAGE_kmod-nft-reject=y" >> .config
+                echo "CONFIG_PACKAGE_kmod-nft-fib=y" >> .config
+                echo "CONFIG_PACKAGE_nftables-json=y" >> .config
                 echo "CONFIG_NETFILTER_NETLINK=m" >> .config
                 echo "CONFIG_NETFILTER_NETLINK_HOOK=m" >> .config
                 # IPv6 support 
@@ -105,6 +108,9 @@ jobs:
                 echo "CONFIG_PACKAGE_kmod-nft-ipt6=y" >> .config
                 echo "CONFIG_PACKAGE_kmod-nft-reject6=y" >> .config
                 echo "CONFIG_PACKAGE_kmod-nft-conntrack6=y" >> .config
+                echo "CONFIG_PACKAGE_kmod-nft-nat6=y" >> .config
+                echo "CONFIG_PACKAGE_kmod-nf-conntrack6=y" >> .config
+                echo "CONFIG_PACKAGE_kmod-nf-reject6=y" >> .config
                 # echo "CONFIG_PACKAGE_6in4=y" >> .config
                 # echo "CONFIG_PACKAGE_6to4=y" >> .config
                 # echo "CONFIG_PACKAGE_6rd=y" >> .config
@@ -113,7 +119,7 @@ jobs:
                 echo "CONFIG_PACKAGE_curl=y" >> .config
                 echo "CONFIG_PACKAGE_wpad-mini=n" >> .config
                 echo "CONFIG_PACKAGE_wpad-basic-wolfssl=n" >> .config
-                echo "CONFIG_PACKAGE_wpad-wolfssl=y" >> .config
+                echo "CONFIG_PACKAGE_wpad-mesh-wolfssl=y" >> .config
                 make defconfig
                 
             - name: Download package sources
