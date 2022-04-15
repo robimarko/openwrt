@@ -1,6 +1,6 @@
 name: Build IPQ807x
   
-on: [push]
+on: [push],
  workflow_dispatch:
 
 
