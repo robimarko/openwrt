@@ -1,5 +1,4 @@
 name: Build IPQ807x
-  
 on: [push],
  workflow_dispatch:
 
