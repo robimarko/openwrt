@@ -1,5 +1,6 @@
 name: Build IPQ807x
 on: 
+
  workflow_dispatch:
 
 jobs:
