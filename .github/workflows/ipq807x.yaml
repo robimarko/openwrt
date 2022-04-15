@@ -1,8 +1,8 @@
 name: Build IPQ807x
   
-on:
+on: [push]
  workflow_dispatch:
-  [push]
+
 
 jobs:
     build:
@@ -18,7 +18,6 @@ jobs:
                 ./scripts/feeds update -a
                 ./scripts/feeds install -a
                 ./scripts/feeds install -a
-                
             - name: Generate config for IPQ807x Generic
               run: |
                 echo "CONFIG_TARGET_ipq807x=y" > .config
