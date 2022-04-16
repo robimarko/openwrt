@@ -1,13 +1,14 @@
 name: Build host tools
 
 on:
-  pull_request:
+  workflow_dispatch:
     paths:
       - 'tools/**'
+      - '.github/workflows/tools.yml'
 
 jobs:
   build:
-    name: Build tools on ${{ matrix.os }}
+    name: tools-${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: False
@@ -30,7 +31,6 @@ jobs:
           hdiutil attach OpenWrt.sparseimage
           mv "$GITHUB_WORKSPACE/openwrt" /Volumes/OpenWrt/
           cd "$WORKPATH"
-
           brew install \
             autoconf \
             automake \
@@ -58,7 +58,6 @@ jobs:
             readline \
             wget \
             zstd
-
             echo "/bin" >> "$GITHUB_PATH"
             echo "/sbin/Library/Apple/usr/bin" >> "$GITHUB_PATH"
             echo "/usr/bin" >> "$GITHUB_PATH"
@@ -71,7 +70,6 @@ jobs:
             echo "/usr/local/opt/make/libexec/gnubin" >> "$GITHUB_PATH"
             echo "/usr/sbin" >> "$GITHUB_PATH"
             pwd
-
       - name: Setup Ubuntu
         if: ${{ matrix.os == 'ubuntu-latest' }}
         env:
@@ -109,26 +107,12 @@ jobs:
           echo "WORKPATH=$GITHUB_WORKSPACE/openwrt/" >> "$GITHUB_ENV"
           cd "$WORKPATH"
           pwd
-
       - name: Make prereq
         run: |
           cd "$WORKPATH"
           pwd
           make defconfig
-
       - name: Build tools
         run: |
           cd "$WORKPATH"
           make tools/install -j$(nproc) BUILD_LOG=1
-
-      - name: Move logs to GITHUB_WORKSPACE
-        if: failure()
-        run: |
-          cp -r "$WORKPATH/logs" "$GITHUB_WORKSPACE"
-
-      - name: Upload logs
-        if: failure()
-        uses: actions/upload-artifact@v2
-        with:
-          name: ${{ matrix.os }}-logs
-          path: "logs"
