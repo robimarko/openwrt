@@ -14,21 +14,106 @@ jobs:
               run: |
                 ./scripts/feeds update -a
                 ./scripts/feeds install -a
-
+                ./scripts/feeds install -a
+                
             - name: Generate config for IPQ807x Generic
               run: |
-                echo "CONFIG_TARGET_ipq807x=y" > .config
+                 echo "CONFIG_TARGET_ipq807x=y" > .config
                 echo "CONFIG_TARGET_ipq807x_generic=y\n" >> .config
-                echo "CONFIG_TARGET_MULTI_PROFILE=y\n" >> .config
-                echo "CONFIG_TARGET_ALL_PROFILES=y\n" >> .config
+                echo 'CONFIG_TARGET_ipq807x_generic_DEVICE_xiaomi_ax3600=y' >> .config
+                # echo 'CONFIG_HAS_SUBTARGETS=y' >> .config
+                echo 'CONFIG_TARGET_SUBTARGET="generic"' >> .config
+                echo 'CONFIG_TARGET_BOARD="ipq807x"' >> .config
+                echo 'CONFIG_TARGET_PROFILE="DEVICE_xiaomi_ax3600"' >> .config
                 echo "CONFIG_TARGET_PER_DEVICE_ROOTFS=y\n" >> .config
                 echo "CONFIG_TARGET_ROOTFS_INITRAMFS=y\n" >> .config
                 echo "CONFIG_TARGET_INITRAMFS_COMPRESSION_ZSTD=y\n" >> .config
+                # luci
                 echo "CONFIG_PACKAGE_luci=y\n" >> .config
+                echo "CONFIG_PACKAGE_luci-ssl=y" >> .config
+                echo "CONFIG_PACKAGE_luci-compat=y" >> .config
+                echo "CONFIG_PACKAGE_luci-app-openvpn=y\n" >> .config
+                echo "CONFIG_PACKAGE_luci-mod-dashboard=y" >> .config
+                echo "CONFIG_PACKAGE_luci-app-wireguard=y" >> .config
+                echo "CONFIG_PACKAGE_luci-app-upnp=y" >> .config
+                echo "CONFIG_PACKAGE_luci-mod-dashboard=y" >> .config
+                echo "CONFIG_PACKAGE_luci-app-adblock=y" >> .config
+                echo "CONFIG_PACKAGE_less=n" >> .config
+                # services and tools
+                echo "CONFIG_PACKAGE_openvpn-openssl=y" >> .config
+                echo "CONFIG_PACKAGE_kmod-wireguard=y\n" >> .config
+                echo "CONFIG_PACKAGE_kmod-tun=y" >> .config
+                # echo "CONFIG_PACKAGE_miniupnpd=y" >> .config
+                echo "CONFIG_PACKAGE_dnsmasq=n" >> .config
+                echo "CONFIG_PACKAGE_dnsmasq-full=y" >> .config
+                echo "CONFIG_PACKAGE_tor=y\n" >> .config
+                echo "CONFIG_PACKAGE_tor-geoip=y\n" >> .config
+                echo "CONFIG_PACKAGE_ipset=y\n" >> .config
+                echo "CONFIG_PACKAGE_wireguard-tools=y\n" >> .config
+                echo "CONFIG_PACKAGE_coreutils-sort=y\n" >> .config
+                #firmware
                 echo "CONFIG_PACKAGE_kmod-qca-nss-dp=y\n" >> .config
+                # echo "CONFIG_PACKAGE_kmod-qca-nss-crypto=y\n" >> .config
+                # echo "CONFIG_PACKAGE_kmod-qca-nss-ecm=y\n" >> .config
+                # echo "CONFIG_PACKAGE_kmod-qca-nss-drv=y\n" >> .config
+                # echo "CONFIG_PACKAGE_kmod-qca-nss-drv-pppoe=y\n" >> .config
+                # echo "CONFIG_PACKAGE_kmod-qca-nss-drv-vlan-mgr=y\n" >> .config
+                echo "CONFIG_PACKAGE_kmod-qca-ssdk-nohnat=y\n" >> .config
                 echo "CONFIG_PACKAGE_qca-ssdk-shell=y\n" >> .config
-                echo "CONFIG_PACKAGE_wpad-basic-wolfssl=m\n" >> .config
-                echo "CONFIG_PACKAGE_wpad-wolfssl=y\n" >> .config
+                # firewall34
+                #echo "CONFIG_PACKAGE_iptables-legacy=y" >> .config
+                #echo "CONFIG_PACKAGE_ip6tables-legacy=y" >> .config
+                echo "CONFIG_PACKAGE_kmod-ipt-core=y" >> .config
+                echo "CONFIG_PACKAGE_kmod-ipt-offload=y" >> .config
+                #echo "CONFIG_PACKAGE_kmod-ipt-extra=y" >> .config
+                echo "CONFIG_PACKAGE_kmod-ipt-conntrack-extra=y" >> .config
+                echo "CONFIG_PACKAGE_kmod-ipt-conntrack=y" >> .config
+                echo "CONFIG_PACKAGE_kmod-ipt-ipset=y" >> .config
+                echo "CONFIG_PACKAGE_kmod-ipt-ipopt=y" >> .config
+                echo "CONFIG_PACKAGE_kmod-ipt-fullconenat=y" >> .config
+                echo "CONFIG_PACKAGE_kmod-ipt-nat=y" >> .config
+                echo "CONFIG_PACKAGE_kmod-ipt-nat-extra=y" >> .config
+                echo "CONFIG_PACKAGE_kmod-ipt-raw=y" >> .config
+                echo "CONFIG_PACKAGE_kmod-ipt-tproxy=y" >> .config
+                #echo "CONFIG_PACKAGE_iptables-mod-extra=y" >> .config
+                #echo "CONFIG_PACKAGE_iptables-mod-ipopt=y" >> .config
+                #echo "CONFIG_PACKAGE_iptables-mod-physdev=y" >> .config
+                #echo "CONFIG_PACKAGE_kmod-iptunnel=y" >> .config
+                #echo "CONFIG_PACKAGE_kmod-iptunnel6=y" >> .config
+                echo "CONFIG_PACKAGE_firewall4=y" >> .config
+                echo "CONFIG_PACKAGE_nftables=y" >> .config
+                echo "CONFIG_PACKAGE_kmod-nft-core=y" >> .config
+                echo "CONFIG_PACKAGE_kmod-nf-nat=y" >> .config
+                echo "CONFIG_PACKAGE_kmod-nfnetlink=y" >> .config
+                echo "CONFIG_PACKAGE_kmod-nf-reject=y" >> .config
+                echo "CONFIG_PACKAGE_kmod-nf-reject6=y" >> .config
+                echo "CONFIG_PACKAGE_kmod-nf-conntrack=y" >> .config
+                echo "CONFIG_PACKAGE_kmod-nf-conntrack6=y" >> .config
+                echo "CONFIG_DEFAULT_kmod-nf-nathelper=y" >> .config
+                echo "CONFIG_DEFAULT_kmod-nf-nathelper-extra=y" >> .config
+                echo "CONFIG_DEFAULT_kmod-nft-core=y" >> .config
+                echo "CONFIG_PACKAGE_kmod-nft-offload=y" >> .config
+                echo "CONFIG_PACKAGE_kmod-nft-conntrack=y" >> .config
+                echo "CONFIG_PACKAGE_kmod-nft-flow=y" >> .config
+                echo "CONFIG_PACKAGE_kmod-nft-ipt=y" >> .config
+                echo "CONFIG_PACKAGE_kmod-nft-nat=y" >> .config
+                echo "CONFIG_PACKAGE_kmod-nft-reject=y" >> .config
+                echo "CONFIG_NETFILTER_NETLINK=m" >> .config
+                echo "CONFIG_NETFILTER_NETLINK_HOOK=m" >> .config
+                # IPv6 support 
+                echo "CONFIG_PACKAGE_luci-proto-ipv6=y" >> .config
+                echo "CONFIG_PACKAGE_kmod-nft-ipt6=y" >> .config
+                echo "CONFIG_PACKAGE_kmod-nft-reject6=y" >> .config
+                echo "CONFIG_PACKAGE_kmod-nft-conntrack6=y" >> .config
+                echo "CONFIG_PACKAGE_6in4=y" >> .config
+                echo "CONFIG_PACKAGE_6to4=y" >> .config
+                echo "CONFIG_PACKAGE_6rd=y" >> .config
+                echo "CONFIG_PACKAGE_kmod-sit=y" >> .config       
+                # wpad full
+                echo "CONFIG_PACKAGE_curl=y" >> .config
+                echo "CONFIG_PACKAGE_wpad-mini=n" >> .config
+                echo "CONFIG_PACKAGE_wpad-basic-wolfssl=n" >> .config
+                echo "CONFIG_PACKAGE_wpad-wolfssl=y" >> .config
                 make defconfig
 
             - name: Download package sources
