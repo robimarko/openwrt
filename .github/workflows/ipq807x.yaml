@@ -1,7 +1,6 @@
 name: Build IPQ807x
 on: [push]
 
-
 jobs:
     build:
         name: Prepare and build IPQ807x generic images
