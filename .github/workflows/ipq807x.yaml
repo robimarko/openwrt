@@ -16,7 +16,7 @@ jobs:
                 ./scripts/feeds install -a
             - name: Generate config for IPQ807x Generic
               run: |
-                 echo "CONFIG_TARGET_ipq807x=y" > .config
+                echo "CONFIG_TARGET_ipq807x=y" > .config
                 echo "CONFIG_TARGET_ipq807x_generic=y\n" >> .config
                 echo 'CONFIG_TARGET_ipq807x_generic_DEVICE_xiaomi_ax3600=y' >> .config
                 # echo 'CONFIG_HAS_SUBTARGETS=y' >> .config
