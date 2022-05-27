@@ -1,0 +1,29 @@
+name: Rebase
+
+on:
+  schedule:
+    - cron: '0 * * * *'
+  workflow_dispatch:
+
+jobs:
+  rebase:
+    name: Automatic rebase
+    runs-on: ubuntu-latest
+    steps:
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install git
+    - name: Rebase
+      run: |
+        git config --global user.name "${GITHUB_USER}"
+        git config --global user.email "${GITHUB_EMAIL}"
+        git clone https://"${GITHUB_USER}":"${GITHUB_TOKEN}"@github.com/"${GITHUB_USER}"/openwrt --single-branch -b ipq807x-5.15-pr
+        cd openwrt
+        git fetch https://git.openwrt.org/openwrt/openwrt.git master
+        git rebase FETCH_HEAD
+        git push -f
+      env:
+        GITHUB_EMAIL: ${{ secrets.EMAIL }}
+        GITHUB_TOKEN: ${{ secrets.TOKEN }}
+        GITHUB_USER: ${{ secrets.USERNAME }}
