@@ -6,6 +6,31 @@
 . /lib/functions/uci-defaults.sh
 . /lib/functions/system.sh
 
+mtd_chardev_get_mac_ascii() {
+	local mtdname="$1"
+	local key="$2"
+	local part
+	local mac_dirty
+
+	part=$(find_mtd_chardev "$mtdname")
+	if [ -z "$part" ]; then
+		echo "mtd_get_mac_ascii: partition $mtdname not found!" >&2
+		return
+	fi
+
+	mac_dirty=$(strings "$part" | sed -n 's/^'"$key"'=//p')
+
+	# "canonicalize" mac
+	[ -n "$mac_dirty" ] && macaddr_canonicalize "$mac_dirty"
+}
+
+ipq807x_setup_mac_from_uboot_env()
+{
+	local lan_mac=$(mtd_chardev_get_mac_ascii "0:appsblenv" ethaddr)
+
+	[ -n $lan_mac ] && ucidef_set_interface_macaddr "lan" $lan_mac
+}
+
 ipq807x_setup_interfaces()
 {
 	local board="$1"
@@ -19,6 +44,10 @@ ipq807x_setup_interfaces()
 		;;
 	edimax,cax1800)
 		ucidef_set_interfaces_lan_wan "eth0"
+		;;
+	netgear,wax218)
+		ucidef_set_interface_lan "eth0" "dhcp"
+		ipq807x_setup_mac_from_uboot_env
 		;;
 	qnap,301w)
 		ucidef_set_interfaces_lan_wan "eth0 eth1 eth2 eth3 eth4" "eth5"

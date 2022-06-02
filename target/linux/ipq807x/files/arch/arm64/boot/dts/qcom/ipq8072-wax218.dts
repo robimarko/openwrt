@@ -1,0 +1,171 @@
+/dts-v1/;
+
+#include "ipq8074.dtsi"
+#include "ipq8074-hk-cpu.dtsi"
+#include "ipq8074-ess.dtsi"
+#include "ipq8072-wax218-switch-vomit.dtsi"
+
+#include <dt-bindings/input/input.h>
+#include <dt-bindings/gpio/gpio.h>
+
+#define GMAC_TYPE_QCOM 			0 /* 1G GMAC type */
+#define GMAC_TYPE_SYNOPSYS_XGMAC	1 /* Synopsys XGMAC type */
+#define GMAC_TYPE_SYNOPSYS_GMAC		2 /* Synopsys 1G GMAC type */
+
+/ {
+	#address-cells = <2>;
+	#size-cells = <2>;
+
+	model = "Netgear WAX218";
+	compatible = "netgear,wax218", "qcom,ipq8074";
+	interrupt-parent = <&intc>;
+
+	aliases {
+		serial0 = &blsp1_uart5;
+		led-boot = &led_power;
+		led-failsafe = &led_power;
+		led-running = &led_power;
+		led-upgrade = &led_power;
+	};
+
+	chosen {
+		stdout-path = "serial0:115200n8";
+		/*
+		 * Netgear's U-Boot adds "ubi.mtd=rootfs root=mtd:ubi_rootfs"
+		 * That fails to create a UBI block device, so add it here.
+		*/
+		bootargs-append = " ubi.block=0,rootfs root=/dev/ubiblock0_1";
+	};
+
+	keys {
+		compatible = "gpio-keys";
+
+		reset {
+			label = "reset";
+			gpios = <&tlmm 52 GPIO_ACTIVE_LOW>;
+			linux,code = <KEY_RESTART>;
+		};
+	};
+
+	led_spi {
+		compatible = "spi-gpio";
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		sck-gpios = <&tlmm 18 GPIO_ACTIVE_HIGH>;
+		mosi-gpios = <&tlmm 19 GPIO_ACTIVE_HIGH>;
+
+		led_gpio: led_gpio@0 {
+			compatible = "fairchild,74hc595";
+			reg = <0>;
+			gpio-controller;
+			#gpio-cells = <2>;
+			registers-number = <1>;
+			enable-gpios = <&tlmm 20 GPIO_ACTIVE_HIGH>;
+			spi-max-frequency = <1000000>;
+		};
+	};
+
+	leds {
+		compatible = "gpio-leds";
+
+		led_power: led-1 {
+			label = "amber:power";
+			gpios = <&led_gpio 1 GPIO_ACTIVE_HIGH>;
+		};
+
+		led_lan: led-2 {
+			label = "blue:lan";
+			gpios = <&led_gpio 2 GPIO_ACTIVE_HIGH>;
+		};
+
+		led_wlan_2g: led-3 {
+			label = "blue:wlan2g";
+			gpios = <&led_gpio 3 GPIO_ACTIVE_HIGH>;
+		};
+
+		led_wlan_5g: led-4 {
+			label = "blue:wlan5g";
+			gpios = <&led_gpio 4 GPIO_ACTIVE_HIGH>;
+		};
+	};
+};
+
+&edma {
+	status = "okay";
+};
+
+&switch {
+	status = "okay";
+};
+
+&tlmm {
+	mdio_pins: mdio-pins {
+		mdc {
+			pins = "gpio68";
+			function = "mdc";
+			drive-strength = <8>;
+			bias-pull-up;
+		};
+
+		mdio {
+			pins = "gpio69";
+			function = "mdio";
+			drive-strength = <8>;
+			bias-pull-up;
+		};
+	};
+};
+
+&mdio {
+	status = "okay";
+
+	pinctrl-0 = <&mdio_pins>;
+	pinctrl-names = "default";
+
+	qca8081_28: ethernet-phy@28 {
+		reg = <28>;
+		reset-gpios = <&tlmm 44 GPIO_ACTIVE_LOW>;
+	};
+};
+
+&soc {
+	dp6: dp@6 {
+		compatible = "qcom,nss-dp";
+		reg = <0x3a007000 0x200>;
+		qcom,mactype = <GMAC_TYPE_SYNOPSYS_XGMAC>;
+		qcom,id = <6>;
+
+		phy-handle = <&qca8081_28>;
+		phy-mode = "sgmii";
+	};
+};
+
+&qpic_bam {
+	status = "okay";
+};
+
+&qpic_nand {
+	status = "okay";
+
+	nand@0 {
+		reg = <0>;
+		nand-ecc-strength = <4>;
+		nand-ecc-step-size = <512>;
+		nand-bus-width = <8>;
+
+		partitions {
+			compatible = "qcom,smem-part";
+		};
+	};
+};
+
+&blsp1_uart5 {
+	status = "okay";
+};
+
+&wifi {
+	status = "okay";
+
+	qcom,ath11k-calibration-variant = "Netgear-WAX218";
+};
