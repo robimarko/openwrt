@@ -58,6 +58,11 @@ platform_do_upgrade() {
 
 		nand_do_upgrade "$1"
 		;;
+	netgear,rax120v2)
+		kernelname="kernel"
+		rootfsname="rootfs"
+		mmc_do_upgrade "$1"
+		;;
 	*)
 		default_do_upgrade "$1"
 		;;

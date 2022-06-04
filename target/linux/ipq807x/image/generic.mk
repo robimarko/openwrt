@@ -98,3 +98,20 @@ define Device/xiaomi_ax9000
 	DEVICE_PACKAGES := ipq-wifi-xiaomi_ax9000 kmod-ath10k-ct ath10k-firmware-qca9887-ct
 endef
 TARGET_DEVICES += xiaomi_ax9000
+
+define Device/netgear_rax120v2
+	$(call Device/FitImage)
+	DEVICE_VENDOR := Netgear
+	DEVICE_MODEL := RAX120v2
+	BLOCKSIZE := 128k
+	DEVICE_DTS_CONFIG := config@hk01
+	SOC := ipq8074
+	KERNEL_SIZE := 29696k
+	NETGEAR_BOARD_ID := RAX120v2
+	NETGEAR_HW_ID="29765589+0+512+1024+4x4+8x8"	
+	IMAGES += factory.bin sysupgrade.bin
+	IMAGE/factory.bin := append-kernel | pad-to $$$$(KERNEL_SIZE) | append-rootfs | pad-rootfs | netgear-dni
+	IMAGE/sysupgrade.bin/squashfs := append-rootfs | pad-rootfs | sysupgrade-tar rootfs=$$$$@ | append-metadata
+	DEVICE_PACKAGES := ipq-wifi-netgear_rax120v2 kmod-spi-gpio kmod-spi-bitbang kmod-gpio-nxp-74hc164
+endef
+TARGET_DEVICES += netgear_rax120v2
