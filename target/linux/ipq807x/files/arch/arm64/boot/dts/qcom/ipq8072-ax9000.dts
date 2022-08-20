@@ -774,7 +774,6 @@
 			compatible = "pci17cb,1104";
 			reg = <0x00010000 0 0 0 0>;
 
-			qcom,board_id = <660>;
 			qcom,ath11k-calibration-variant = "Xiaomi-AX9000";
 		};
 	};
@@ -811,6 +810,5 @@
 &wifi {
 	status = "okay";
 
-	qcom,board_id = <660>;
 	qcom,ath11k-calibration-variant = "Xiaomi-AX9000";
 };
