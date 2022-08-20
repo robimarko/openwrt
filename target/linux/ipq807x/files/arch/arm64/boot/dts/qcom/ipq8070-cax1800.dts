@@ -601,6 +601,5 @@
 &wifi {
 	status = "okay";
 
-	qcom,board_id = <657>;
 	qcom,ath11k-calibration-variant = "Edimax-CAX1800";
 };
