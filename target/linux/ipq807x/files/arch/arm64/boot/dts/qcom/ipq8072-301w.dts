@@ -800,9 +800,6 @@
 
 &wifi {
 	status = "okay";
-	/* using board_id 0xff is intentionally
-	 * as the stock firmware is also using this default board_id
-	 */
-	qcom,board_id = <0xff>;
+	
 	qcom,ath11k-calibration-variant = "QNAP-301w";
 };
