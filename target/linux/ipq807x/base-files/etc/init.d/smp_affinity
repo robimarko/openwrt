@@ -1,0 +1,38 @@
+#!/bin/sh /etc/rc.common
+
+START=99
+
+enable_affinity_ipq807x(){
+#assign 4 rx interrupts to each cores
+        irq_affinity_num=$(grep -E -m1 'reo2host-destination-ring1' /proc/interrupts | cut -d ':' -f 1 | tail -n1 | tr -d ' ')
+        [ -n "$irq_affinity_num" ] && echo 1 > /proc/irq/$irq_affinity_num/smp_affinity
+        irq_affinity_num=$(grep -E -m1 'reo2host-destination-ring2' /proc/interrupts | cut -d ':' -f 1 | tail -n1 | tr -d ' ')
+        [ -n "$irq_affinity_num" ] && echo 2 > /proc/irq/$irq_affinity_num/smp_affinity
+        irq_affinity_num=$(grep -E -m1 'reo2host-destination-ring3' /proc/interrupts | cut -d ':' -f 1 | tail -n1 | tr -d ' ')
+        [ -n "$irq_affinity_num" ] && echo 4 > /proc/irq/$irq_affinity_num/smp_affinity
+        irq_affinity_num=$(grep -E -m1 'reo2host-destination-ring4' /proc/interrupts | cut -d ':' -f 1 | tail -n1 | tr -d ' ')
+        [ -n "$irq_affinity_num" ] && echo 8 > /proc/irq/$irq_affinity_num/smp_affinity
+
+#assign 3 tcl completions to last 3 CPUs
+        irq_affinity_num=$(grep -E -m1 'wbm2host-tx-completions-ring1' /proc/interrupts | cut -d ':' -f 1 | tail -n1 | tr -d ' ')
+        [ -n "$irq_affinity_num" ] && echo 2 > /proc/irq/$irq_affinity_num/smp_affinity
+        irq_affinity_num=$(grep -E -m1 'wbm2host-tx-completions-ring2' /proc/interrupts | cut -d ':' -f 1 | tail -n1 | tr -d ' ')
+        [ -n "$irq_affinity_num" ] && echo 4 > /proc/irq/$irq_affinity_num/smp_affinity
+        irq_affinity_num=$(grep -E -m1 'wbm2host-tx-completions-ring3' /proc/interrupts | cut -d ':' -f 1 | tail -n1 | tr -d ' ')
+        [ -n "$irq_affinity_num" ] && echo 8 > /proc/irq/$irq_affinity_num/smp_affinity
+
+}
+
+boot() {
+	case $(board_name) in
+    dynalink,dl-wrx36|\
+	edgecore,eap102|\
+	edimax,cax1800|\
+	qnap,301w|\
+	redmi,ax6|\
+	xiaomi,ax3600|\
+	xiaomi,ax9000)
+    enable_affinity_ipq807x
+    ;;
+	esac
+}
