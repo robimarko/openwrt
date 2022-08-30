@@ -154,6 +154,8 @@ killall -9 telnetd 2>/dev/null
 killall -9 dropbear 2>/dev/null
 killall -9 ash 2>/dev/null
 
+wifi down
+
 kill_remaining TERM
 sleep 4
 kill_remaining KILL 1
