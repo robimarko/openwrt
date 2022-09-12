@@ -35,6 +35,7 @@ dnsmasq_ignore_opt() {
 		[ "${dnsmasq_features#* DNSSEC }" = "$dnsmasq_features" ] || dnsmasq_has_dnssec=1
 		[ "${dnsmasq_features#* TFTP }" = "$dnsmasq_features" ] || dnsmasq_has_tftp=1
 		[ "${dnsmasq_features#* ipset }" = "$dnsmasq_features" ] || dnsmasq_has_ipset=1
+		[ "${dnsmasq_features#* nftset }" = "$dnsmasq_features" ] || dnsmasq_has_nftset=1
 	fi
 
 	case "$opt" in
@@ -57,6 +58,8 @@ dnsmasq_ignore_opt() {
 			[ -z "$dnsmasq_has_tftp" ] ;;
 		ipset)
 			[ -z "$dnsmasq_has_ipset" ] ;;
+		nftset)
+			[ -z "$dnsmasq_has_nftset" ] ;;
 		*)
 			return 1
 	esac
@@ -169,10 +172,6 @@ append_rev_server() {
 
 append_address() {
 	xappend "--address=$1"
-}
-
-append_ipset() {
-	xappend "--ipset=$1"
 }
 
 append_connmark_allowlist() {
@@ -542,15 +541,6 @@ dhcp_add() {
 	# Override interface netmask with dhcp config if applicable
 	config_get netmask "$cfg" netmask "${subnet##*/}"
 
-	#check for an already active dhcp server on the interface, unless 'force' is set
-	config_get_bool force "$cfg" force 0
-	[ $force -gt 0 ] || dhcp_check "$ifname" || {
-		logger -t dnsmasq \
-			"found already running DHCP-server on interface '$ifname'" \
-			"refusing to start, use 'option force 1' to override"
-		return 0
-	}
-
 	config_get start "$cfg" start 100
 	config_get limit "$cfg" limit 150
 	config_get leasetime "$cfg" leasetime 12h
@@ -798,25 +788,41 @@ dhcp_relay_add() {
 
 dnsmasq_ipset_add() {
 	local cfg="$1"
-	local ipsets domains
+	local ipsets nftsets domains
 
 	add_ipset() {
 		ipsets="${ipsets:+$ipsets,}$1"
+	}
+
+	add_nftset() {
+		local IFS=,
+		for set in $1; do
+			local family=$(echo "$set" | sed -nre 's#^.*[^0-9]([46])$#\1#p')
+			[ -n "$family" ] || \
+				family=$(nft -t list set inet "$table" "$set" 2>&1 | sed -nre 's#^\t\ttype .*\bipv([46])_addr\b.*$#\1#p')
+
+			[ -n "$family" ] || \
+				logger -t dnsmasq "Cannot infer address family from non-existent nftables set '$set'"
+
+			nftsets="${nftsets:+$nftsets,}${family:+$family#}inet#$table#$set"
+		done
 	}
 
 	add_domain() {
 		# leading '/' is expected
 		domains="$domains/$1"
 	}
-
+	config_get table "$cfg" table 'fw4'
 	config_list_foreach "$cfg" "name" add_ipset
+	config_list_foreach "$cfg" "name" add_nftset
 	config_list_foreach "$cfg" "domain" add_domain
 
-	if [ -z "$ipsets" ] || [ -z "$domains" ]; then
+	if [ -z "$ipsets" ] || [ -z "$nftsets" ] || [ -z "$domains" ]; then
 		return 0
 	fi
 
 	xappend "--ipset=$domains/$ipsets"
+	xappend "--nftset=$domains/$nftsets"
 }
 
 dnsmasq_start()
@@ -858,6 +864,12 @@ dnsmasq_start()
 	# if we did this last, we could override auto-generated config
 	[ -f "${dnsmasqconffile}" ] && {
 		xappend "--conf-file=${dnsmasqconffile}"
+	}
+
+	config_get_bool boguspriv "$cfg" boguspriv 1
+	[ "$boguspriv" -gt 0 ] && {
+		xappend "--bogus-priv"
+		[ -r "$RFC6761FILE" ] && xappend "--conf-file=$RFC6761FILE"
 	}
 
 	$PROG --version | grep -osqE "^Compile time options:.* DHCPv6( |$)" && DHCPv6CAPABLE=1 || DHCPv6CAPABLE=0
@@ -950,7 +962,6 @@ dnsmasq_start()
 	config_list_foreach "$cfg" "server" append_server
 	config_list_foreach "$cfg" "rev_server" append_rev_server
 	config_list_foreach "$cfg" "address" append_address
-	config_list_foreach "$cfg" "ipset" append_ipset
 
 	local connmark_allowlist_enable
 	config_get connmark_allowlist_enable "$cfg" connmark_allowlist_enable 0
@@ -968,8 +979,8 @@ dnsmasq_start()
 		xappend "--addn-hosts=$HOSTFILE"
 		append EXTRA_MOUNT "$HOSTFILE"
 	else
-		xappend "--addn-hosts=$HOSTFILE_DIR"
-		append EXTRA_MOUNT "$HOSTFILE_DIR"
+		xappend "--addn-hosts=$(dirname $HOSTFILE)"
+		append EXTRA_MOUNT "$(dirname $HOSTFILE)"
 	fi
 	config_list_foreach "$cfg" "addnhosts" append_addnhosts
 	config_list_foreach "$cfg" "bogusnxdomain" append_bogusnxdomain
@@ -1075,7 +1086,6 @@ dnsmasq_start()
 
 	xappend "--dhcp-broadcast=tag:needs-broadcast"
 
-
 	config_get dnsmasqconfdir "$cfg" confdir "/tmp/dnsmasq.d"
 	xappend "--conf-dir=$dnsmasqconfdir"
 	dnsmasqconfdir="${dnsmasqconfdir%%,*}"
@@ -1117,11 +1127,6 @@ dnsmasq_start()
 	config_foreach filter_dnsmasq mxhost dhcp_mx_add "$cfg"
 	echo >> $CONFIGFILE_TMP
 
-	config_get_bool boguspriv "$cfg" boguspriv 1
-	[ "$boguspriv" -gt 0 ] && {
-		xappend "--bogus-priv"
-		[ -r "$RFC6761FILE" ] && xappend "--conf-file=$RFC6761FILE"
-	}
 
 	if [ "$DNSMASQ_DHCP_VER" -gt 4 ] ; then
 		# Enable RA feature for when/if it is constructed,
