@@ -28,6 +28,8 @@ jobs:
                 echo "CONFIG_PACKAGE_wpad-basic-wolfssl=m\n" >> .config
                 echo "CONFIG_PACKAGE_wpad-wolfssl=y\n" >> .config
                 echo "CONFIG_WOLFSSL_HAS_CPU_CRYPTO=y\n" >> .config
+                echo "CONFIG_PACKAGE_mwan3=y\n" >> .config
+                echo "CONFIG_PACKAGE_luci-app-mwan3=y\n" >> .config
                 make defconfig
 
             - name: Download package sources
