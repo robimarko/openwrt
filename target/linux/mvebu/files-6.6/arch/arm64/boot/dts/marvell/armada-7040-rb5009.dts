@@ -301,7 +301,7 @@
 				reg = <9>;
 				label = "p1";
 				phy-mode = "sgmii";
-				phy-handle = <&switch0phy9>;
+				phy-handle = <&qca8081>;
 				managed = "in-band-status";
 				nvmem-cells = <&macaddr_hard>;
 				nvmem-cell-names = "mac-address";
@@ -358,7 +358,7 @@
 			#address-cells = <1>;
 			#size-cells = <0>;
 
-			switch0phy9: switch0phy9@0 {
+			qca8081: qca8081@0 {
 				reg = <0>;
 			};
 		};
