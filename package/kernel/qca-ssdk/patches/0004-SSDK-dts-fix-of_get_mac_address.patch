@@ -1,7 +1,7 @@
-From f3a7b93137c1a6a1b8010b86296242178eed5d9e Mon Sep 17 00:00:00 2001
+From 079c20aa182c6b623d49e1f375e022dedac7373c Mon Sep 17 00:00:00 2001
 From: Robert Marko <robimarko@gmail.com>
 Date: Fri, 13 Aug 2021 20:03:21 +0200
-Subject: [PATCH] SSDK: dts: fix of_get_mac_address()
+Subject: [PATCH 04/11] SSDK: dts: fix of_get_mac_address()
 
 Recently OpenWrt backported the updated of_get_mac_address()
 function which returns and error code instead.
@@ -15,7 +15,7 @@ Signed-off-by: Robert Marko <robimarko@gmail.com>
 
 --- a/src/init/ssdk_dts.c
 +++ b/src/init/ssdk_dts.c
-@@ -824,8 +824,9 @@ static void ssdk_dt_parse_intf_mac(void)
+@@ -921,8 +921,9 @@ static void ssdk_dt_parse_intf_mac(void)
  {
  	struct device_node *dp_node = NULL;
  	a_uint32_t dp = 0;
@@ -26,7 +26,7 @@ Signed-off-by: Robert Marko <robimarko@gmail.com>
  
  	for (dp = 1; dp <= SSDK_MAX_NR_ETH; dp++) {
  		snprintf(dp_name, sizeof(dp_name), "dp%d", dp);
-@@ -833,11 +834,11 @@ static void ssdk_dt_parse_intf_mac(void)
+@@ -930,11 +931,11 @@ static void ssdk_dt_parse_intf_mac(void)
  		if (!dp_node) {
  			continue;
  		}
