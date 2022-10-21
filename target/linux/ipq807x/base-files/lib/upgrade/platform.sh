@@ -28,7 +28,8 @@ platform_do_upgrade() {
 	edimax,cax1800)
 		nand_do_upgrade "$1"
 		;;
-	qnap,301w)
+	qnap,301w|\
+	zyxel,nbg7815)
 		kernelname="0:HLOS"
 		rootfsname="rootfs"
 		mmc_do_upgrade "$1"
