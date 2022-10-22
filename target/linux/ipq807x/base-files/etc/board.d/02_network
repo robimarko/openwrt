@@ -20,7 +20,8 @@ ipq807x_setup_interfaces()
 	edimax,cax1800)
 		ucidef_set_interfaces_lan_wan "eth0"
 		;;
-	qnap,301w)
+	qnap,301w|\
+	zyxel,nbg7815)
 		ucidef_set_interfaces_lan_wan "eth0 eth1 eth2 eth3 eth4" "eth5"
 		;;
 	redmi,ax6|\
@@ -29,9 +30,6 @@ ipq807x_setup_interfaces()
 		;;
 	xiaomi,ax9000)
 		ucidef_set_interfaces_lan_wan "eth0 eth1 eth2 eth3" "eth4"
-		;;
-	zyxel,nbg7815)
-		ucidef_set_interfaces_lan_wan "eth0 eth1 eth2 eth3 eth4" "eth5"
 		;;
 	*)
 		echo "Unsupported hardware. Network interfaces not initialized"

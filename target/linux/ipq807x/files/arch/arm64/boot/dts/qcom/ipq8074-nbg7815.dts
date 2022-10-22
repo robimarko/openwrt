@@ -13,161 +13,158 @@
 / {
 	model = "Zyxel NBG7815";
 	compatible = "zyxel,nbg7815", "qcom,ipq8074";
-  
+
 	aliases {
 		serial0 = &blsp1_uart5;
-		/* LED is managed by lp5569
-    led-boot = &led_system_yellow;
-		led-failsafe = &led_system_yellow;
-		led-running = &led_system_blue;
-		led-upgrade = &led_system_yellow;
-    */
+		sdhc1 = &sdhc_1;
 		/* Aliases as required by u-boot to patch MAC addresses */
 		ethernet0 = &dp1;
 		ethernet1 = &dp2;
 		ethernet2 = &dp3;
 		ethernet3 = &dp4;
 		ethernet4 = &dp5;
-    ethernet5 = &dp6;
+		ethernet5 = &dp6;
 		label-mac-device = &dp1;
 	};
 
 	chosen {
-    stdout-path = "serial0:115200n8";
-		bootargs = "console=ttyMSM0,115200n8 root=PARTUUID=a0bb3852-36cc-ac69-a1a2-6bd39ff56f0a rootwait";
+		stdout-path = "serial0:115200n8";
+		bootargs = "console=ttyMSM0,115200,n8 root=/dev/ram0 rw init=/init";
 		bootargs-append = " swiotlb=1";
 	};
-  
-  
-  keys {
+
+	keys {
 		compatible = "gpio-keys";
 
 		reset {
-			label = "reset";
-			gpios = <&tlmm 36 GPIO_ACTIVE_LOW>;
+			label = "reset_to_default";
 			linux,code = <KEY_RESTART>;
+			gpios = <&tlmm 54 GPIO_ACTIVE_LOW>;
+			linux,input-type = <1>;
+			debounce-interval = <60>;
 		};
 	};
 };
 
 &tlmm {
-  mdio_pins: mdio-pins {
-    mdc {
-      pins = "gpio68";
-      function = "mdc";
-      drive-strength = <8>;
-      bias-pull-up;
-    };
+	mdio_pins: mdio-pins {
+		mdc {
+			pins = "gpio68";
+			function = "mdc";
+			drive-strength = <8>;
+			bias-pull-up;
+		};
 
-    mdio {
-      pins = "gpio69";
-      function = "mdio";
-      drive-strength = <8>;
-      bias-pull-up;
-    };
-  };
+		mdio {
+			pins = "gpio69";
+			function = "mdio";
+			drive-strength = <8>;
+			bias-pull-up;
+		};
+	};
+	uart_pins: uart_pins {
+		mux {
+			pins = "gpio23", "gpio24";
+			function = "blsp4_uart1";
+			drive-strength = <8>;
+			bias-disable;
+		};
+	};
+
+	/* add 2nd i2c bus for temperature sensor CLK & DATA - needs patch in ipq8074.dts
+	i2c_1_pins: i2c_1_pinmux {
+		mux {
+			pins = "gpio50", "gpio51";
+			function = "blsp3_i2c";
+			drive-strength = <8>;
+			bias-disable;
+		};
+	};*/
+
 };
 
 &blsp1_uart5 {
-  status = "okay";
+	status = "okay";
 };
 
 &prng {
-  status = "okay";
+	status = "okay";
 };
 
 &cryptobam {
-  status = "okay";
+	status = "okay";
 };
 
 &crypto {
-  status = "okay";
+	status = "okay";
 };
 
 &qpic_bam {
-  status = "okay";
-  };
+	status = "okay";
+};
 
 &mdio {
-	status = "okay";
-
 	pinctrl-0 = <&mdio_pins>;
 	pinctrl-names = "default";
-	reset-gpios = <&tlmm 37 GPIO_ACTIVE_LOW>; /*<0x14 0x25 0x00 0x14 0x1f 0x01>;*/
-
-	qca8075_0: ethernet-phy@0 {
+	phy-reset-gpio = <&tlmm 37 0 &tlmm 31 1>;
+	qca8075_1: ethernet-phy@0 {
 		reg = <0>;
 	};
-
-	qca8075_1: ethernet-phy@1 {
+	qca8075_2: ethernet-phy@1 {
 		reg = <1>;
 	};
-
-	qca8075_2: ethernet-phy@2 {
+	qca8075_3: ethernet-phy@2 {
 		reg = <2>;
 	};
-
-	qca8075_3: ethernet-phy@3 {
+	qca8075_4: ethernet-phy@3 {
 		reg = <3>;
 	};
-
-	qca8075_4: ethernet-phy@4 {
-		reg = <0x1c>;
+	qca8081: ethernet-phy@4 {
+		reg = <28>;
 	};
-  
-  qca8075_5: ethernet-phy@5 {
-    compatible = "ethernet-phy-ieee802.3-c45";
-    reg = <0x08>;
-  };  
-
+	aqr107: ethernet-phy@5 {
+		compatible ="ethernet-phy-ieee802.3-c45";
+		reg = <8>;
+	};
 };
 
 &switch {
-	status = "okay";
-  
-  switch_cpu_bmp = <0x01>;
-  switch_lan_bmp = <0x3e>;
-  switch_wan_bmp = <0x40>;
-  switch_mac_mode = <0x00>;
-  switch_mac_mode1 = <0x0f>;
-  switch_mac_mode2 = <0x0d>;
-  bm_tick_mode = <0x00>;
-  tm_tick_mode = <0x00>;
-  
-  qcom,port_phyinfo {
-
-    port@0 {
-      port_id = <0x01>;
-      phy_address = <0x00>;
-    };
-
-    port@1 {
-      port_id = <0x02>;
-      phy_address = <0x01>;
-    };
-
-    port@2 {
-      port_id = <0x03>;
-      phy_address = <0x02>;
-    };
-
-    port@3 {
-      port_id = <0x04>;
-      phy_address = <0x03>;
-    };
-
-    port@4 {
-      port_id = <0x05>;
-      phy_address = <0x1c>;
-      port_mac_sel = "QGMAC_PORT";
-    };
-
-    port@5 {
-      port_id = <0x06>;
-      ethernet-phy-ieee802.3-c45;
-      phy_address = <0x08>;
-    };
-	};
+		switch_cpu_bmp = <0x1>;
+		switch_lan_bmp = <0x3e>;
+		switch_wan_bmp = <0x40>;
+		switch_mac_mode = <0x0>;
+		switch_mac_mode1 = <0xf>;
+		switch_mac_mode2 = <0xd>;
+		bm_tick_mode = <0>;
+		tm_tick_mode = <0>;
+		qcom,port_phyinfo {
+			port@0 {
+				port_id = <1>;
+				phy_address = <0>;
+			};
+			port@1 {
+				port_id = <2>;
+				phy_address = <1>;
+			};
+			port@2 {
+				port_id = <3>;
+				phy_address = <2>;
+			};
+			port@3 {
+				port_id = <4>;
+				phy_address = <3>;
+			};
+			port@4 {
+				port_id = <5>;
+				phy_address = <28>;
+				port_mac_sel = "QGMAC_PORT";
+			};
+			port@5 {
+				port_id = <6>;
+				ethernet-phy-ieee802.3-c45;
+				phy_address = <8>;
+			};
+		};
 
 	port_scheduler_resource {
 		port@0 {
@@ -251,23 +248,19 @@
 			l1edrr = <32 35>;
 		};
 	};
-  port_scheduler_config {
+	port_scheduler_config {
 		port@0 {
 			port_id = <0>;
 			l1scheduler {
 				group@0 {
-					sp = <0 1>; /*L0 SPs*/
-					/*cpri cdrr epri edrr*/
+					sp = <0 1>;
 					cfg = <0 0 0 0>;
 				};
 			};
 			l0scheduler {
 				group@0 {
-					/*unicast queues*/
 					ucast_queue = <0 4 8>;
-					/*multicast queues*/
 					mcast_queue = <256 260>;
-					/*sp cpri cdrr epri edrr*/
 					cfg = <0 0 0 0 0>;
 				};
 				group@1 {
@@ -442,76 +435,199 @@
 		};
 	};
 };
-  
-&edma {
-	status = "okay";
+
+&soc {
+	dp1: dp1 {
+		device_type = "network";
+		compatible = "qcom,nss-dp";
+		qcom,id = <1>;
+		reg = <0x3a001000 0x200>;
+		qcom,mactype = <0>;
+		local-mac-address = [00 00 00 00 00 00];
+		phy-handle = <&qca8075_1>;
+		phy-mode = "sgmii";
+	};
+
+	dp2: dp2 {
+		device_type = "network";
+		compatible = "qcom,nss-dp";
+		qcom,id = <2>;
+		reg = <0x3a001200 0x200>;
+		qcom,mactype = <0>;
+		local-mac-address = [00 00 00 00 00 00];
+		phy-handle = <&qca8075_2>;
+		phy-mode = "sgmii";
+		};
+
+	dp3: dp3 {
+		device_type = "network";
+		compatible = "qcom,nss-dp";
+		qcom,id = <3>;
+		reg = <0x3a001400 0x200>;
+		qcom,mactype = <0>;
+		local-mac-address = [00 00 00 00 00 00];
+		phy-handle = <&qca8075_3>;
+		phy-mode = "sgmii";
+	};
+
+	dp4: dp4 {
+		device_type = "network";
+		compatible = "qcom,nss-dp";
+		qcom,id = <4>;
+		reg = <0x3a001600 0x200>;
+		qcom,mactype = <0>;
+		local-mac-address = [00 00 00 00 00 00];
+		phy-handle = <&qca8075_4>;
+		phy-mode = "sgmii";
+	};
+
+	dp5: dp5 {
+		device_type = "network";
+		compatible = "qcom,nss-dp";
+		qcom,id = <5>;
+		reg = <0x3a001800 0x200>;
+		qcom,mactype = <0>;
+		local-mac-address = [00 00 00 00 00 00];
+		phy-handle = <&qca8081>;
+		phy-mode = "sgmii";
+	};
+
+	dp6: dp6 {
+		device_type = "network";
+		compatible = "qcom,nss-dp";
+		qcom,id = <6>;
+		reg = <0x3a007000 0x3fff>;
+		qcom,mactype = <1>;
+		local-mac-address = [00 00 00 00 00 00];
+		phy-handle = <&aqr107>;
+		phy-mode = "sgmii";
+	};
 };
 
-  
-&soc {  
-  dp1: dp1 {
-			device_type = "network";
-			compatible = "qcom,nss-dp";
-			qcom,id = <1>;
-			reg = <0x3a001000 0x200>;
-			qcom,mactype = <0>;
-			local-mac-address = [bc cf 4f ff 07 10];
-			qcom,phy-mdio-addr = <0x00>;
-			phy-mode = "sgmii";
-		};
+&blsp1_i2c2 {
+	pinctrl-0 = <&i2c_0_pins>;
+	pinctrl-names = "default";
+	status = "ok";
 
-		dp2: dp2 {
-			device_type = "network";
-			compatible = "qcom,nss-dp";
-			qcom,id = <2>;
-			reg = <0x3a001200 0x200>;
-			qcom,mactype = <0>;
-			local-mac-address = [00 00 00 00 00 00];
-			qcom,phy-mdio-addr = <0x01>;
-			phy-mode = "sgmii";
-		};
+	lp5569@32 {
+		compatible = "ti,lp5569";
+		reg = <0x32>;
+		clock-mode = /bits/8 <1>;
 
-		dp3: dp3 {
-			device_type = "network";
-			compatible = "qcom,nss-dp";
-			qcom,id = <3>;
-			reg = <0x3a001400 0x200>;
-			qcom,mactype = <0>;
-			local-mac-address = [00 00 00 00 00 00];
-			qcom,phy-mdio-addr = <0x02>;
-			phy-mode = "sgmii";
+		chan0 {
+			chan-name = "D1";
+			led-cur = /bits/ 8 <0xDF>;
+			max-cur = /bits/ 8 <0xFF>;
 		};
-
-		dp4: dp4 {
-			device_type = "network";
-			compatible = "qcom,nss-dp";
-			qcom,id = <4>;
-			reg = <0x3a001600 0x200>;
-			qcom,mactype = <0>;
-			local-mac-address = [00 00 00 00 00 00];
-			qcom,phy-mdio-addr = <0x03>;
-			phy-mode = "sgmii";
+		chan1 {
+			chan-name = "D2";
+			led-cur = /bits/ 8 <0xDF>;
+			max-cur = /bits/ 8 <0xFF>;
 		};
-
-		dp5: dp5 {
-			device_type = "network";
-			compatible = "qcom,nss-dp";
-			qcom,id = <5>;
-			reg = <0x3a001800 0x200>;
-			qcom,mactype = <0>;
-			local-mac-address = [00 00 00 00 00 00];
-			qcom,phy-mdio-addr = <0x1c>;
-			phy-mode = "sgmii";
+		chan2 {
+			chan-name = "D3";
+			led-cur = /bits/ 8 <0xDF>;
+			max-cur = /bits/ 8 <0xFF>;
 		};
-
-		dp6: dp6 {
-			device_type = "network";
-			compatible = "qcom,nss-dp";
-			qcom,id = <6>;
-			reg = <0x3a007000 0x3fff>;
-			qcom,mactype = <1>;
-			local-mac-address = [00 00 00 00 00 00];
-			qcom,phy-mdio-addr = <0x08>;
-			phy-mode = "sgmii";
+		chan3 {
+			chan-name = "D4";
+			led-cur = /bits/ 8 <0xDF>;
+			max-cur = /bits/ 8 <0xFF>;
+		};
+		chan4 {
+			chan-name = "D5";
+			led-cur = /bits/ 8 <0xDF>;
+			max-cur = /bits/ 8 <0xFF>;
+		};
+		chan5 {
+			chan-name = "D6";
+			led-cur = /bits/ 8 <0xDF>;
+			max-cur = /bits/ 8 <0xFF>;
+		};
+		chan6 {
+			chan-name = "D7";
+			led-cur = /bits/ 8 <0xDF>;
+			max-cur = /bits/ 8 <0xFF>;
+		};
+		chan7 {
+			chan-name = "D8";
+			led-cur = /bits/ 8 <0xDF>;
+			max-cur = /bits/ 8 <0xFF>;
+		};
+		chan8 {
+			chan-name = "D9";
+			led-cur = /bits/ 8 <0xDF>;
+			max-cur = /bits/ 8 <0xFF>;
 		};
 	};
+
+	lp5569@35 {
+		compatible = "ti,lp5569";
+		reg = <0x35>;
+		clock-mode = /bits/8 <2>;
+
+		chan0 {
+			chan-name = "D10";
+			led-cur = /bits/ 8 <0xDF>;
+			max-cur = /bits/ 8 <0xFF>;
+		};
+		chan1 {
+			chan-name = "D11";
+			led-cur = /bits/ 8 <0xDF>;
+			max-cur = /bits/ 8 <0xFF>;
+		};
+		chan2 {
+			chan-name = "D12";
+			led-cur = /bits/ 8 <0xDF>;
+			max-cur = /bits/ 8 <0xFF>;
+		};
+		chan3 {
+			chan-name = "D13";
+			led-cur = /bits/ 8 <0xDF>;
+			max-cur = /bits/ 8 <0xFF>;
+		};
+		chan4 {
+			chan-name = "D14";
+			led-cur = /bits/ 8 <0xDF>;
+			max-cur = /bits/ 8 <0xFF>;
+		};
+		chan5 {
+			chan-name = "D15";
+			led-cur = /bits/ 8 <0xDF>;
+			max-cur = /bits/ 8 <0xFF>;
+		};
+		chan6 {
+			chan-name = "D16";
+			led-cur = /bits/ 8 <0xDF>;
+			max-cur = /bits/ 8 <0xFF>;
+		};
+		chan7 {
+			chan-name = "D17";
+			led-cur = /bits/ 8 <0xDF>;
+			max-cur = /bits/ 8 <0xFF>;
+		};
+		chan8 {
+			chan-name = "D18";
+			led-cur = /bits/ 8 <0xDF>;
+			max-cur = /bits/ 8 <0xFF>;
+		};
+	};
+
+	tmp103@70 {
+		compatible = "ti,tmp103";
+		reg = <0x70>;
+	};
+};
+
+&sdhc_1 {
+	qcom,clk-rates = <400000 25000000 50000000 100000000 192000000 384000000>;
+	qcom,bus-speed-mode = "HS400_1p8v", "HS200_1p8v", "DDR_1p8v";
+	qcom,nonremovable;
+	status = "ok";
+};
+
+&wifi {
+	status = "okay";
+
+	qcom,ath11k-calibration-variant = "Zyxel-NBG7815";
+};
