@@ -71,7 +71,7 @@
 		};
 	};
 
-	/* add 2nd i2c bus for temperature sensor CLK & DATA - needs patch in ipq8074.dts
+	/* add 2nd i2c bus for temperature sensor CLK & DATA - needs patch for ipq8074.dtsi
 	i2c_1_pins: i2c_1_pinmux {
 		mux {
 			pins = "gpio50", "gpio51";
@@ -507,8 +507,8 @@
 &blsp1_i2c2 {
 	pinctrl-0 = <&i2c_0_pins>;
 	pinctrl-names = "default";
-	status = "ok";
-
+	status = "okay";
+	/*lp5569 driver currently not in kernel, hence LED is not working 
 	lp5569@32 {
 		compatible = "ti,lp5569";
 		reg = <0x32>;
@@ -611,7 +611,7 @@
 			led-cur = /bits/ 8 <0xDF>;
 			max-cur = /bits/ 8 <0xFF>;
 		};
-	};
+	};*/
 
 	tmp103@70 {
 		compatible = "ti,tmp103";
@@ -623,7 +623,7 @@
 	qcom,clk-rates = <400000 25000000 50000000 100000000 192000000 384000000>;
 	qcom,bus-speed-mode = "HS400_1p8v", "HS200_1p8v", "DDR_1p8v";
 	qcom,nonremovable;
-	status = "ok";
+	status = "okay";
 };
 
 &wifi {
@@ -631,3 +631,4 @@
 
 	qcom,ath11k-calibration-variant = "Zyxel-NBG7815";
 };
+
