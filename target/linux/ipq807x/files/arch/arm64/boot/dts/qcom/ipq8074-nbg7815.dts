@@ -622,9 +622,35 @@
 };
 
 &sdhc_1 {
-	qcom,clk-rates = <400000 25000000 50000000 100000000 192000000 384000000>;
-	qcom,bus-speed-mode = "HS400_1p8v", "HS200_1p8v", "DDR_1p8v";
-	qcom,nonremovable;
+	status = "okay";
+
+	mmc-hs400-1_8v;
+	mmc-hs200-1_8v;
+	mmc-ddr-1_8v;
+	vqmmc-supply = <&l11>;
+};
+
+&ssphy_0 {
+	qcom,emulation = <1>;
+	status = "okay";
+};
+
+&qusb_phy_0 {
+	qcom,emulation = <1>;
+	status = "okay";
+};
+
+&ssphy_1 {
+	qcom,emulation = <1>;
+	status = "okay";
+};
+
+&qusb_phy_1 {
+	qcom,emulation = <1>;
+	status = "okay";
+};
+
+&edma {
 	status = "okay";
 };
 
