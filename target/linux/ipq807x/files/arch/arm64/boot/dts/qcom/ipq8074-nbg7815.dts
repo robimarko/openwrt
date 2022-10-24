@@ -107,7 +107,7 @@
 	status = "okay";
 	pinctrl-0 = <&mdio_pins>;
 	pinctrl-names = "default";
-	phy-reset-gpio = <&tlmm 37 0 &tlmm 31 1>;
+	reset-gpios = <&tlmm 37 GPIO_ACTIVE_LOW>;
 	qca8075_1: ethernet-phy@0 {
 		reg = <0>;
 	};
@@ -120,12 +120,15 @@
 	qca8075_4: ethernet-phy@3 {
 		reg = <3>;
 	};
-	qca8081: ethernet-phy@4 {
+	qca8081: ethernet-phy@4{
+		compatible = "ethernet-phy-id004d.d101";
 		reg = <28>;
+		reset-gpios = <&tlmm 31 GPIO_ACTIVE_LOW>;
 	};
-	aqr107: ethernet-phy@5 {
+	aqr113c_5: ethernet-phy@5 {
 		compatible ="ethernet-phy-ieee802.3-c45";
 		reg = <8>;
+		reset-gpios = <&tlmm 63 GPIO_ACTIVE_LOW>;
 	};
 };
 
@@ -501,7 +504,7 @@
 		reg = <0x3a007000 0x3fff>;
 		qcom,mactype = <1>;
 		local-mac-address = [00 00 00 00 00 00];
-		phy-handle = <&aqr107>;
+		phy-handle = <&aqr113c_5>;
 		phy-mode = "sgmii";
 	};
 };
