@@ -104,6 +104,7 @@
 };
 
 &mdio {
+	status = "okay";
 	pinctrl-0 = <&mdio_pins>;
 	pinctrl-names = "default";
 	phy-reset-gpio = <&tlmm 37 0 &tlmm 31 1>;
@@ -129,6 +130,7 @@
 };
 
 &switch {
+		status = "okay";
 		switch_cpu_bmp = <0x1>;
 		switch_lan_bmp = <0x3e>;
 		switch_wan_bmp = <0x40>;
