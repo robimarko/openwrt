@@ -20,7 +20,7 @@
 		led-running = &led_system_green;
 		led-upgrade = &led_system_red;
 		/* Aliases as required by u-boot to patch MAC addresses */
-		ethernet4 = &dp5;
+		ethernet0 = &dp5;
 		label-mac-device = &dp5;
 	};
 
