@@ -36,6 +36,14 @@ platform_do_upgrade() {
 	redmi,ax6|\
 	xiaomi,ax3600|\
 	xiaomi,ax9000)
+	
+		# Circunvent a random issue with WPAD taking a huge time to stop
+		# while upgrading with ath11 driver, leading the sysupgrade role to failure
+		/etc/init.d/wpad stop 2>/dev/null
+		sleep 16
+		wifi down 2>/dev/null
+		sleep 8
+	
 		part_num="$(fw_printenv -n flag_boot_rootfs)"
 		if [ "$part_num" -eq "0" ]; then
 			CI_UBIPART="rootfs_1"
