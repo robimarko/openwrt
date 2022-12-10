@@ -36,6 +36,10 @@ platform_do_upgrade() {
 	redmi,ax6|\
 	xiaomi,ax3600|\
 	xiaomi,ax9000)
+		/etc/init.d/wpad stop 2>/dev/null
+		sleep 16
+		wifi down 2>/dev/null
+		sleep 8
 		part_num="$(fw_printenv -n flag_boot_rootfs)"
 		if [ "$part_num" -eq "0" ]; then
 			CI_UBIPART="rootfs_1"
