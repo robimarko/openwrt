@@ -33,6 +33,18 @@ platform_do_upgrade() {
 		rootfsname="rootfs"
 		mmc_do_upgrade "$1"
 		;;
+	zyxel,nbg7815)
+		part_num="$(hexdump -e '1/1 "%01x|"' -n 1 -s 168 -C /dev/mtd2|cut -f 1 -d "|"|head -n1)"
+		if [ "$part_num" -eq "0" ]; then
+			kernelname="0:HLOS"
+			rootfsname="rootfs"
+			mmc_do_upgrade "$1"
+		else
+			kernelname="0:HLOS_1"
+			rootfsname="rootfs_1"
+			mmc_do_upgrade "$1"
+		fi
+		;;
 	redmi,ax6|\
 	xiaomi,ax3600|\
 	xiaomi,ax9000)

@@ -46,7 +46,8 @@ ALLWIFIBOARDS:= \
 	sony_ncp-hg100-cellular \
 	teltonika_rutx \
 	xiaomi_ax3600 \
-	xiaomi_ax9000
+	xiaomi_ax9000 \
+	zyxel_nbg7815
 
 ALLWIFIPACKAGES:=$(foreach BOARD,$(ALLWIFIBOARDS),ipq-wifi-$(BOARD))
 
@@ -141,5 +142,6 @@ $(eval $(call generate-ipq-wifi-package,teltonika_rutx,Teltonika RUTX))
 $(eval $(call generate-ipq-wifi-package,xiaomi_ax3600,Xiaomi AX3600))
 $(eval $(call generate-ipq-wifi-package,xiaomi_ax9000,Xiaomi AX9000))
 $(eval $(call generate-ipq-wifi-package,zte_mf289f,ZTE MF289F))
+$(eval $(call generate-ipq-wifi-package,zyxel_nbg7815,Zyxel NBG7815))
 
 $(foreach PACKAGE,$(ALLWIFIPACKAGES),$(eval $(call BuildPackage,$(PACKAGE))))
