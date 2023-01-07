@@ -25,10 +25,19 @@ jobs:
                 echo "CONFIG_TARGET_ROOTFS_INITRAMFS=y\n" >> .config
                 echo "CONFIG_TARGET_INITRAMFS_COMPRESSION_ZSTD=y\n" >> .config
                 echo "CONFIG_PACKAGE_luci=y\n" >> .config
-                echo "CONFIG_PACKAGE_kmod-qca-nss-dp=y\n" >> .config
-                echo "CONFIG_PACKAGE_qca-ssdk-shell=y\n" >> .config
                 echo "CONFIG_PACKAGE_wpad-basic-wolfssl=m\n" >> .config
                 echo "CONFIG_PACKAGE_wpad-wolfssl=y\n" >> .config
+                #### CUSTOM PACKAGES HERE ###
+                echo "CONFIG_PACKAGE_kmod-qca-nss-dp=y\n" >> .config
+                echo "CONFIG_PACKAGE_qca-ssdk-shell=y\n" >> .config
+                echo "CONFIG_PACKAGE_kmod-tun=y" >> .config
+                echo "CONFIG_PACKAGE_kmod-wireguard=y" >> .config
+                echo "CONFIG_PACKAGE_luci-app-openvpn=y" >> .config
+                echo "CONFIG_PACKAGE_luci-app-wireguard=y" >> .config
+                echo "CONFIG_PACKAGE_openvpn-openssl=y" >> .config
+                echo "CONFIG_PACKAGE_wireguard-tools=y" >> .config
+                echo "CONFIG_PACKAGE_luci-app-wireguard=y" >> .config
+                echo "CONFIG_PACKAGE_kmod-wireguard=y" >> .config
                 make defconfig
 
             - name: Download package sources
