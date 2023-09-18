@@ -232,6 +232,8 @@
 				reg = <0>;
 				label = "cpu";
 				ethernet = <&cp0_eth0>;
+				phy-mode = "10gbase-r";
+				managed = "in-band-status";
 			};
 
 			port@1 {
