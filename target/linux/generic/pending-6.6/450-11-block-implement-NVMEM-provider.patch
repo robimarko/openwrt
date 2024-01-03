@@ -33,7 +33,7 @@ Signed-off-by: Daniel Golle <daniel@makrotopia.org>
 +
  source "block/partitions/Kconfig"
  
- config BLOCK_COMPAT
+ config BLK_MQ_PCI
 --- a/block/Makefile
 +++ b/block/Makefile
 @@ -35,6 +35,7 @@ obj-$(CONFIG_BLK_DEV_ZONED)	+= blk-zoned
