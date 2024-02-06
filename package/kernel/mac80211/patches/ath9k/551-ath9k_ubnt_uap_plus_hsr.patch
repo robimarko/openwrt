@@ -371,7 +371,7 @@
  
 --- a/local-symbols
 +++ b/local-symbols
-@@ -128,6 +128,7 @@ ATH9K_WOW=
+@@ -127,6 +127,7 @@ ATH9K_WOW=
  ATH9K_RFKILL=
  ATH9K_CHANNEL_CONTEXT=
  ATH9K_PCOEM=
@@ -400,4 +400,4 @@
 +
  config ATH9K_DEBUGFS
  	bool "Atheros ath9k debugging"
- 	depends on ATH9K && DEBUG_FS
+ 	depends on ATH9K && DEBUG_FS && MAC80211_DEBUGFS

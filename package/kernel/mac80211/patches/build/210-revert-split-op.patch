@@ -1,6 +1,6 @@
 --- a/net/wireless/nl80211.c
 +++ b/net/wireless/nl80211.c
-@@ -16442,8 +16442,7 @@ static u32 nl80211_internal_flags[] = {
+@@ -16321,8 +16321,7 @@ static u32 nl80211_internal_flags[] = {
  #undef SELECTOR
  };
  
@@ -10,7 +10,7 @@
  			    struct genl_info *info)
  {
  	struct cfg80211_registered_device *rdev = NULL;
-@@ -16544,8 +16543,7 @@ out_unlock:
+@@ -16423,8 +16422,7 @@ out_unlock:
  	return err;
  }
  

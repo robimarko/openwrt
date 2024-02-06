@@ -14,7 +14,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
 
 --- a/net/mac80211/mesh.c
 +++ b/net/mac80211/mesh.c
-@@ -765,6 +765,9 @@ bool ieee80211_mesh_xmit_fast(struct iee
+@@ -769,6 +769,9 @@ bool ieee80211_mesh_xmit_fast(struct iee
  			      struct sk_buff *skb, u32 ctrl_flags)
  {
  	struct ieee80211_if_mesh *ifmsh = &sdata->u.mesh;
@@ -24,7 +24,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  	struct ieee80211_mesh_fast_tx *entry;
  	struct ieee80211s_hdr *meshhdr;
  	u8 sa[ETH_ALEN] __aligned(2);
-@@ -800,7 +803,10 @@ bool ieee80211_mesh_xmit_fast(struct iee
+@@ -804,7 +807,10 @@ bool ieee80211_mesh_xmit_fast(struct iee
  			return false;
  	}
  
@@ -94,7 +94,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  void mesh_fast_tx_cache(struct ieee80211_sub_if_data *sdata,
 --- a/net/mac80211/mesh_pathtbl.c
 +++ b/net/mac80211/mesh_pathtbl.c
-@@ -36,8 +36,8 @@ static const struct rhashtable_params me
+@@ -37,8 +37,8 @@ static const struct rhashtable_params me
  static const struct rhashtable_params fast_tx_rht_params = {
  	.nelem_hint = 10,
  	.automatic_shrinking = true,
@@ -105,7 +105,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  	.head_offset = offsetof(struct ieee80211_mesh_fast_tx, rhash),
  	.hashfn = mesh_table_hash,
  };
-@@ -426,20 +426,21 @@ static void mesh_fast_tx_entry_free(stru
+@@ -431,20 +431,21 @@ static void mesh_fast_tx_entry_free(stru
  }
  
  struct ieee80211_mesh_fast_tx *
@@ -130,7 +130,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  		if (entry)
  		    mesh_fast_tx_entry_free(cache, entry);
  		spin_unlock_bh(&cache->walk_lock);
-@@ -484,18 +485,24 @@ void mesh_fast_tx_cache(struct ieee80211
+@@ -489,18 +490,24 @@ void mesh_fast_tx_cache(struct ieee80211
  	if (!sta)
  		return;
  
@@ -155,7 +155,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  	/* rate limit, in case fast xmit can't be enabled */
  	if (mppath->fast_tx_check == jiffies)
  		return;
-@@ -542,7 +549,7 @@ void mesh_fast_tx_cache(struct ieee80211
+@@ -547,7 +554,7 @@ void mesh_fast_tx_cache(struct ieee80211
  		}
  	}
  
@@ -164,7 +164,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  	build.timestamp = jiffies;
  	build.fast_tx.band = info->band;
  	build.fast_tx.da_offs = offsetof(struct ieee80211_hdr, addr3);
-@@ -644,13 +651,19 @@ void mesh_fast_tx_flush_addr(struct ieee
+@@ -649,13 +656,19 @@ void mesh_fast_tx_flush_addr(struct ieee
  			     const u8 *addr)
  {
  	struct mesh_tx_cache *cache = &sdata->u.mesh.tx_cache;
@@ -189,7 +189,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  
 --- a/net/mac80211/rx.c
 +++ b/net/mac80211/rx.c
-@@ -2726,7 +2726,10 @@ ieee80211_rx_mesh_fast_forward(struct ie
+@@ -2735,7 +2735,10 @@ ieee80211_rx_mesh_fast_forward(struct ie
  			       struct sk_buff *skb, int hdrlen)
  {
  	struct ieee80211_if_mesh *ifmsh = &sdata->u.mesh;
@@ -201,7 +201,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  	struct ieee80211s_hdr *mesh_hdr;
  	struct tid_ampdu_tx *tid_tx;
  	struct sta_info *sta;
-@@ -2735,9 +2738,13 @@ ieee80211_rx_mesh_fast_forward(struct ie
+@@ -2744,9 +2747,13 @@ ieee80211_rx_mesh_fast_forward(struct ie
  
  	mesh_hdr = (struct ieee80211s_hdr *)(skb->data + sizeof(eth));
  	if ((mesh_hdr->flags & MESH_FLAGS_AE) == MESH_FLAGS_AE_A5_A6)

@@ -1,6 +1,6 @@
 --- a/drivers/net/wireless/virtual/mac80211_hwsim.c
 +++ b/drivers/net/wireless/virtual/mac80211_hwsim.c
-@@ -6179,7 +6179,9 @@ static struct genl_family hwsim_genl_fam
+@@ -6181,7 +6181,9 @@ static struct genl_family hwsim_genl_fam
  	.module = THIS_MODULE,
  	.small_ops = hwsim_ops,
  	.n_small_ops = ARRAY_SIZE(hwsim_ops),
@@ -12,7 +12,7 @@
  };
 --- a/net/wireless/nl80211.c
 +++ b/net/wireless/nl80211.c
-@@ -17551,7 +17551,9 @@ static struct genl_family nl80211_fam __
+@@ -17430,7 +17430,9 @@ static struct genl_family nl80211_fam __
  	.n_ops = ARRAY_SIZE(nl80211_ops),
  	.small_ops = nl80211_small_ops,
  	.n_small_ops = ARRAY_SIZE(nl80211_small_ops),

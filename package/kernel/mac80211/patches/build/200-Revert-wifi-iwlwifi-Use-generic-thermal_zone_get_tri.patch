@@ -8,7 +8,7 @@ This reverts commit 3d2f20ad46f83b333025f5e8e4afc34be8f13c4c.
 
 --- a/drivers/net/wireless/intel/iwlwifi/mvm/mvm.h
 +++ b/drivers/net/wireless/intel/iwlwifi/mvm/mvm.h
-@@ -531,7 +531,7 @@ struct iwl_mvm_tt_mgmt {
+@@ -543,7 +543,7 @@ struct iwl_mvm_tt_mgmt {
   * @tzone: thermal zone device data
  */
  struct iwl_mvm_thermal_device {
@@ -45,7 +45,7 @@ This reverts commit 3d2f20ad46f83b333025f5e8e4afc34be8f13c4c.
  				mvm->tz_device.fw_trips_index[i] = j;
  		}
  	}
-@@ -638,12 +638,37 @@ out:
+@@ -638,11 +638,37 @@ out:
  	return ret;
  }
  
@@ -77,14 +77,14 @@ This reverts commit 3d2f20ad46f83b333025f5e8e4afc34be8f13c4c.
  				       int trip, int temp)
  {
  	struct iwl_mvm *mvm = thermal_zone_device_priv(device);
- 	struct iwl_mvm_thermal_device *tzone;
 -	int ret;
++	struct iwl_mvm_thermal_device *tzone;
 +	int i, ret;
 +	s16 temperature;
  
  	mutex_lock(&mvm->mutex);
  
-@@ -653,17 +678,40 @@ static int iwl_mvm_tzone_set_trip_temp(s
+@@ -652,11 +678,39 @@ static int iwl_mvm_tzone_set_trip_temp(s
  		goto out;
  	}
  
@@ -99,13 +99,12 @@ This reverts commit 3d2f20ad46f83b333025f5e8e4afc34be8f13c4c.
  	}
  
 +	temperature = (s16)(temp / 1000);
- 	tzone = &mvm->tz_device;
++	tzone = &mvm->tz_device;
++	if (!tzone) {
++		ret = -EIO;
++		goto out;
++	}
 +
- 	if (!tzone) {
- 		ret = -EIO;
- 		goto out;
- 	}
- 
 +	/* no updates*/
 +	if (tzone->temp_trips[trip] == temperature) {
 +		ret = 0;
@@ -125,7 +124,7 @@ This reverts commit 3d2f20ad46f83b333025f5e8e4afc34be8f13c4c.
  	ret = iwl_mvm_send_temp_report_ths_cmd(mvm);
  out:
  	mutex_unlock(&mvm->mutex);
-@@ -672,6 +720,8 @@ out:
+@@ -665,6 +719,8 @@ out:
  
  static  struct thermal_zone_device_ops tzone_ops = {
  	.get_temp = iwl_mvm_tzone_get_temp,
@@ -134,7 +133,7 @@ This reverts commit 3d2f20ad46f83b333025f5e8e4afc34be8f13c4c.
  	.set_trip_temp = iwl_mvm_tzone_set_trip_temp,
  };
  
-@@ -693,8 +743,7 @@ static void iwl_mvm_thermal_zone_registe
+@@ -686,8 +742,7 @@ static void iwl_mvm_thermal_zone_registe
  	BUILD_BUG_ON(ARRAY_SIZE(name) >= THERMAL_NAME_LENGTH);
  
  	sprintf(name, "iwlwifi_%u", atomic_inc_return(&counter) & 0xFF);
@@ -144,7 +143,7 @@ This reverts commit 3d2f20ad46f83b333025f5e8e4afc34be8f13c4c.
  							IWL_MAX_DTS_TRIPS,
  							IWL_WRITABLE_TRIPS_MSK,
  							mvm, &tzone_ops,
-@@ -717,10 +766,8 @@ static void iwl_mvm_thermal_zone_registe
+@@ -710,10 +765,8 @@ static void iwl_mvm_thermal_zone_registe
  	/* 0 is a valid temperature,
  	 * so initialize the array with S16_MIN which invalid temperature
  	 */

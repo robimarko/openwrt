@@ -49,7 +49,7 @@ Signed-off-by: Robert Marko <robimarko@gmail.com>
 
 --- a/drivers/net/wireless/ath/ath11k/mhi.c
 +++ b/drivers/net/wireless/ath/ath11k/mhi.c
-@@ -294,6 +294,34 @@ static void ath11k_mhi_op_runtime_put(st
+@@ -295,6 +295,34 @@ static void ath11k_mhi_op_runtime_put(st
  {
  }
  
@@ -84,7 +84,7 @@ Signed-off-by: Robert Marko <robimarko@gmail.com>
  static char *ath11k_mhi_op_callback_to_str(enum mhi_callback reason)
  {
  	switch (reason) {
-@@ -315,6 +343,8 @@ static char *ath11k_mhi_op_callback_to_s
+@@ -316,6 +344,8 @@ static char *ath11k_mhi_op_callback_to_s
  		return "MHI_CB_FATAL_ERROR";
  	case MHI_CB_BW_REQ:
  		return "MHI_CB_BW_REQ";
@@ -93,7 +93,7 @@ Signed-off-by: Robert Marko <robimarko@gmail.com>
  	default:
  		return "UNKNOWN";
  	}
-@@ -337,27 +367,14 @@ static void ath11k_mhi_op_status_cb(stru
+@@ -338,27 +368,14 @@ static void ath11k_mhi_op_status_cb(stru
  		if (!(test_bit(ATH11K_FLAG_UNREGISTERING, &ab->dev_flags)))
  			queue_work(ab->workqueue_aux, &ab->reset_work);
  		break;

@@ -153,7 +153,7 @@ Link: https://lore.kernel.org/r/TYAP286MB0315D7462CE08A119A99DE34BCA4A@TYAP286MB
  }
  EXPORT_SYMBOL_GPL(rt2800_watchdog);
  
-@@ -12016,6 +12068,9 @@ int rt2800_probe_hw(struct rt2x00_dev *r
+@@ -12013,6 +12065,9 @@ int rt2800_probe_hw(struct rt2x00_dev *r
  		__set_bit(REQUIRE_TASKLET_CONTEXT, &rt2x00dev->cap_flags);
  	}
  
