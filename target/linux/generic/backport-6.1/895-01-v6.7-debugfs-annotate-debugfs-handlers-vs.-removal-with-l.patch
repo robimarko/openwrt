@@ -1,0 +1,104 @@
+From f4acfcd4deb158b96595250cc332901b282d15b0 Mon Sep 17 00:00:00 2001
+From: Johannes Berg <johannes.berg@intel.com>
+Date: Fri, 24 Nov 2023 17:25:25 +0100
+Subject: [PATCH] debugfs: annotate debugfs handlers vs. removal with lockdep
+
+When you take a lock in a debugfs handler but also try
+to remove the debugfs file under that lock, things can
+deadlock since the removal has to wait for all users
+to finish.
+
+Add lockdep annotations in debugfs_file_get()/_put()
+to catch such issues.
+
+Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+---
+ fs/debugfs/file.c     | 10 ++++++++++
+ fs/debugfs/inode.c    | 12 ++++++++++++
+ fs/debugfs/internal.h |  6 ++++++
+ 3 files changed, 28 insertions(+)
+
+--- a/fs/debugfs/file.c
++++ b/fs/debugfs/file.c
+@@ -108,6 +108,12 @@ int debugfs_file_get(struct dentry *dent
+ 			kfree(fsd);
+ 			fsd = READ_ONCE(dentry->d_fsdata);
+ 		}
++#ifdef CONFIG_LOCKDEP
++		fsd->lock_name = kasprintf(GFP_KERNEL, "debugfs:%pd", dentry);
++		lockdep_register_key(&fsd->key);
++		lockdep_init_map(&fsd->lockdep_map, fsd->lock_name ?: "debugfs",
++				 &fsd->key, 0);
++#endif
+ 	}
+ 
+ 	/*
+@@ -124,6 +130,8 @@ int debugfs_file_get(struct dentry *dent
+ 	if (!refcount_inc_not_zero(&fsd->active_users))
+ 		return -EIO;
+ 
++	lock_map_acquire_read(&fsd->lockdep_map);
++
+ 	return 0;
+ }
+ EXPORT_SYMBOL_GPL(debugfs_file_get);
+@@ -141,6 +149,8 @@ void debugfs_file_put(struct dentry *den
+ {
+ 	struct debugfs_fsdata *fsd = READ_ONCE(dentry->d_fsdata);
+ 
++	lock_map_release(&fsd->lockdep_map);
++
+ 	if (refcount_dec_and_test(&fsd->active_users))
+ 		complete(&fsd->active_users_drained);
+ }
+--- a/fs/debugfs/inode.c
++++ b/fs/debugfs/inode.c
+@@ -242,6 +242,14 @@ static void debugfs_release_dentry(struc
+ 	if ((unsigned long)fsd & DEBUGFS_FSDATA_IS_REAL_FOPS_BIT)
+ 		return;
+ 
++	/* check it wasn't a dir (no fsdata) or automount (no real_fops) */
++	if (fsd && fsd->real_fops) {
++#ifdef CONFIG_LOCKDEP
++		lockdep_unregister_key(&fsd->key);
++		kfree(fsd->lock_name);
++#endif
++	}
++
+ 	kfree(fsd);
+ }
+ 
+@@ -745,6 +753,10 @@ static void __debugfs_file_removed(struc
+ 	fsd = READ_ONCE(dentry->d_fsdata);
+ 	if ((unsigned long)fsd & DEBUGFS_FSDATA_IS_REAL_FOPS_BIT)
+ 		return;
++
++	lock_map_acquire(&fsd->lockdep_map);
++	lock_map_release(&fsd->lockdep_map);
++
+ 	if (!refcount_dec_and_test(&fsd->active_users))
+ 		wait_for_completion(&fsd->active_users_drained);
+ }
+--- a/fs/debugfs/internal.h
++++ b/fs/debugfs/internal.h
+@@ -7,6 +7,7 @@
+ 
+ #ifndef _DEBUGFS_INTERNAL_H_
+ #define _DEBUGFS_INTERNAL_H_
++#include <linux/lockdep.h>
+ 
+ struct file_operations;
+ 
+@@ -23,6 +24,11 @@ struct debugfs_fsdata {
+ 		struct {
+ 			refcount_t active_users;
+ 			struct completion active_users_drained;
++#ifdef CONFIG_LOCKDEP
++			struct lockdep_map lockdep_map;
++			struct lock_class_key key;
++			char *lock_name;
++#endif
+ 		};
+ 	};
+ };
