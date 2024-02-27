@@ -1,0 +1,43 @@
+From 9517ecddfc3c473a5e50d07a543768c0273d951b Mon Sep 17 00:00:00 2001
+From: Robert Marko <robimarko@gmail.com>
+Date: Tue, 27 Feb 2024 17:03:59 +0100
+Subject: [PATCH net-next 2/2] net: phy: qcom: qca808x: fill in
+ possible_interfaces
+
+Currently QCA808x driver does not fill the possible_interfaces.
+2.5G QCA808x support SGMII and 2500Base-X while 1G model only supports
+SGMII, so fill the possible_interfaces accordingly.
+
+Signed-off-by: Robert Marko <robimarko@gmail.com>
+---
+ drivers/net/phy/qcom/qca808x.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+--- a/drivers/net/phy/qcom/qca808x.c
++++ b/drivers/net/phy/qcom/qca808x.c
+@@ -170,6 +170,16 @@ static bool qca808x_is_1g_only(struct ph
+ 		return false;
+ }
+ 
++static void qca808x_fill_possible_interfaces(struct phy_device *phydev)
++{
++	unsigned long *possible = phydev->possible_interfaces;
++
++	__set_bit(PHY_INTERFACE_MODE_SGMII, possible);
++
++	if (!qca808x_is_1g_only(phydev))
++		__set_bit(PHY_INTERFACE_MODE_2500BASEX, possible);
++}
++
+ static int qca808x_probe(struct phy_device *phydev)
+ {
+ 	struct device *dev = &phydev->mdio.dev;
+@@ -234,6 +244,8 @@ static int qca808x_config_init(struct ph
+ 		}
+ 	}
+ 
++	qca808x_fill_possible_interfaces(phydev);
++
+ 	/* Configure adc threshold as 100mv for the link 10M */
+ 	return at803x_debug_reg_mask(phydev, QCA808X_PHY_DEBUG_ADC_THRESHOLD,
+ 				     QCA808X_ADC_THRESHOLD_MASK,
