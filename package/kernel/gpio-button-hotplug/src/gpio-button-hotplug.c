@@ -539,7 +539,7 @@ static int gpio_keys_button_probe(struct platform_device *pdev,
 				of_get_next_child(dev->of_node, prev);
 
 			bdata->gpiod = devm_fwnode_gpiod_get(dev,
-				of_fwnode_handle(child), "gpios", GPIOD_IN,
+				of_fwnode_handle(child), NULL, GPIOD_IN,
 				desc);
 
 			prev = child;
