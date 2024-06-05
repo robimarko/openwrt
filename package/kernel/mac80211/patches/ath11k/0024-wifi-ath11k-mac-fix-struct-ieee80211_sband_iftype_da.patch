@@ -28,7 +28,7 @@ Link: https://lore.kernel.org/r/20230927142708.2897504-2-kvalo@kernel.org
 
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -7913,12 +7913,14 @@ ath11k_mac_get_tx_mcs_map(const struct i
+@@ -7918,12 +7918,14 @@ ath11k_mac_get_tx_mcs_map(const struct i
  
  static bool
  ath11k_mac_bitrate_mask_get_single_nss(struct ath11k *ar,
@@ -43,7 +43,7 @@ Link: https://lore.kernel.org/r/20230927142708.2897504-2-kvalo@kernel.org
  	u16 he_mcs_map = 0;
  	u8 ht_nss_mask = 0;
  	u8 vht_nss_mask = 0;
-@@ -7949,7 +7951,11 @@ ath11k_mac_bitrate_mask_get_single_nss(s
+@@ -7954,7 +7956,11 @@ ath11k_mac_bitrate_mask_get_single_nss(s
  			return false;
  	}
  
@@ -56,7 +56,7 @@ Link: https://lore.kernel.org/r/20230927142708.2897504-2-kvalo@kernel.org
  
  	for (i = 0; i < ARRAY_SIZE(mask->control[band].he_mcs); i++) {
  		if (mask->control[band].he_mcs[i] == 0)
-@@ -8365,7 +8371,7 @@ ath11k_mac_op_set_bitrate_mask(struct ie
+@@ -8370,7 +8376,7 @@ ath11k_mac_op_set_bitrate_mask(struct ie
  		ieee80211_iterate_stations_atomic(ar->hw,
  						  ath11k_mac_disable_peer_fixed_rate,
  						  arvif);

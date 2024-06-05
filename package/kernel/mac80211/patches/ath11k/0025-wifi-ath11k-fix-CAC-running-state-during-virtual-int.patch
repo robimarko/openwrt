@@ -40,7 +40,7 @@ Link: https://lore.kernel.org/r/20230912051857.2284-3-quic_adisi@quicinc.com
  #include <linux/etherdevice.h>
  #include <linux/bitfield.h>
  #include <linux/inetdevice.h>
-@@ -7196,6 +7197,7 @@ ath11k_mac_vdev_start_restart(struct ath
+@@ -7201,6 +7202,7 @@ ath11k_mac_vdev_start_restart(struct ath
  	struct wmi_vdev_start_req_arg arg = {};
  	const struct cfg80211_chan_def *chandef = &ctx->def;
  	int ret = 0;
@@ -48,7 +48,7 @@ Link: https://lore.kernel.org/r/20230912051857.2284-3-quic_adisi@quicinc.com
  
  	lockdep_assert_held(&ar->conf_mutex);
  
-@@ -7275,20 +7277,21 @@ ath11k_mac_vdev_start_restart(struct ath
+@@ -7280,20 +7282,21 @@ ath11k_mac_vdev_start_restart(struct ath
  	ath11k_dbg(ab, ATH11K_DBG_MAC,  "vdev %pM started, vdev_id %d\n",
  		   arvif->vif->addr, arvif->vdev_id);
  

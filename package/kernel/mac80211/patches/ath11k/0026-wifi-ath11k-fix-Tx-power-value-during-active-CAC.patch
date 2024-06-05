@@ -26,7 +26,7 @@ Link: https://lore.kernel.org/r/20230912051857.2284-4-quic_adisi@quicinc.com
 
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -9068,6 +9068,14 @@ static int ath11k_mac_op_get_txpower(str
+@@ -9073,6 +9073,14 @@ static int ath11k_mac_op_get_txpower(str
  		return -EAGAIN;
  	}
  

@@ -126,7 +126,7 @@ Link: https://msgid.link/20231222101442.626837-15-martin.kaistra@linutronix.de
  }
  
  static int rtl8xxxu_config(struct ieee80211_hw *hw, u32 changed)
-@@ -7661,6 +7667,8 @@ static int rtl8xxxu_probe(struct usb_int
+@@ -7662,6 +7668,8 @@ static int rtl8xxxu_probe(struct usb_int
  	if (ret)
  		goto err_set_intfdata;
  

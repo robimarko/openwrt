@@ -195,7 +195,7 @@ Link: https://lore.kernel.org/r/20230919045150.524304-1-yunchuan@nfschina.com
  		FIELD_PREP(BUFFER_ADDR_INFO0_ADDR, ti->paddr);
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -6970,8 +6970,8 @@ err:
+@@ -6975,8 +6975,8 @@ err:
  
  static int ath11k_mac_vif_unref(int buf_id, void *skb, void *ctx)
  {

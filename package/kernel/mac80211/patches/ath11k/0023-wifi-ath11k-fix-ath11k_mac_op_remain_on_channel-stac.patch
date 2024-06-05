@@ -26,7 +26,7 @@ Link: https://lore.kernel.org/r/20230926042906.13725-1-dmantipov@yandex.ru
 
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -8908,7 +8908,7 @@ static int ath11k_mac_op_remain_on_chann
+@@ -8913,7 +8913,7 @@ static int ath11k_mac_op_remain_on_chann
  {
  	struct ath11k *ar = hw->priv;
  	struct ath11k_vif *arvif = ath11k_vif_to_arvif(vif);
@@ -35,7 +35,7 @@ Link: https://lore.kernel.org/r/20230926042906.13725-1-dmantipov@yandex.ru
  	int ret;
  	u32 scan_time_msec;
  
-@@ -8940,27 +8940,31 @@ static int ath11k_mac_op_remain_on_chann
+@@ -8945,27 +8945,31 @@ static int ath11k_mac_op_remain_on_chann
  
  	scan_time_msec = ar->hw->wiphy->max_remain_on_channel_duration * 2;
  
@@ -83,7 +83,7 @@ Link: https://lore.kernel.org/r/20230926042906.13725-1-dmantipov@yandex.ru
  	if (ret) {
  		ath11k_warn(ar->ab, "failed to start roc scan: %d\n", ret);
  
-@@ -8986,7 +8990,9 @@ static int ath11k_mac_op_remain_on_chann
+@@ -8991,7 +8995,9 @@ static int ath11k_mac_op_remain_on_chann
  	ret = 0;
  
  free_chan_list:

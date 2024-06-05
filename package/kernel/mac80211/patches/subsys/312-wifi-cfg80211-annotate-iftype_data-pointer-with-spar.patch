@@ -19,7 +19,7 @@ Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -5893,8 +5893,9 @@ static void ath11k_mac_setup_he_cap(stru
+@@ -5898,8 +5898,9 @@ static void ath11k_mac_setup_he_cap(stru
  					       ar->mac.iftype[NL80211_BAND_2GHZ],
  					       NL80211_BAND_2GHZ);
  		band = &ar->mac.sbands[NL80211_BAND_2GHZ];
@@ -31,7 +31,7 @@ Signed-off-by: Johannes Berg <johannes.berg@intel.com>
  	}
  
  	if (cap->supported_bands & WMI_HOST_WLAN_5G_CAP) {
-@@ -5902,8 +5903,9 @@ static void ath11k_mac_setup_he_cap(stru
+@@ -5907,8 +5908,9 @@ static void ath11k_mac_setup_he_cap(stru
  					       ar->mac.iftype[NL80211_BAND_5GHZ],
  					       NL80211_BAND_5GHZ);
  		band = &ar->mac.sbands[NL80211_BAND_5GHZ];
@@ -43,7 +43,7 @@ Signed-off-by: Johannes Berg <johannes.berg@intel.com>
  	}
  
  	if (cap->supported_bands & WMI_HOST_WLAN_5G_CAP &&
-@@ -5912,8 +5914,9 @@ static void ath11k_mac_setup_he_cap(stru
+@@ -5917,8 +5919,9 @@ static void ath11k_mac_setup_he_cap(stru
  					       ar->mac.iftype[NL80211_BAND_6GHZ],
  					       NL80211_BAND_6GHZ);
  		band = &ar->mac.sbands[NL80211_BAND_6GHZ];
@@ -57,7 +57,7 @@ Signed-off-by: Johannes Berg <johannes.berg@intel.com>
  
 --- a/drivers/net/wireless/intel/iwlwifi/iwl-nvm-parse.c
 +++ b/drivers/net/wireless/intel/iwlwifi/iwl-nvm-parse.c
-@@ -1078,8 +1078,8 @@ static void iwl_init_he_hw_capab(struct
+@@ -1075,8 +1075,8 @@ static void iwl_init_he_hw_capab(struct
  
  	memcpy(iftype_data, iwl_he_eht_capa, sizeof(iwl_he_eht_capa));
  
@@ -133,7 +133,7 @@ Signed-off-by: Johannes Berg <johannes.berg@intel.com>
  }
 --- a/drivers/net/wireless/mediatek/mt76/mt7996/init.c
 +++ b/drivers/net/wireless/mediatek/mt76/mt7996/init.c
-@@ -828,8 +828,7 @@ __mt7996_set_stream_he_eht_caps(struct m
+@@ -829,8 +829,7 @@ __mt7996_set_stream_he_eht_caps(struct m
  		n++;
  	}
  

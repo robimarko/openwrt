@@ -24,7 +24,7 @@ Link: https://lore.kernel.org/r/20231004044915.6817-1-quic_alokad@quicinc.com
 
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -3732,9 +3732,7 @@ static void ath11k_mac_op_bss_info_chang
+@@ -3737,9 +3737,7 @@ static void ath11k_mac_op_bss_info_chang
  				    arvif->vdev_id, ret);
  	}
  

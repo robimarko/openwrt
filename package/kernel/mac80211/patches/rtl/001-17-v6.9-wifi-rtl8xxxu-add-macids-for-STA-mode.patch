@@ -54,7 +54,7 @@ Link: https://msgid.link/20231222101442.626837-18-martin.kaistra@linutronix.de
  
  exit:
  	return ret;
-@@ -7375,6 +7379,7 @@ static int rtl8xxxu_sta_add(struct ieee8
+@@ -7376,6 +7380,7 @@ static int rtl8xxxu_sta_add(struct ieee8
  			    struct ieee80211_sta *sta)
  {
  	struct rtl8xxxu_sta_info *sta_info = (struct rtl8xxxu_sta_info *)sta->drv_priv;
@@ -62,7 +62,7 @@ Link: https://msgid.link/20231222101442.626837-18-martin.kaistra@linutronix.de
  	struct rtl8xxxu_priv *priv = hw->priv;
  
  	if (vif->type == NL80211_IFTYPE_AP) {
-@@ -7384,6 +7389,17 @@ static int rtl8xxxu_sta_add(struct ieee8
+@@ -7385,6 +7390,17 @@ static int rtl8xxxu_sta_add(struct ieee8
  
  		rtl8xxxu_refresh_rate_mask(priv, 0, sta, true);
  		priv->fops->report_connect(priv, sta_info->macid, H2C_MACID_ROLE_STA, true);

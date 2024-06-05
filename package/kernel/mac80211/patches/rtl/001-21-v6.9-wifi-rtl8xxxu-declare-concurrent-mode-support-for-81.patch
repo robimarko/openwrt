@@ -41,7 +41,7 @@ Link: https://msgid.link/20231222101442.626837-22-martin.kaistra@linutronix.de
  	.trxff_boundary = 0x3f7f,
 --- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
 +++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-@@ -7665,6 +7665,20 @@ static void rtl8xxxu_deinit_led(struct r
+@@ -7666,6 +7666,20 @@ static void rtl8xxxu_deinit_led(struct r
  	led_classdev_unregister(led);
  }
  
@@ -62,7 +62,7 @@ Link: https://msgid.link/20231222101442.626837-22-martin.kaistra@linutronix.de
  static int rtl8xxxu_probe(struct usb_interface *interface,
  			  const struct usb_device_id *id)
  {
-@@ -7810,6 +7824,11 @@ static int rtl8xxxu_probe(struct usb_int
+@@ -7811,6 +7825,11 @@ static int rtl8xxxu_probe(struct usb_int
  		hw->wiphy->interface_modes |= BIT(NL80211_IFTYPE_AP);
  	hw->queues = 4;
  
