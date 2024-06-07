@@ -89,7 +89,7 @@
 &spi0 {
 	status = "okay";
 
-	spi-flash@0 {
+	flash@0 {
 		#address-cells = <1>;
 		#size-cells = <1>;
 		compatible = "jedec,spi-nor";
@@ -102,44 +102,22 @@
 			#size-cells = <1>;
 
 			partition@0 {
-				label = "ATF";
-				reg = <0x0 0x95c04>;
-				read-only;
-			};
-			partition@1 {
-				label = "backup_RouterBOOT";
-				reg = <0x95c04 0x193FC>;
-				read-only;
-			};
-			hard_config: partition@2 {
-				label = "hard_config";
-				reg = <0xaf000 0x1000>;
-				read-only;
-			};
-			partition@3 {
-				label = "RouterBOOT";
-				reg = <0xb0000 0x10000>;
-			};
-			partition@4 {
-				label = "soft_config";
-				reg = <0xc0000 0x10000>;
-			};
-			partition@5 {
-				label = "DTS";
-				reg = <0xd0000 0x10000>;
-				read-only;
-			};
-			partition@6 {
-				label = "free_space";
-				reg = <0xe0000 0x20000>;
-			};
-			partition@7 {
-				label = "kernel";
-				reg = <0x100000 0xf00000>;
-			};
-			partition@8 {
-				label = "first_1M";
-				reg = <0x0 0x100000>;
+				compatible = "mikrotik,routerboot-partitions";
+				#address-cells = <1>;
+				#size-cells = <1>;
+				label = "RouterBoot";
+				reg = <0x0 0x1000000>;
+
+				hard_config: hard_config {
+					read-only;
+				};
+
+				soft_config {
+				};
+
+				dtb_config {
+					read-only;
+				};
 			};
 		};
 	};
@@ -162,8 +140,13 @@
 			#size-cells = <1>;
 
 			partition@0 {
+				label = "Boot YAFFS";
+				reg = <0x0 0x800000>;
+			};
+
+			partition@800000 {
 				label = "ubi";
-				reg = <0x0 0x40000000>;
+				reg = <0x800000 0x3f800000>;
 			};
 		};
 	};
