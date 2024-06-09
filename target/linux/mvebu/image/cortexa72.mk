@@ -4,6 +4,18 @@ define Device/FitImage
   KERNEL_NAME := Image
 endef
 
+define Device/FitImageLzma
+  KERNEL_SUFFIX := -uImage.itb
+  KERNEL = kernel-bin | lzma | fit lzma $$(KDIR)/image-$$(DEVICE_DTS).dtb
+  KERNEL_NAME := Image
+endef
+
+define Build/aux-loader
+  -[ -f "$@" ] && [ -f "bin/aux-loader.elf" ] &&  \
+  cat "bin/aux-loader.elf" "$@" > "$@.tmp" && \
+  cat "$@.tmp" > "$@" && rm -f "$@.tmp"
+endef
+
 define Device/UbiFit
   KERNEL_IN_UBI := 1
   IMAGES := factory.ubi sysupgrade.bin
@@ -68,13 +80,15 @@ TARGET_DEVICES += marvell_macchiatobin-singleshot
 define Device/mikrotik_rb5009
   $(call Device/Default-arm64)
   $(Device/NAND-128K)
-  $(call Device/FitImage)
+  $(call Device/FitImageLzma)
   $(call Device/UbiFit)
   DEVICE_VENDOR := MikroTik
   DEVICE_MODEL := RB5009
   SOC := armada-7040
   KERNEL_LOADADDR := 0x22000000
   DEVICE_PACKAGES += kmod-i2c-gpio yafut
+  ARTIFACTS := initramfs-fit-uImage.elf
+  ARTIFACT/initramfs-fit-uImage.elf := append-image-stage initramfs-uImage.itb | aux-loader
 endef
 TARGET_DEVICES += mikrotik_rb5009
 
