@@ -29,7 +29,7 @@ ath79_setup_interfaces()
 	mikrotik,routerboard-wap-2nd|\
 	mikrotik,routerboard-wap-g-5hact2hnd|\
 	mikrotik,routerboard-wapr-2nd)
-		ucidef_set_interface_lan "eth0"
+		ucidef_set_interface_lan "eth0" "dhcp"
 		;;
 	mikrotik,routerboard-951ui-2hnd|\
 	mikrotik,routerboard-951ui-2nd|\
@@ -64,7 +64,6 @@ ath79_setup_macs()
 	mikrotik,routerboard-911-lite|\
 	mikrotik,routerboard-911g-5hpacd|\
 	mikrotik,routerboard-911g-xhpnd|\
-	mikrotik,routerboard-912uag-2hpnd|\
 	mikrotik,routerboard-lhg-2nd|\
 	mikrotik,routerboard-lhg-5nd|\
 	mikrotik,routerboard-map-2nd|\
@@ -81,6 +80,8 @@ ath79_setup_macs()
 		label_mac="$mac_base"
 		lan_mac="$mac_base"
 		wan_mac=$(macaddr_add $mac_base 1)
+		;;
+	mikrotik,routerboard-912uag-2hpnd)
 		;;
 	*)
 		label_mac="$mac_base"

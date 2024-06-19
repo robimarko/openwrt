@@ -163,26 +163,41 @@
 		spi-max-frequency = <50000000>;
 
 		partitions {
-			compatible = "mikrotik,routerboot-partitions";
+			compatible = "fixed-partitions";
 			#address-cells = <1>;
 			#size-cells = <1>;
 
-			partition@0 {
-				label = "routerboot";
-				reg = <0x0 0x0>;
-				read-only;
-			};
+			MikroTik@0 {
+				compatible = "mikrotik,routerboot-partitions";
+				reg = <0x0 0x10000>;
+				label = "MikroTik";
+				#address-cells = <1>;
+				#size-cells = <1>;
 
-			hard_config {
-				read-only;
-			};
+				partition@0 {
+					label = "routerboot";
+					reg = <0x0 0x0>;
+					read-only;
+				};
 
-			bios {
-				size = <0x1000>;
-				read-only;
-			};
+				hard_config {
+					read-only;
+					nvmem-layout {
+						compatible = "mikrotik,routerboot-nvmem";
 
-			soft_config {
+						macaddr_hard: base-mac-address {
+							#nvmem-cell-cells = <1>;
+						};
+					};
+				};
+
+				bios {
+					size = <0x1000>;
+					read-only;
+				};
+
+				soft_config {
+				};
 			};
 		};
 	};
@@ -211,6 +226,8 @@
 	phy-mode = "rgmii-id";
 	phy-handle = <&phy0>;
 	pll-data = <0x02000000 0x00000101 0x00001313>;
+	nvmem-cells = <&macaddr_hard 0>;
+	nvmem-cell-names = "mac-address";
 
 	gmac-config {
 		device = <&gmac>;
