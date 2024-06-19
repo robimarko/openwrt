@@ -21,3 +21,7 @@
 &usb_phy {
 	status = "okay";
 };
+
+&ref {
+	clock-frequency = <25000000>;
+};
