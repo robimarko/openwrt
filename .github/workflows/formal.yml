@@ -9,4 +9,4 @@ permissions:
 jobs:
   build:
     name: Test Formalities
-    uses: openwrt/actions-shared-workflows/.github/workflows/formal.yml@main
+    uses: robimarko/actions-shared-workflows/.github/workflows/formal.yml@buildworker-bump
