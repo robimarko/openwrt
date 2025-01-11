@@ -29,3 +29,11 @@ define Device/linksys_mx5500
 		ipq-wifi-linksys_mx5500
 endef
 TARGET_DEVICES += linksys_mx5500
+
+define Device/motorola_q14
+	$(call Device/FitImage)
+	DEVICE_VENDOR := Motorola
+	DEVICE_MODEL := Q14
+	SOC := ipq5018
+endef
+TARGET_DEVICES += motorola_q14

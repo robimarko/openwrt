@@ -11,6 +11,9 @@ ipq50xx_setup_interfaces()
 		linksys,mx5500)
 			ucidef_set_interfaces_lan_wan "lan1 lan2 lan3" "wan"
 			;;
+		motorola,q14)
+			ucidef_set_interfaces_lan_wan "lan" "wan"
+		;;
 	esac
 }
 
