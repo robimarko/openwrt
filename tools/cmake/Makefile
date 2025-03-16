@@ -56,3 +56,4 @@ ifneq ($(findstring c,$(OPENWRT_VERBOSE)),)
 endif
 
 $(eval $(call HostBuild))
+
