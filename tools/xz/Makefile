@@ -39,3 +39,4 @@ define Host/Uninstall
 endef
 
 $(eval $(call HostBuild))
+
