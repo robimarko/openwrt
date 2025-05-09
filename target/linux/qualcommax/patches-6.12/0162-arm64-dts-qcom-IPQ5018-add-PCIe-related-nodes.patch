@@ -13,7 +13,7 @@ Signed-off-by: George Moussalem <george.moussalem@outlook.com>
 
 --- a/arch/arm64/boot/dts/qcom/ipq5018.dtsi
 +++ b/arch/arm64/boot/dts/qcom/ipq5018.dtsi
-@@ -149,6 +149,42 @@
+@@ -147,6 +147,42 @@
  			status = "disabled";
  		};
  
@@ -56,7 +56,7 @@ Signed-off-by: George Moussalem <george.moussalem@outlook.com>
  		qfprom: qfprom@a0000 {
  			compatible = "qcom,ipq5018-qfprom", "qcom,qfprom";
  			reg = <0xa0000 0x1000>;
-@@ -283,8 +319,8 @@
+@@ -281,8 +317,8 @@
  			reg = <0x01800000 0x80000>;
  			clocks = <&xo_board_clk>,
  				 <&sleep_clk>,
@@ -67,7 +67,7 @@ Signed-off-by: George Moussalem <george.moussalem@outlook.com>
  				 <0>,
  				 <0>,
  				 <0>,
-@@ -501,6 +537,146 @@
+@@ -498,6 +534,146 @@
  				status = "disabled";
  			};
  		};
