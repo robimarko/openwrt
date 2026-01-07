@@ -67,9 +67,9 @@ Signed-off-by: George Moussalem <george.moussalem@outlook.com>
  	}
  
  	qcom_pil_info_store("wcss", wcss->mem_phys, wcss->mem_size);
-@@ -291,17 +317,20 @@ static int wcss_sec_probe(struct platfor
- 	struct wcss_sec *wcss;
- 	struct clk *sleep_clk;
+@@ -293,17 +319,20 @@ static int wcss_sec_probe(struct platfor
+ 	struct clk *prng_clk;
+ 	struct clk *qdss_clk;
  	struct clk *int_clk;
 -	const char *fw_name = NULL;
 +	const char **firmware = NULL;
@@ -92,7 +92,7 @@ Signed-off-by: George Moussalem <george.moussalem@outlook.com>
  	if (!rproc) {
  		dev_err(&pdev->dev, "failed to allocate rproc\n");
  		return -ENOMEM;
-@@ -310,6 +339,7 @@ static int wcss_sec_probe(struct platfor
+@@ -312,6 +341,7 @@ static int wcss_sec_probe(struct platfor
  	wcss = rproc->priv;
  	wcss->dev = &pdev->dev;
  	wcss->desc = desc;

@@ -61,20 +61,17 @@ Signed-off-by: Robert Marko <robimarko@gmail.com>
  		spmi_bus: spmi@200f000 {
  			compatible = "qcom,spmi-pmic-arb";
  			reg = <0x0200f000 0x001000>,
-@@ -994,6 +1025,56 @@
+@@ -994,6 +1025,43 @@
  				ranges;
  			};
  		};
 +
-+		q6v5_wcss: q6v5_wcss@cd00000 {
-+			compatible = "qcom,ipq8074-wcss-pil";
-+			reg = <0x0cd00000 0x4040>,
-+			      <0x004ab000 0x20>;
-+			reg-names = "qdsp6",
-+				    "rmb";
-+			qca,auto-restart;
-+			qca,extended-intc;
-+			interrupts-extended = <&intc 0 325 1>,
++		q6v5_wcss: remoteproc@cd00000 {
++			compatible = "qcom,ipq8074-wcss-sec-pil", "qcom,ipq9574-wcss-sec-pil";
++			reg = <0x0cd00000 0x4040>;
++			firmware-name = "IPQ8074/q6_fw.mdt",
++					"IPQ8074/m3_fw.mdt";
++			interrupts-extended = <&intc GIC_SPI 325 IRQ_TYPE_EDGE_RISING>,
 +					      <&wcss_smp2p_in 0 0>,
 +					      <&wcss_smp2p_in 1 0>,
 +					      <&wcss_smp2p_in 2 0>,
@@ -85,28 +82,18 @@ Signed-off-by: Robert Marko <robimarko@gmail.com>
 +					  "handover",
 +					  "stop-ack";
 +
-+			resets = <&gcc GCC_WCSSAON_RESET>,
-+				 <&gcc GCC_WCSS_BCR>,
-+				 <&gcc GCC_WCSS_Q6_BCR>;
-+
-+			reset-names = "wcss_aon_reset",
-+				      "wcss_reset",
-+				      "wcss_q6_reset";
-+
 +			clocks = <&gcc GCC_PRNG_AHB_CLK>;
 +			clock-names = "prng";
-+
-+			qcom,halt-regs = <&tcsr_q6 0xa000 0xd000 0x0>;
 +
 +			qcom,smem-states = <&wcss_smp2p_out 0>,
 +					   <&wcss_smp2p_out 1>;
 +			qcom,smem-state-names = "shutdown",
 +						"stop";
-+
 +			memory-region = <&q6_region>;
 +
 +			glink-edge {
 +				interrupts = <GIC_SPI 321 IRQ_TYPE_EDGE_RISING>;
++				label = "rtr";
 +				qcom,remote-pid = <1>;
 +				mboxes = <&apcs_glb 8>;
 +
