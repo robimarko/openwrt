@@ -1,0 +1,48 @@
+--- a/arch/arm64/boot/dts/qcom/ipq5018.dtsi
++++ b/arch/arm64/boot/dts/qcom/ipq5018.dtsi
+@@ -239,6 +239,9 @@
+ 				compatible = "ethernet-phy-id004d.d0c0";
+ 				reg = <7>;
+ 
++				clocks = <&gcc GCC_GEPHY_RX_CLK>,
++					 <&gcc GCC_GEPHY_TX_CLK>;
++
+ 				resets = <&gcc GCC_GEPHY_MISC_ARES>;
+ 			};
+ 		};
+--- a/drivers/net/phy/qcom/at803x.c
++++ b/drivers/net/phy/qcom/at803x.c
+@@ -21,6 +21,7 @@
+ #include <linux/phylink.h>
+ #include <linux/reset.h>
+ #include <linux/sfp.h>
++#include <linux/clk.h>
+ #include <dt-bindings/net/qca-ar803x.h>
+ 
+ #include "qcom.h"
+@@ -178,6 +179,8 @@ struct at803x_context {
+ struct ipq5018_priv {
+ 	struct reset_control *rst;
+ 	bool set_short_cable_dac;
++	unsigned int num_clks;
++	struct clk_bulk_data *clks;
+ };
+ 
+ static int at803x_write_page(struct phy_device *phydev, int page)
+@@ -1099,6 +1102,16 @@ static int ipq5018_probe(struct phy_devi
+ 	priv->set_short_cable_dac = of_property_read_bool(dev->of_node,
+ 							  "qcom,dac-preset-short-cable");
+ 
++	priv->num_clks = devm_clk_bulk_get_all(dev, &priv->clks);
++	if (priv->num_clks < 0)
++		return dev_err_probe(dev, priv->num_clks,
++				     "failed to acquire clocks\n");
++
++	ret = clk_bulk_prepare_enable(priv->num_clks, priv->clks);
++	if (ret)
++		return dev_err_probe(dev, ret,
++				     "failed to enable clocks\n");
++
+ 	priv->rst = devm_reset_control_array_get_exclusive(dev);
+ 	if (IS_ERR(priv->rst))
+ 		return dev_err_probe(dev, PTR_ERR(priv->rst),
