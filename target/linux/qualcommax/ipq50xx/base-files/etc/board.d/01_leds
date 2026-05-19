@@ -15,6 +15,10 @@ elecom,wrc-x3000gst2|\
 iodata,wn-dax3000gr)
 	ucidef_set_led_netdev "wan" "WAN" "green:wan" "wan" "tx rx link_10 link_100 link_1000"
 	;;
+
+motorola,q14)
+	ucidef_set_led_netdev "wan-port-link" "WAN-PORT-LINK" "90000.mdio-1:1c:green:wan" "wan" "tx rx link_10 link_100 link_1000 link_2500"
+	;;
 linksys,mr5500)
 	ucidef_set_led_netdev "lan1-port-link" "LAN1-PORT-LINK" "qca8k-0.0:00:green:lan" "lan1" "link_10 link_100 link_1000"
 	ucidef_set_led_netdev "lan1-port-activity" "LAN1-PORT-ACTIVITY" "qca8k-0.0:00:amber:lan" "lan1" "tx rx"

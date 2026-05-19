@@ -201,6 +201,14 @@ define Device/linksys_spnmx56
 endef
 TARGET_DEVICES += linksys_spnmx56
 
+define Device/motorola_q14
+	$(call Device/FitImage)
+	DEVICE_VENDOR := Motorola
+	DEVICE_MODEL := Q14
+	SOC := ipq5018
+endef
+TARGET_DEVICES += motorola_q14
+
 define Device/xiaomi_ipq50xx_ax_base
 	$(call Device/FitImage)
 	$(call Device/UbiFit)
