@@ -1,0 +1,26 @@
+From: Robert Marko <robert.marko@sartura.hr>
+Date: Sat, 8 Aug 2026 17:45:00 +0200
+Subject: [PATCH] net: airoha: handle missing managed property
+
+The managed property is optional, but airoha_pcs_init() passes its value
+to strncmp() without checking whether dev_read_string() returned NULL.
+
+Treat a missing property as disabled in-band negotiation.
+
+Signed-off-by: Robert Marko <robert.marko@sartura.hr>
+---
+ drivers/net/airoha_eth.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+--- a/drivers/net/airoha_eth.c
++++ b/drivers/net/airoha_eth.c
+@@ -750,7 +750,8 @@ static int airoha_pcs_init(struct udevice
+ 	port->pcs_dev = pcs_dev;
+ 	port->mode = dev_read_phy_mode(dev);
+ 	managed = dev_read_string(dev, "managed");
+-	port->neg_mode = !strncmp(managed, "in-band-status",
++	port->neg_mode = managed &&
++			 !strncmp(managed, "in-band-status",
+ 				  sizeof("in-band-status"));
+ 
+ 	airoha_pcs_pre_config(pcs_dev, port->mode);
