@@ -1,0 +1,103 @@
+--- a/src/ptgen.c
++++ b/src/ptgen.c
+@@ -180,6 +180,7 @@ char *filename = NULL;
+ int gpt_split_image = false;
+ int gpt_alternate = false;
+ uint64_t gpt_first_entry_sector = GPT_FIRST_ENTRY_SECTOR;
++uint64_t gpt_first_usable_sector = 0;
+ uint64_t gpt_last_usable_sector = 0;
+ 
+ /*
+@@ -411,13 +412,15 @@ fail:
+ /* check the partition sizes and write the guid partition table */
+ static int gen_gptable(uint32_t signature, guid_t guid, unsigned nr)
+ {
++	uint64_t first_usable = gpt_first_usable_sector ?
++		gpt_first_usable_sector : gpt_first_entry_sector + GPT_SIZE;
+ 	struct pte pte[MBR_ENTRY_MAX];
+ 	struct gpth gpth = {
+ 		.signature = cpu_to_le64(GPT_SIGNATURE),
+ 		.revision = cpu_to_le32(GPT_REVISION),
+ 		.size = cpu_to_le32(GPT_HEADER_SIZE),
+ 		.self = cpu_to_le64(GPT_HEADER_SECTOR),
+-		.first_usable = cpu_to_le64(gpt_first_entry_sector + GPT_SIZE),
++		.first_usable = cpu_to_le64(first_usable),
+ 		.first_entry = cpu_to_le64(gpt_first_entry_sector),
+ 		.disk_guid = guid,
+ 		.entry_num = cpu_to_le32(GPT_ENTRY_MAX),
+@@ -425,7 +428,7 @@ static int gen_gptable(uint32_t signature, guid_t guid, unsigned nr)
+ 	};
+ 	struct gpte  gpte[GPT_ENTRY_MAX];
+ 	uint64_t start, end;
+-	uint64_t sect = GPT_SIZE + gpt_first_entry_sector;
++	uint64_t sect = first_usable;
+ 	int fd, ret = -1;
+ 	unsigned i, index, pmbr = 1;
+ 	char img_name[strlen(filename) + 20];
+@@ -450,6 +453,15 @@ static int gen_gptable(uint32_t signature, guid_t guid, unsigned nr)
+ 		} else if (kb_align != 0) {
+ 			start = round_to_kb(start);
+ 		}
++		if (start < first_usable) {
++			fprintf(stderr, "Partition %d starts before the first usable sector\n", i);
++			return ret;
++		}
++		if (start < gpt_first_entry_sector + GPT_SIZE &&
++		    gpt_first_entry_sector < start + parts[i].size * 2) {
++			fprintf(stderr, "Partition %d overlaps the GPT entry table\n", i);
++			return ret;
++		}
+ 		if ((gpt_last_usable_sector > 0) &&
+ 		    (start + parts[i].size * 2 > gpt_last_usable_sector + 1)) {
+ 				fprintf(stderr, "Partition %d ends after last usable sector %ld\n",
+@@ -523,7 +535,7 @@ static int gen_gptable(uint32_t signature, guid_t guid, unsigned nr)
+ 
+ 	if (verbose)
+ 		fprintf(stderr, "PartitionEntryLBA=%" PRIu64 ", FirstUsableLBA=%" PRIu64 ", LastUsableLBA=%" PRIu64 "\n",
+-			gpt_first_entry_sector, gpt_first_entry_sector + GPT_SIZE, gpt_last_usable_sector);
++			gpt_first_entry_sector, first_usable, gpt_last_usable_sector);
+ 
+ 	if (!gpt_split_image)
+ 		strcpy(img_name, filename);
+@@ -643,6 +655,8 @@ static void usage(char *prog)
+ 			"  -g, --gpt                       use GPT instead of MBR\n"
+ 			"  -G, --gpt-guid=GUID             defines custom GPT GUID\n"
+ 			"  -e, --gpt-entry-offset=OFFSET   defines custom placement of GPT Entry table (default: 1K)\n"
++			"  -u, --gpt-first-usable-offset=OFFSET\n"
++			"                                    defines first usable GPT offset (default: after Entry table)\n"
+ 			"  -d, --gpt-disk-size=SIZE        defines total size of disk image (used for ALT GPT headers)\n"
+ 			"  -b, --gpt-split-images          generate 2 or 3 images (depends on entry table placement):\n"
+ 			"                                    GPT header + GPT Entry Table, Alt Entry Table + ALT Header\n"
+@@ -711,6 +725,7 @@ int main (int argc, char **argv)
+ 			{"gpt",				no_argument,		0,	'g'},
+ 			{"gpt-guid",			required_argument,	0,	'G'},
+ 			{"gpt-entry-offset",		required_argument,	0,	'e'},
++			{"gpt-first-usable-offset",	required_argument,	0,	'u'},
+ 			{"gpt-disk-size",		required_argument,	0,	'd'},
+ 			{"gpt-split-images",		no_argument,		0,	'b'},
+ 			{"part",			required_argument,	0,	'p'},
+@@ -724,7 +739,7 @@ int main (int argc, char **argv)
+ 			{NULL,				0,			0,	 0 },
+ 		};
+ 
+-		ch = getopt_long(argc, argv, "?h:s:p:a:t:T:o:DvnbHN:gl:rBS:G:e:d:i:",
++		ch = getopt_long(argc, argv, "?h:s:p:a:t:T:o:DvnbHN:gl:rBS:G:e:u:d:i:",
+ 				 long_options, &option_index);
+ 		if (ch == -1)
+ 			break;
+@@ -757,6 +772,15 @@ int main (int argc, char **argv)
+ 				exit(EXIT_FAILURE);
+ 			}
+ 			break;
++		case 'u':
++			/* based on DISK_SECTOR_SIZE = 512 */
++			gpt_first_usable_sector = 2 * to_kbytes(optarg);
++			if (gpt_first_usable_sector < GPT_HEADER_SECTOR + 1) {
++				fputs("GPT First Usable offset must be at least 1 KByte\n",
++				      stderr);
++				exit(EXIT_FAILURE);
++			}
++			break;
+ 		case 'd':
+ 			/*
+ 			 * Zero disk_size is specially allowed. It means: find a disk size
