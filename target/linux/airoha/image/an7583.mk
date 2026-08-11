@@ -13,6 +13,17 @@ define Build/an7583-bl31-uboot
   cat $(STAGING_DIR_IMAGE)/an7583_$1-bl31-u-boot.fip >> $@
 endef
 
+define Build/an7583-gpt-emmc
+	ptgen -g -o $@.tmp -e 576k -u 2k -D -l 1024 \
+			-t 0x83 -N bl2    -r  -p 126k@2k \
+			-t 0x83 -N bl31  	-r  -p 368k@128k \
+			-t 0x83 -N ubootenv -r -p 64k@496k \
+			-t 0x2e -N production -p $(CONFIG_TARGET_ROOTFS_PARTSIZE)M@1M
+	dd if=$@.tmp of=$@ bs=512 count=2 conv=notrunc
+	dd if=$@.tmp of=$@ bs=512 skip=1152 seek=1152 count=32 conv=notrunc
+	rm $@.tmp
+endef
+
 define Device/FitImageLzma
   KERNEL_SUFFIX := -uImage.itb
   KERNEL = kernel-bin | lzma | \
@@ -46,6 +57,32 @@ define Device/airoha_an7583-evb-emmc
   ARTIFACTS := preloader.bin bl31-uboot.fip
 endef
 TARGET_DEVICES += airoha_an7583-evb-emmc
+
+define Device/datamate_nanoDPU
+  DEVICE_VENDOR := Datamate
+  DEVICE_MODEL := NanoDPU
+  DEVICE_DTS := an7583-nanoDPU
+  DEVICE_PACKAGES := fitblk e2fsprogs kmod-hwmon-lm75 kmod-sfp
+  KERNEL := kernel-bin | gzip
+  KERNEL_INITRAMFS := kernel-bin | lzma | \
+	fit lzma $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb with-initrd
+ifeq ($(DUMP),)
+  IMAGE_SIZE := $$(shell expr 1 + $$(CONFIG_TARGET_ROOTFS_PARTSIZE))m
+endif
+  ARTIFACT/preloader.bin := an7583-preloader rfb
+  ARTIFACT/bl31-uboot.fip := an7583-bl31-uboot datamate_nanoDPU
+  ARTIFACTS := preloader.bin bl31-uboot.fip emmc-factory.img
+  IMAGES := sysupgrade.itb
+  IMAGE/sysupgrade.itb := append-kernel | \
+	fit gzip $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb \
+		external-static-with-rootfs | \
+	pad-rootfs | append-metadata
+  ARTIFACT/emmc-factory.img := pad-extra 2k | an7583-preloader rfb |\
+		pad-to 128k | an7583-bl31-uboot datamate_nanoDPU |\
+		an7583-gpt-emmc | pad-to 1M |\
+		append-image squashfs-sysupgrade.itb | check-size
+endef
+TARGET_DEVICES += datamate_nanoDPU
 
 define Device/nokia_xg-040g-mf-common
   $(call Device/FitImageLzma)

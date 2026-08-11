@@ -72,6 +72,16 @@ define U-Boot/an7583_rfb
   DEPENDS:=+trusted-firmware-a-an7583-bl31
 endef
 
+define U-Boot/an7583_datamate_nanoDPU
+  NAME:=Datamate NanoDPU
+  UBOOT_CONFIG:=an7583_nanoDPU
+  BUILD_DEVICES:=datamate_nanoDPU
+  BUILD_SUBTARGET:=an7583
+  BL2_IMAGE:=an7583-bl2.bin
+  BL31_IMAGE:=an7583-bl31.bin
+  DEPENDS:=+trusted-firmware-a-an7583-bl31
+endef
+
 define U-Boot/en7523_rfb
   NAME:=EN7523 Reference Board
   UBOOT_CONFIG:=en7523_evb
@@ -86,6 +96,7 @@ UBOOT_TARGETS := \
 	an7581_nokia_valyrian \
 	an7581_nokia_xg-040g-md \
 	an7581_rfb \
+	an7583_datamate_nanoDPU \
 	an7583_nokia_xg-040g-mf \
 	an7583_rfb \
 	en7523_rfb
