@@ -1,0 +1,60 @@
+From: Robert Marko <robert.marko@sartura.hr>
+Date: Tue, 11 Aug 2026 13:20:00 +0200
+Subject: [PATCH] net: pcs: airoha: calibrate AN7583 RX before autoneg
+
+AN7583 performs the CDR and RX-ready calibration from the PCS link-up
+callback. This is too late for SGMII and 1000Base-X since the PCS must
+receive a valid in-band status word before phylink reports link up and
+calls that callback.
+
+Run the calibration after configuring these modes, then ask phylink to
+restart in-band negotiation. Without this, SGMII modules can remain down
+with no partner ability despite valid signal detection.
+
+Signed-off-by: Robert Marko <robert.marko@sartura.hr>
+---
+ drivers/net/pcs/airoha/pcs-airoha-common.c | 15 +++++++++++++++
+ drivers/net/pcs/airoha/pcs-airoha.h        |  1 +
+ 2 files changed, 16 insertions(+)
+
+--- a/drivers/net/pcs/airoha/pcs-airoha-common.c
++++ b/drivers/net/pcs/airoha/pcs-airoha-common.c
+@@ -704,6 +704,20 @@ static int airoha_pcs_config(struct phyl
+ 				AIROHA_PCS_XFI_TX_FC_EN | AIROHA_PCS_XFI_RX_FC_EN :
+ 				0);
+ 
++	/* AN7583 needs RX calibration before it can receive the in-band
++	 * status word. Without it, phylink never observes the link-up event
++	 * which would normally trigger the same calibration.
++	 */
++	if (data->needs_pre_an_calibration && data->link_up &&
++	    (interface == PHY_INTERFACE_MODE_SGMII ||
++	     interface == PHY_INTERFACE_MODE_1000BASEX)) {
++		data->link_up(priv, index);
++
++		/* Restart negotiation after resetting the CDR and RX-ready state. */
++		if (neg_mode == PHYLINK_PCS_NEG_INBAND_ENABLED)
++			return 1;
++	}
++
+ 	return 0;
+ }
+ 
+@@ -1436,6 +1450,7 @@ static const struct airoha_pcs_match_dat
+ 	.usxgmii_rx_gb_out_vld_tweak = true,
+ 	.usxgmii_xfi_mode_sel = true,
+ 	.bringup = an7583_pcs_common_phya_bringup,
++	.needs_pre_an_calibration = true,
+ 	.link_up = an7583_pcs_common_phya_link_up,
+ };
+ 
+--- a/drivers/net/pcs/airoha/pcs-airoha.h
++++ b/drivers/net/pcs/airoha/pcs-airoha.h
+@@ -1677,6 +1677,7 @@ struct airoha_pcs_match_data {
+ 	bool usxgmii_ber_time_fixup;
+ 	bool usxgmii_rx_gb_out_vld_tweak;
+ 	bool usxgmii_xfi_mode_sel;
++	bool needs_pre_an_calibration;
+ 
+ 	int (*alloc_regmap_fields)(struct airoha_pcs_priv *priv);
+ 	int (*bringup)(struct airoha_pcs_priv *priv,
