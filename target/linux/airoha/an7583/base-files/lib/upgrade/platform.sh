@@ -13,6 +13,7 @@ platform_check_image() {
 	local board=$(board_name)
 
 	case "$board" in
+	datamate,nanoDPU|\
 	nokia,xg-040g-mf-ubi)
 		fit_check_image "$1"
 		return $?
@@ -30,11 +31,20 @@ platform_do_upgrade() {
 	local board=$(board_name)
 
 	case "$board" in
+	datamate,nanoDPU|\
 	nokia,xg-040g-mf-ubi)
 		fit_do_upgrade "$1"
 		;;
 	*)
 		nand_do_upgrade "$1"
+		;;
+	esac
+}
+
+platform_copy_config() {
+	case "$(board_name)" in
+	datamate,nanoDPU)
+		emmc_copy_config
 		;;
 	esac
 }
