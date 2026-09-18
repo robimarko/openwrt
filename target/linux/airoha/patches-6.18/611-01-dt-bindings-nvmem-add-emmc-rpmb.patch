@@ -1,0 +1,83 @@
+From: Robert Marko <robert.marko@sartura.hr>
+Subject: [PATCH] dt-bindings: nvmem: describe read-only eMMC RPMB storage
+
+Describe an opt-in RPMB NVMEM child of an MMC card, with standard NVMEM
+layouts and explicitly unauthenticated, read-only access semantics.
+
+Signed-off-by: Robert Marko <robert.marko@sartura.hr>
+---
+--- a/Documentation/devicetree/bindings/mmc/mmc-card.yaml
++++ b/Documentation/devicetree/bindings/mmc/mmc-card.yaml
+@@ -24,6 +24,9 @@ properties:
+   reg:
+     const: 0
+ 
++  rpmb:
++    $ref: /schemas/nvmem/mmc-rpmb-nvmem.yaml#
++
+   broken-hpi:
+     $ref: /schemas/types.yaml#/definitions/flag
+     description:
+--- /dev/null
++++ b/Documentation/devicetree/bindings/nvmem/mmc-rpmb-nvmem.yaml
+@@ -0,0 +1,60 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/nvmem/mmc-rpmb-nvmem.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Read-only eMMC RPMB NVMEM
++
++maintainers:
++  - Robert Marko <robert.marko@sartura.hr>
++
++description: |
++  An opt-in view of the eMMC replay protected memory block as read-only
++  NVMEM. The rpmb node is a child of the mmc-card node. Byte offset zero
++  corresponds to RPMB data block zero; each block contains 256 data bytes.
++  Capacity is obtained from the eMMC.
++
++  This interface does not authenticate response MACs. It is intended for
++  non-secret factory data, not trusted or replay-protected storage. It
++  cannot write data or provision an authentication key.
++
++allOf:
++  - $ref: nvmem.yaml#
++
++properties:
++  compatible:
++    const: mmc-rpmb-nvmem
++
++  nvmem-layout: true
++
++required:
++  - compatible
++  - nvmem-layout
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    mmc {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        card@0 {
++            compatible = "mmc-card";
++            reg = <0>;
++
++            rpmb {
++                compatible = "mmc-rpmb-nvmem";
++
++                nvmem-layout {
++                    compatible = "u-boot,env";
++                    env-size = <256>;
++
++                    ethaddr {
++                        #nvmem-cell-cells = <1>;
++                    };
++                };
++            };
++        };
++    };
