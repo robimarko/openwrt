@@ -96,6 +96,19 @@
 		compatible = "mmc-card";
 		reg = <0>;
 
+		rpmb {
+			compatible = "mmc-rpmb-nvmem";
+
+			nvmem-layout {
+				compatible = "u-boot,env";
+				env-size = <0x100>;
+
+				factory_mac: ethaddr {
+					#nvmem-cell-cells = <1>;
+				};
+			};
+		};
+
 		block {
 			compatible = "block-device";
 
@@ -138,15 +151,17 @@
 
 &gdm2 {
 	status = "okay";
-
 	sfp = <&sfp>;
-
 	managed = "in-band-status";
 	phy-mode = "sgmii";
+	nvmem-cells = <&factory_mac 0>;
+	nvmem-cell-names = "mac-address";
 };
 
 &gdm3 {
 	status = "okay";
 	managed = "in-band-status";
 	phy-mode = "2500base-x";
+	nvmem-cells = <&factory_mac 1>;
+	nvmem-cell-names = "mac-address";
 };

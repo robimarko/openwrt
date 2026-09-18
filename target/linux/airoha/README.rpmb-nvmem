@@ -1,0 +1,53 @@
+NanoDPU RPMB factory environment
+==============================
+
+The AN7583 kernel includes a read-only eMMC RPMB NVMEM provider. It is
+enabled only for MMC cards with an "rpmb" child whose compatible is
+"mmc-rpmb-nvmem". Other cards are unaffected.
+
+The provider exposes the RPMB data capacity as bytes, excluding protocol
+headers. It reads one 256-byte data block per transaction, supports
+unaligned reads spanning blocks, and checks transport errors, response
+type, result, address and nonce. It does not verify response MACs and
+must not be used as an authenticated or confidential storage interface.
+It exposes no data-write or key-programming operation.
+
+NanoDPU uses the existing u-boot,env NVMEM layout with env-size = <256>.
+The environment starts at RPMB data block zero. Its four-byte little-endian
+CRC32 covers the remaining 252 bytes, including padding. Generate it with:
+
+  mkenvimage -s 0x100 -o factory-env.bin factory-env.txt
+
+Example text input:
+
+  ethaddr=8A:43:A7:2B:3B:BE
+  serial#=7
+  model=NanoDPU
+
+Provision the environment separately using your existing RPMB tooling.
+The kernel does not provision it or modify any RPMB contents. Reserve this
+block for factory data; it must not overlap storage owned by a TEE.
+
+The layout validates the CRC and creates a cell for each variable. The
+ethaddr cell converts the ASCII MAC to six bytes and supplies GDM2/eth0.
+GDM3/eth1 uses the base MAC plus one. Serial and model are
+exported as strings; this does not replace the device-tree model or
+automatically populate the system serial-number property.
+
+Read-only checks after boot:
+
+  dmesg | grep -Ei 'rpmb|nvmem|CRC|eth0'
+  ls /sys/bus/nvmem/devices/
+  cat /sys/class/net/eth0/address
+  ls /sys/bus/nvmem/devices/rpmb*-nvmem/cells/
+  cat /sys/bus/nvmem/devices/rpmb*-nvmem/cells/serial\#@*
+  cat /sys/bus/nvmem/devices/rpmb*-nvmem/cells/model@*
+  dd if=/sys/bus/nvmem/devices/rpmb0-nvmem/nvmem bs=256 count=1 | hexdump -C
+
+The expected eth0 address for the example is 8a:43:a7:2b:3b:be. The serial
+and model cells contain 7 and NanoDPU, without terminating newlines.
+The RPMB device number may differ if multiple devices are present.
+
+If the RPMB key is not provisioned, or a transaction fails, reads return
+an error. A bad environment CRC prevents creation of the layout cells.
+The CRC detects corruption but does not authenticate the environment.
