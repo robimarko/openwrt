@@ -1,0 +1,530 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
+
+/dts-v1/;
+
+#include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/input/input.h>
+#include <dt-bindings/leds/common.h>
+#include "ipq9574.dtsi"
+
+/ {
+	model = "Babtel Kiwi";
+	compatible = "babtel,kiwi", "qcom,ipq9574";
+
+	aliases {
+		serial0 = &blsp1_uart2;
+		led-boot = &led_power;
+		led-failsafe = &led_power;
+		led-running = &led_power;
+		led-upgrade = &led_power;
+	};
+
+	chosen {
+		stdout-path = "serial0:115200n8";
+	};
+
+	keys {
+		compatible = "gpio-keys";
+		pinctrl-0 = <&button_pins>;
+		pinctrl-names = "default";
+
+		reset-button {
+			label = "reset";
+			gpios = <&tlmm 61 GPIO_ACTIVE_LOW>;
+			linux,code = <KEY_RESTART>;
+		};
+	};
+
+	leds {
+		compatible = "gpio-leds";
+
+		led_power: led-power {
+			color = <LED_COLOR_ID_GREEN>;
+			function = LED_FUNCTION_POWER;
+			gpios = <&tlmm 62 GPIO_ACTIVE_LOW>;
+			default-state = "on";
+		};
+
+		led-sfp-green {
+			color = <LED_COLOR_ID_GREEN>;
+			function = LED_FUNCTION_LAN;
+			function-enumerator = <0>;
+			gpios = <&tlmm 44 GPIO_ACTIVE_LOW>;
+			default-state = "off";
+		};
+
+		led-sfp-yellow {
+			color = <LED_COLOR_ID_YELLOW>;
+			function = LED_FUNCTION_LAN;
+			function-enumerator = <0>;
+			gpios = <&tlmm 43 GPIO_ACTIVE_LOW>;
+			default-state = "off";
+		};
+	};
+
+	sfp0: sfp-0 {
+		compatible = "sff,sfp";
+		i2c-bus = <&blsp1_i2c1>;
+		tx-disable-gpios = <&tlmm 41 GPIO_ACTIVE_HIGH>;
+		los-gpios = <&tlmm 45 GPIO_ACTIVE_HIGH>;
+		mod-def0-gpios = <&tlmm 42 GPIO_ACTIVE_LOW>;
+		tx-fault-gpios = <&tlmm 40 GPIO_ACTIVE_HIGH>;
+		/* RS1 is internally tied to RS0 */
+		rate-select0-gpios = <&tlmm 47 GPIO_ACTIVE_HIGH>;
+	};
+};
+
+&sleep_clk {
+	clock-frequency = <32000>;
+};
+
+/*
+ * The bootstrap pins for the board select the XO clock frequency,
+ * which automatically enables the right dividers to ensure the
+ * reference clock output from WiFi is 48 MHZ.
+ */
+&ref_48mhz_clk {
+	clock-div = <1>;
+	clock-mult = <1>;
+};
+
+/*
+ * The frequency of xo_board_clk is fixed to 24 MHZ, which is routed
+ * from WiFi output clock 48 MHZ divided by 2.
+ */
+&xo_board_clk {
+	clock-div = <2>;
+	clock-mult = <1>;
+};
+
+&xo_clk {
+	clock-frequency = <48000000>;
+};
+
+&tlmm {
+	button_pins: button-default-state {
+		pins = "gpio61";
+		function = "gpio";
+		drive-strength = <8>;
+		bias-pull-up;
+	};
+
+	sdc_default_state: sdc-default-state {
+		clk-pins {
+			pins = "gpio5";
+			function = "sdc_clk";
+			drive-strength = <8>;
+			bias-disable;
+		};
+
+		cmd-pins {
+			pins = "gpio4";
+			function = "sdc_cmd";
+			drive-strength = <8>;
+			bias-pull-up;
+		};
+
+		data-pins {
+			pins = "gpio0", "gpio1", "gpio2",
+			       "gpio3", "gpio6", "gpio7",
+			       "gpio8", "gpio9";
+			function = "sdc_data";
+			drive-strength = <8>;
+			bias-pull-up;
+		};
+
+		rclk-pins {
+			pins = "gpio10";
+			function = "sdc_rclk";
+			drive-strength = <8>;
+			bias-pull-down;
+		};
+	};
+
+	spi_0_default: spi-0-default-state {
+		pins = "gpio11", "gpio12", "gpio13", "gpio14";
+		function = "blsp0_spi";
+		drive-strength = <8>;
+		bias-disable;
+	};
+
+	i2c1_default: i2c1-default-state {
+		pins = "gpio36", "gpio37";
+		function = "blsp1_i2c";
+		drive-strength = <8>;
+		bias-pull-up;
+	};
+
+	i2c4_default: i2c4-default-state {
+		pins = "gpio50", "gpio51";
+		function = "blsp4_i2c";
+		drive-strength = <8>;
+		bias-pull-up;
+	};
+
+	mdint_default: mdint-default-state {
+		pins = "gpio15";
+		function = "gpio";
+		drive-strength = <8>;
+		bias-pull-up;
+	};
+
+	pcie0_default: pcie0-default-state {
+		clkreq-n-pins {
+			pins = "gpio22";
+			function = "pcie0_clk";
+			drive-strength = <6>;
+			bias-pull-up;
+		};
+
+		perst-n-pins {
+			pins = "gpio23";
+			function = "gpio";
+			drive-strength = <8>;
+			bias-pull-down;
+			output-low;
+		};
+
+		wake-n-pins {
+			pins = "gpio24";
+			function = "pcie0_wake";
+			drive-strength = <6>;
+			bias-pull-up;
+		};
+	};
+
+	pcie1_default: pcie1-default-state {
+		clkreq-n-pins {
+			pins = "gpio25";
+			function = "pcie1_clk";
+			drive-strength = <6>;
+			bias-pull-up;
+		};
+
+		perst-n-pins {
+			pins = "gpio26";
+			function = "gpio";
+			drive-strength = <8>;
+			bias-pull-down;
+			output-low;
+		};
+
+		wake-n-pins {
+			pins = "gpio27";
+			function = "pcie1_wake";
+			drive-strength = <6>;
+			bias-pull-up;
+		};
+	};
+
+	pcie2_default: pcie2-default-state {
+		clkreq-n-pins {
+			pins = "gpio28";
+			function = "pcie2_clk";
+			drive-strength = <6>;
+			bias-pull-up;
+		};
+
+		perst-n-pins {
+			pins = "gpio29";
+			function = "gpio";
+			drive-strength = <8>;
+			bias-pull-down;
+			output-low;
+		};
+
+		wake-n-pins {
+			pins = "gpio30";
+			function = "pcie2_wake";
+			drive-strength = <6>;
+			bias-pull-up;
+		};
+	};
+
+	pcie3_default: pcie3-default-state {
+		clkreq-n-pins {
+			pins = "gpio31";
+			function = "pcie3_clk";
+			drive-strength = <6>;
+			bias-pull-up;
+		};
+
+		perst-n-pins {
+			pins = "gpio32";
+			function = "gpio";
+			drive-strength = <8>;
+			bias-pull-up;
+			output-low;
+		};
+
+		wake-n-pins {
+			pins = "gpio33";
+			function = "pcie3_wake";
+			drive-strength = <6>;
+			bias-pull-up;
+		};
+	};
+};
+
+&blsp1_uart2 {
+	pinctrl-0 = <&uart2_pins>;
+	pinctrl-names = "default";
+	status = "okay";
+};
+
+&blsp1_i2c1 {
+	pinctrl-0 = <&i2c1_default>;
+	pinctrl-names = "default";
+	status = "okay";
+};
+
+&blsp1_i2c4 {
+	pinctrl-0 = <&i2c4_default>;
+	pinctrl-names = "default";
+	status = "okay";
+
+	temperature-sensor@18 {
+		compatible = "jedec,jc-42.4-temp";
+		reg = <0x18>;
+	};
+
+	temperature-sensor@19 {
+		compatible = "jedec,jc-42.4-temp";
+		reg = <0x19>;
+	};
+};
+
+&blsp1_spi0 {
+	pinctrl-0 = <&spi_0_default>;
+	pinctrl-names = "default";
+	status = "okay";
+
+	flash@0 {
+		compatible = "jedec,spi-nor";
+		reg = <0>;
+		spi-max-frequency = <50000000>;
+	};
+};
+
+&sdhc_1 {
+	pinctrl-0 = <&sdc_default_state>;
+	pinctrl-names = "default";
+	bus-width = <8>;
+	max-frequency = <384000000>;
+	mmc-ddr-1_8v;
+	mmc-hs200-1_8v;
+	mmc-hs400-1_8v;
+	mmc-hs400-enhanced-strobe;
+	non-removable;
+	no-sdio;
+	no-sd;
+	#address-cells = <1>;
+	#size-cells = <0>;
+	status = "okay";
+
+	card@0 {
+		compatible = "mmc-card";
+		reg = <0>;
+
+		block {
+			compatible = "block-device";
+
+			partitions {
+				block-partition-art {
+					partname = "0:ART";
+
+					nvmem: nvmem-layout {
+						compatible = "fixed-layout";
+						#address-cells = <1>;
+						#size-cells = <1>;
+
+						mac0: macaddr@0 {
+							reg = <0x0 0x6>;
+						};
+
+						mac1: macaddr@6 {
+							reg = <0x6 0x6>;
+						};
+
+						mac2: macaddr@c {
+							reg = <0xc 0x6>;
+						};
+					};
+				};
+			};
+		};
+	};
+};
+
+&mdio {
+	status = "okay";
+	pinctrl-0 = <&mdio_pins>, <&mdint_default>;
+	pinctrl-names = "default";
+	reset-gpios = <&tlmm 16 GPIO_ACTIVE_LOW>;
+	reset-assert-us = <10000>;
+	reset-deassert-us = <500000>;
+
+	mxl86211c_1: ethernet-phy@1 {
+		reg = <1>;
+		maxlinear,mdio-voltage-microvolt = <1800000>;
+		maxlinear,lane-asp-map = <0x00e4>;
+		interrupts = <15 IRQ_TYPE_LEVEL_LOW>;
+		interrupt-parent = <&tlmm>;
+	};
+
+	mxl86211c_2: ethernet-phy@2 {
+		reg = <2>;
+		maxlinear,mdio-voltage-microvolt = <1800000>;
+		maxlinear,lane-asp-map = <0x00e4>;
+		interrupts = <15 IRQ_TYPE_LEVEL_LOW>;
+		interrupt-parent = <&tlmm>;
+	};
+};
+
+&rpm_requests {
+	regulators {
+		compatible = "qcom,rpm-mp5496-regulators";
+
+		ipq9574_s1: s1 {
+		/*
+		 * During kernel bootup, the SoC runs at 800MHz with 875mV set by the bootloaders.
+		 * During regulator registration, kernel not knowing the initial voltage,
+		 * considers it as zero and brings up the regulators with minimum supported voltage.
+		 * Update the regulator-min-microvolt with SVS voltage of 725mV so that
+		 * the regulators are brought up with 725mV which is sufficient for all the
+		 * corner parts to operate at 800MHz
+		 */
+			regulator-min-microvolt = <725000>;
+			regulator-max-microvolt = <1075000>;
+		};
+
+		mp5496_l5: l5 {
+			regulator-min-microvolt = <1800000>;
+			regulator-max-microvolt = <1800000>;
+			regulator-always-on;
+			regulator-boot-on;
+		};
+	};
+};
+
+&qcom_ppe {
+	ethernet-ports {
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		xgmac1: port@1 {
+			reg = <1>;
+			phy-mode = "10gbase-r";
+			managed = "in-band-status";
+			label = "sfp";
+			sfp = <&sfp0>;
+			pcs-handle = <&pcs0_ch0>;
+			clocks = <&nsscc NSS_CC_PORT1_MAC_CLK>,
+				 <&nsscc NSS_CC_PORT1_RX_CLK>,
+				 <&nsscc NSS_CC_PORT1_TX_CLK>;
+			clock-names = "mac",
+				      "rx",
+				      "tx";
+			resets = <&nsscc PORT1_MAC_ARES>,
+				 <&nsscc PORT1_RX_ARES>,
+				 <&nsscc PORT1_TX_ARES>;
+			reset-names = "mac",
+				      "rx",
+				      "tx";
+			nvmem-cells = <&mac0>;
+			nvmem-cell-names = "mac-address";
+		};
+
+		xgmac5: port@5 {
+			reg = <5>;
+			phy-mode = "2500base-x";
+			label = "lan1";
+			phy-handle = <&mxl86211c_1>;
+			pcs-handle = <&pcs1_ch0>;
+			clocks = <&nsscc NSS_CC_PORT5_MAC_CLK>,
+				 <&nsscc NSS_CC_PORT5_RX_CLK>,
+				 <&nsscc NSS_CC_PORT5_TX_CLK>;
+			clock-names = "mac",
+				      "rx",
+				      "tx";
+			resets = <&nsscc PORT5_MAC_ARES>,
+				 <&nsscc PORT5_RX_ARES>,
+				 <&nsscc PORT5_TX_ARES>;
+			reset-names = "mac",
+				      "rx",
+				      "tx";
+		};
+
+		xgmac6: port@6 {
+			reg = <6>;
+			phy-mode = "2500base-x";
+			label = "lan2";
+			phy-handle = <&mxl86211c_2>;
+			pcs-handle = <&pcs2_ch0>;
+			clocks = <&nsscc NSS_CC_PORT6_MAC_CLK>,
+				 <&nsscc NSS_CC_PORT6_RX_CLK>,
+				 <&nsscc NSS_CC_PORT6_TX_CLK>;
+			clock-names = "mac",
+				      "rx",
+				      "tx";
+			resets = <&nsscc PORT6_MAC_ARES>,
+				 <&nsscc PORT6_RX_ARES>,
+				 <&nsscc PORT6_TX_ARES>;
+			reset-names = "mac",
+				      "rx",
+				      "tx";
+		};
+	};
+};
+
+&pcie0 {
+	pinctrl-0 = <&pcie0_default>;
+	pinctrl-names = "default";
+
+	perst-gpios = <&tlmm 23 GPIO_ACTIVE_LOW>;
+	wake-gpios = <&tlmm 24 GPIO_ACTIVE_LOW>;
+	status = "okay";
+};
+
+&pcie0_phy {
+	status = "okay";
+};
+
+&pcie1 {
+	pinctrl-0 = <&pcie1_default>;
+	pinctrl-names = "default";
+
+	perst-gpios = <&tlmm 26 GPIO_ACTIVE_LOW>;
+	wake-gpios = <&tlmm 27 GPIO_ACTIVE_LOW>;
+	status = "okay";
+};
+
+&pcie1_phy {
+	status = "okay";
+};
+
+&pcie2 {
+	pinctrl-0 = <&pcie2_default>;
+	pinctrl-names = "default";
+
+	perst-gpios = <&tlmm 29 GPIO_ACTIVE_LOW>;
+	wake-gpios = <&tlmm 30 GPIO_ACTIVE_LOW>;
+	status = "okay";
+};
+
+&pcie2_phy {
+	status = "okay";
+};
+
+&pcie3 {
+	pinctrl-0 = <&pcie3_default>;
+	pinctrl-names = "default";
+
+	perst-gpios = <&tlmm 32 GPIO_ACTIVE_LOW>;
+	wake-gpios = <&tlmm 33 GPIO_ACTIVE_LOW>;
+	status = "okay";
+};
+
+&pcie3_phy {
+	status = "okay";
+};

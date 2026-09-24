@@ -1,0 +1,17 @@
+
+. /lib/functions/uci-defaults.sh
+
+board_config_update
+
+board=$(board_name)
+
+case "$board" in
+babtel,kiwi)
+	ucidef_set_led_netdev "sfp-link" "SFP-LINK" "green:lan-0" "sfp" "link"
+	ucidef_set_led_netdev "sfp-traffic" "SFP-TRAFFIC" "yellow:lan-0" "sfp" "tx rx"
+	;;
+esac
+
+board_config_flush
+
+exit 0

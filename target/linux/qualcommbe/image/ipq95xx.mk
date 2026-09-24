@@ -31,6 +31,21 @@ define Device/askey_sbe1v1k
 endef
 TARGET_DEVICES += askey_sbe1v1k
 
+define Device/babtel_kiwi
+	$(call Device/FitImage)
+	$(call Device/EmmcImage)
+	DEVICE_VENDOR := Babtel
+	DEVICE_MODEL := Kiwi
+	DEVICE_DTS := ipq9570-babtel-kiwi
+	DEVICE_DTS_CONFIG := config@8dev-kiwi
+	SOC := ipq9570
+	DEVICE_PACKAGES := kmod-ath12k ath12k-firmware-qcn9274 \
+		ipq-wifi-8devices_kiwi f2fsck mkf2fs kmod-sfp \
+		kmod-hwmon-jc42 kmod-phy-maxlinear
+	IMAGE/factory.bin := qsdk-ipq-factory-nor
+endef
+TARGET_DEVICES += babtel_kiwi
+
 define Device/qcom_rdp433
 	$(call Device/FitImageLzma)
 	DEVICE_VENDOR := Qualcomm Technologies, Inc.
