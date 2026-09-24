@@ -17,6 +17,9 @@ ipq95xx_setup_interfaces()
 	askey,sbe1v1k)
 		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3" "wan"
 		;;
+	babtel,kiwi)
+		ucidef_set_interfaces_lan_wan "lan1 lan2 sfp"
+		;;
 	linksys,ln6001)
 		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 lan4" "wan"
 		;;
