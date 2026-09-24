@@ -1,0 +1,21 @@
+
+. /lib/functions/uci-defaults.sh
+
+board_config_update
+
+board=$(board_name)
+
+case "$board" in
+babtel,kiwi)
+	ucidef_set_led_netdev "lan1-green" "LAN1-GREEN" "90000.mdio-1:01:green:lan" "lan1" "link_1000 link_2500 tx rx"
+	ucidef_set_led_netdev "lan1-yellow" "LAN1-YELLOW" "90000.mdio-1:01:yellow:lan" "lan1" "link_10 link_100 tx rx"
+	ucidef_set_led_netdev "lan2-green" "LAN2-GREEN" "90000.mdio-1:02:green:lan" "lan2" "link_1000 link_2500 tx rx"
+	ucidef_set_led_netdev "lan2-yellow" "LAN2-YELLOW" "90000.mdio-1:02:yellow:lan" "lan2" "link_10 link_100 tx rx"
+	ucidef_set_led_netdev "sfp-link" "SFP-LINK" "green:lan-0" "sfp" "link"
+	ucidef_set_led_netdev "sfp-traffic" "SFP-TRAFFIC" "yellow:lan-0" "sfp" "tx rx"
+	;;
+esac
+
+board_config_flush
+
+exit 0
