@@ -1,0 +1,63 @@
+From: Robert Marko <robert.marko@sartura.hr>
+Date: Fri, 25 Sep 2026 12:30:01 +0200
+Subject: [PATCH] net: phy: mxl-gpy: configure MxL86211C MDIO voltage
+
+Allow MxL86211C boards to select the MDIO interface voltage through
+maxlinear,mdio-voltage-microvolt. A missing property preserves the
+strap-selected value.
+
+Signed-off-by: Robert Marko <robert.marko@sartura.hr>
+---
+ drivers/net/phy/mxl-gpy.c | 27 +++++++++++++++++++++++++++
+ 1 file changed, 27 insertions(+)
+
+--- a/drivers/net/phy/mxl-gpy.c
++++ b/drivers/net/phy/mxl-gpy.c
+@@ -114,6 +114,10 @@
+ #define VSPEC1_PM_CTRL		0x0c
+ #define VSPEC1_PM_CTRL_SI		BIT(12)
+ 
++#define VSPEC1_PM_CTRL_MDIO_VOL	BIT(14)
++#define MXL86211C_MDIO_VOLTAGE_1V8_UV	1800000
++#define MXL86211C_MDIO_VOLTAGE_3V3_UV	3300000
++
+ /* Temperature sensor */
+ #define VSPEC1_TEMP_STA	0x0E
+ #define VSPEC1_TEMP_STA_DATA	GENMASK(9, 0)
+@@ -348,6 +352,9 @@ static int gpy_config_init(struct phy_de
+ 
+ static int mxl86211c_config_pm(struct phy_device *phydev)
+ {
++	struct device *dev = &phydev->mdio.dev;
++	u32 mdio_voltage_uv;
++	int ret;
+ 	int val;
+ 
+ 	val = phy_read_mmd(phydev, MDIO_MMD_VEND1, VSPEC1_PM_CTRL);
+@@ -357,6 +364,26 @@ static int mxl86211c_config_pm(struct ph
+ 	/* Disable Super Isolate after reset. */
+ 	val &= ~VSPEC1_PM_CTRL_SI;
+ 
++	ret = device_property_read_u32(dev,
++				       "maxlinear,mdio-voltage-microvolt",
++				       &mdio_voltage_uv);
++	if (!ret) {
++		switch (mdio_voltage_uv) {
++		case MXL86211C_MDIO_VOLTAGE_1V8_UV:
++			val |= VSPEC1_PM_CTRL_MDIO_VOL;
++			break;
++		case MXL86211C_MDIO_VOLTAGE_3V3_UV:
++			val &= ~VSPEC1_PM_CTRL_MDIO_VOL;
++			break;
++		default:
++			phydev_err(phydev, "unsupported MDIO voltage %u uV\n",
++				   mdio_voltage_uv);
++			return -EINVAL;
++		}
++	} else if (ret != -EINVAL) {
++		return ret;
++	}
++
+ 	return phy_write_mmd(phydev, MDIO_MMD_VEND1, VSPEC1_PM_CTRL, val);
+ }
+ 

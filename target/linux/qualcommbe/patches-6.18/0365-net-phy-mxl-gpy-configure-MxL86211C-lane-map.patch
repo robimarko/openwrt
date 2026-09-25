@@ -1,0 +1,53 @@
+From: Robert Marko <robert.marko@sartura.hr>
+Date: Fri, 25 Sep 2026 12:30:02 +0200
+Subject: [PATCH] net: phy: mxl-gpy: configure MxL86211C lane map
+
+Allow boards to configure the MxL86211C VSPEC1_LANE_ASP_MAP register
+through maxlinear,lane-asp-map.
+
+Signed-off-by: Robert Marko <robert.marko@sartura.hr>
+---
+ drivers/net/phy/mxl-gpy.c | 20 +++++++++++++++++++-
+ 1 file changed, 19 insertions(+), 1 deletion(-)
+
+--- a/drivers/net/phy/mxl-gpy.c
++++ b/drivers/net/phy/mxl-gpy.c
+@@ -115,6 +115,7 @@
+ #define VSPEC1_PM_CTRL_SI		BIT(12)
+ 
+ #define VSPEC1_PM_CTRL_MDIO_VOL	BIT(14)
++#define VSPEC1_LANE_ASP_MAP	0x14
+ #define MXL86211C_MDIO_VOLTAGE_1V8_UV	1800000
+ #define MXL86211C_MDIO_VOLTAGE_3V3_UV	3300000
+ 
+@@ -353,6 +354,7 @@ static int gpy_config_init(struct phy_de
+ static int mxl86211c_config_pm(struct phy_device *phydev)
+ {
+ 	struct device *dev = &phydev->mdio.dev;
++	u32 lane_asp_map;
+ 	u32 mdio_voltage_uv;
+ 	int ret;
+ 	int val;
+@@ -384,7 +386,21 @@ static int mxl86211c_config_pm(struct ph
+ 		return ret;
+ 	}
+ 
+-	return phy_write_mmd(phydev, MDIO_MMD_VEND1, VSPEC1_PM_CTRL, val);
++	ret = phy_write_mmd(phydev, MDIO_MMD_VEND1, VSPEC1_PM_CTRL, val);
++	if (ret)
++		return ret;
++
++	ret = device_property_read_u32(dev, "maxlinear,lane-asp-map",
++				       &lane_asp_map);
++	if (ret == -EINVAL)
++		return 0;
++	if (ret)
++		return ret;
++	if (lane_asp_map > 0xffff)
++		return -EINVAL;
++
++	return phy_write_mmd(phydev, MDIO_MMD_VEND1, VSPEC1_LANE_ASP_MAP,
++			     lane_asp_map);
+ }
+ 
+ static int gpy21x_config_init(struct phy_device *phydev)

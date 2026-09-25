@@ -1,0 +1,74 @@
+From: Robert Marko <robert.marko@sartura.hr>
+Date: Fri, 25 Sep 2026 12:30:00 +0200
+Subject: [PATCH] net: phy: mxl-gpy: disable MxL86211C Super Isolate
+
+The Super Isolate control bit in VSPEC1_PM_CTRL must be cleared after reset
+for normal PHY operation. Configure it from probe so it is applied to every
+discovered MxL86211C, including PHYs not attached to a MAC.
+
+Signed-off-by: Robert Marko <robert.marko@sartura.hr>
+---
+ drivers/net/phy/mxl-gpy.c | 31 ++++++++++++++++++++++++++++++-
+ 1 file changed, 30 insertions(+), 1 deletion(-)
+
+--- a/drivers/net/phy/mxl-gpy.c
++++ b/drivers/net/phy/mxl-gpy.c
+@@ -110,6 +110,10 @@
+ #define VSPEC1_SGMII_ANEN_ANRS	(VSPEC1_SGMII_CTRL_ANEN | \
+ 				 VSPEC1_SGMII_CTRL_ANRS)
+ 
++/* Power management */
++#define VSPEC1_PM_CTRL		0x0c
++#define VSPEC1_PM_CTRL_SI		BIT(12)
++
+ /* Temperature sensor */
+ #define VSPEC1_TEMP_STA	0x0E
+ #define VSPEC1_TEMP_STA_DATA	GENMASK(9, 0)
+@@ -342,6 +346,20 @@ static int gpy_config_init(struct phy_de
+ 			 FIELD_PREP(PHY_ERRCNT_SEL, PHY_ERRCNT_SEL_RXERR));
+ }
+ 
++static int mxl86211c_config_pm(struct phy_device *phydev)
++{
++	int val;
++
++	val = phy_read_mmd(phydev, MDIO_MMD_VEND1, VSPEC1_PM_CTRL);
++	if (val < 0)
++		return val;
++
++	/* Disable Super Isolate after reset. */
++	val &= ~VSPEC1_PM_CTRL_SI;
++
++	return phy_write_mmd(phydev, MDIO_MMD_VEND1, VSPEC1_PM_CTRL, val);
++}
++
+ static int gpy21x_config_init(struct phy_device *phydev)
+ {
+ 	__set_bit(PHY_INTERFACE_MODE_2500BASEX, phydev->possible_interfaces);
+@@ -390,6 +408,17 @@ static int gpy_probe(struct phy_device *
+ 	return 0;
+ }
+ 
++static int mxl86211c_probe(struct phy_device *phydev)
++{
++	int ret;
++
++	ret = gpy_probe(phydev);
++	if (ret)
++		return ret;
++
++	return mxl86211c_config_pm(phydev);
++}
++
+ static bool gpy_sgmii_need_reaneg(struct phy_device *phydev)
+ {
+ 	struct gpy_priv *priv = phydev->priv;
+@@ -1406,7 +1435,7 @@ static struct phy_driver gpy_drivers[] =
+ 		.name		= "Maxlinear Ethernet MxL86211C",
+ 		.get_features	= genphy_c45_pma_read_abilities,
+ 		.config_init	= gpy_config_init,
+-		.probe		= gpy_probe,
++		.probe		= mxl86211c_probe,
+ 		.inband_caps	= gpy_inband_caps,
+ 		.config_inband	= gpy_config_inband,
+ 		.suspend	= genphy_suspend,
