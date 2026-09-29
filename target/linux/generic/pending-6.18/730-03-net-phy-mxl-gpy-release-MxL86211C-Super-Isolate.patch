@@ -1,0 +1,54 @@
+From bf75846a13596bb859336b50b808272f0339d40f Mon Sep 17 00:00:00 2001
+From: Robert Marko <robert.marko@sartura.hr>
+Date: Tue, 29 Sep 2026 19:32:27 +0200
+Subject: [PATCH 365/367] net: phy: mxl-gpy: release MxL86211C Super Isolate
+
+The MxL86211C can be strapped into Super Isolate mode, leaving
+the PHY halted after reset until software releases it.
+
+Clear VSPEC1_PM_CTRL.SI after registering the MDIO voltage regulator
+and before the generic GPY initialization accesses the PHY.
+
+Signed-off-by: Robert Marko <robert.marko@sartura.hr>
+---
+ drivers/net/phy/mxl-gpy.c | 15 ++++++++++-----
+ 1 file changed, 10 insertions(+), 5 deletions(-)
+
+--- a/drivers/net/phy/mxl-gpy.c
++++ b/drivers/net/phy/mxl-gpy.c
+@@ -115,6 +115,7 @@
+ /* Packet Manager Control */
+ #define VSPEC1_PM_CTRL		0x0c
+ #define VSPEC1_PM_CTRL_MDIO_VOL	BIT(14)
++#define VSPEC1_PM_CTRL_SI	BIT(12)		/* Super Isolate */
+ 
+ /* Temperature sensor */
+ #define VSPEC1_TEMP_STA	0x0E
+@@ -446,10 +447,6 @@ static int mxl86211c_probe(struct phy_de
+ 	struct regulator_dev *rdev;
+ 	int ret;
+ 
+-	ret = gpy_probe(phydev);
+-	if (ret)
+-		return ret;
+-
+ 	config.dev = dev;
+ 	config.driver_data = phydev;
+ 
+@@ -459,7 +456,15 @@ static int mxl86211c_probe(struct phy_de
+ 		return PTR_ERR(rdev);
+ 	}
+ 
+-	return 0;
++	ret = phy_modify_mmd(phydev, MDIO_MMD_VEND1, VSPEC1_PM_CTRL,
++			     VSPEC1_PM_CTRL_SI,
++			     0);
++	if (ret)
++		return ret;
++
++	ret = gpy_probe(phydev);
++
++	return ret;
+ }
+ 
+ static bool gpy_sgmii_need_reaneg(struct phy_device *phydev)
