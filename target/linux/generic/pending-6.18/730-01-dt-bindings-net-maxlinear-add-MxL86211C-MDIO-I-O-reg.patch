@@ -1,0 +1,73 @@
+From da926594c3bddba4244cd98d312a8ccd08a2dde5 Mon Sep 17 00:00:00 2001
+From: Robert Marko <robert.marko@sartura.hr>
+Date: Tue, 29 Sep 2026 18:23:34 +0200
+Subject: [PATCH 363/367] dt-bindings: net: maxlinear: add MxL86211C MDIO I/O
+ regulator
+
+Document the MDIO I/O voltage regulator exposed by the MxL86211C PHY.
+
+The regulator configures the MDIO, MDC, and MDINT pad voltage
+between 1.8 V and 3.3 V.
+
+Restrict the regulator subnode to the MxL86211C PHY ID and document
+the board requirement for VDDP to use the selected voltage.
+
+Signed-off-by: Robert Marko <robert.marko@sartura.hr>
+---
+ .../bindings/net/maxlinear,gpy2xx.yaml        | 40 +++++++++++++++++++
+ 1 file changed, 40 insertions(+)
+
+--- a/Documentation/devicetree/bindings/net/maxlinear,gpy2xx.yaml
++++ b/Documentation/devicetree/bindings/net/maxlinear,gpy2xx.yaml
+@@ -12,6 +12,29 @@ maintainers:
+ 
+ allOf:
+   - $ref: ethernet-phy.yaml#
++  - if:
++      properties:
++        compatible:
++          contains:
++            const: ethernet-phy-idc133.5400
++      required:
++        - compatible
++
++    then:
++      properties:
++        mdio-regulator:
++          type: object
++          description: |
++            Initial data for the MxL86211C MDIO I/O voltage regulator. Set
++            this to 1.8 V or 3.3 V to configure the MDIO, MDC, and MDINT
++            pad voltage. The board must supply the VDDP pin at the selected
++            voltage.
++          $ref: /schemas/regulator/regulator.yaml#
++          unevaluatedProperties: false
++
++    else:
++      properties:
++        mdio-regulator: false
+ 
+ properties:
+   maxlinear,use-broken-interrupts:
+@@ -45,4 +68,21 @@ examples:
+         };
+     };
+ 
++  - |
++    ethernet {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        ethernet-phy@0 {
++            compatible = "ethernet-phy-idc133.5400",
++                         "ethernet-phy-ieee802.3-c45";
++            reg = <0>;
++
++            mdio: mdio-regulator {
++                regulator-min-microvolt = <1800000>;
++                regulator-max-microvolt = <1800000>;
++            };
++        };
++    };
++
+ ...
