@@ -1,0 +1,60 @@
+From ba37d0538baa515f312ffa60f0ca115920721f2d Mon Sep 17 00:00:00 2001
+From: Robert Marko <robert.marko@sartura.hr>
+Date: Tue, 29 Sep 2026 19:44:37 +0200
+Subject: [PATCH 366/367] dt-bindings: net: maxlinear: add MxL86211C lane
+ mapping support
+
+Describe the optional lane-to-ASP mapping for the MxL86211C PHY.
+
+The mapping accounts for board-level swaps between its physical TPI
+lanes and analog signal processing lanes.
+
+MxL86211C supports per lane mapping.
+
+Signed-off-by: Robert Marko <robert.marko@sartura.hr>
+---
+ .../bindings/net/maxlinear,gpy2xx.yaml        | 19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
+
+--- a/Documentation/devicetree/bindings/net/maxlinear,gpy2xx.yaml
++++ b/Documentation/devicetree/bindings/net/maxlinear,gpy2xx.yaml
+@@ -22,6 +22,21 @@ allOf:
+ 
+     then:
+       properties:
++        maxlinear,lane-asp-map:
++          description: |
++            Mapping of the physical TPI lanes A through D to the PHY's
++            analog signal processing lanes (ASPs). The array index identifies
++            physical lane A, B, C, or D, while its value identifies ASP A, B,
++            C, or D, encoded as 0 through 3. Each ASP must be mapped exactly
++            once. Omit the property to retain the hardware reset mapping.
++          $ref: /schemas/types.yaml#/definitions/uint32-array
++          minItems: 4
++          maxItems: 4
++          uniqueItems: true
++          items:
++            minimum: 0
++            maximum: 3
++
+         mdio-regulator:
+           type: object
+           description: |
+@@ -34,6 +49,7 @@ allOf:
+ 
+     else:
+       properties:
++        maxlinear,lane-asp-map: false
+         mdio-regulator: false
+ 
+ properties:
+@@ -78,6 +94,9 @@ examples:
+                          "ethernet-phy-ieee802.3-c45";
+             reg = <0>;
+ 
++            /* Swap physical TPI lanes C and D. */
++            maxlinear,lane-asp-map = <0 1 3 2>;
++
+             mdio: mdio-regulator {
+                 regulator-min-microvolt = <1800000>;
+                 regulator-max-microvolt = <1800000>;
