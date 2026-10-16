@@ -1,0 +1,77 @@
+From 24dc583623af531c9cf6809b282e44d82ffcaba5 Mon Sep 17 00:00:00 2001
+From: Robert Marko <robert.marko@sartura.hr>
+Date: Fri, 9 Oct 2026 13:22:27 +0200
+Subject: [PATCH 363/367] dt-bindings: net: maxlinear: add MxL86211C VDDP
+ supply
+
+Describe the optional VDDP supply used by the MxL86211C PHY. Its
+voltage determines whether the MDIO, MDC, and MDINT pads use 1.8 V or
+3.3 V.
+
+Existing device trees do not describe the supply and rely on the hardware
+reset default. Keep the property optional to preserve their compatibility.
+
+Keep this binding applicable to all GPY2xx PHYs, so existing properties
+continue to be validated. Restrict the new property to the MxL86211C with
+the compatible conditional.
+
+Signed-off-by: Robert Marko <robert.marko@sartura.hr>
+---
+ .../bindings/net/maxlinear,gpy2xx.yaml        | 39 +++++++++++++++++++
+ 1 file changed, 39 insertions(+)
+
+--- a/Documentation/devicetree/bindings/net/maxlinear,gpy2xx.yaml
++++ b/Documentation/devicetree/bindings/net/maxlinear,gpy2xx.yaml
+@@ -12,8 +12,26 @@ maintainers:
+ 
+ allOf:
+   - $ref: ethernet-phy.yaml#
++  - if:
++      properties:
++        compatible:
++          contains:
++            const: ethernet-phy-idc133.5400
++      required:
++        - compatible
++
++    then: {}
++
++    else:
++      properties:
++        vddp-supply: false
+ 
+ properties:
++  vddp-supply:
++    description: |
++      Optional regulator supplying the VDDP pin. Its voltage configures the
++      MDIO, MDC, and MDINT pad voltage and must be either 1.8 V or 3.3 V.
++
+   maxlinear,use-broken-interrupts:
+     description: |
+       Interrupts are broken on some GPY2xx PHYs in that they keep the
+@@ -45,4 +63,25 @@ examples:
+         };
+     };
+ 
++  - |
++    vddp: regulator-vddp {
++        compatible = "regulator-fixed";
++        regulator-name = "vddp";
++        regulator-min-microvolt = <1800000>;
++        regulator-max-microvolt = <1800000>;
++    };
++
++    ethernet {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        ethernet-phy@0 {
++            compatible = "ethernet-phy-idc133.5400",
++                         "ethernet-phy-ieee802.3-c45";
++            reg = <0>;
++            vddp-supply = <&vddp>;
++
++        };
++    };
++
+ ...

@@ -1,0 +1,83 @@
+From 3a1740bd6c022f36542e71134a3e27239780806f Mon Sep 17 00:00:00 2001
+From: Robert Marko <robert.marko@sartura.hr>
+Date: Fri, 9 Oct 2026 13:25:29 +0200
+Subject: [PATCH 369/369] net: phy: mxl-gpy: limit MxL86211C LED support
+
+The MxL86211C exposes three LED outputs and does not support LED
+
+polarity configuration. Restrict its LED callbacks accordingly.
+
+Signed-off-by: Robert Marko <robert.marko@sartura.hr>
+---
+ drivers/net/phy/mxl-gpy.c | 46 ++++++++++++++++++++++++++++++++++-----
+ 1 file changed, 41 insertions(+), 5 deletions(-)
+
+--- a/drivers/net/phy/mxl-gpy.c
++++ b/drivers/net/phy/mxl-gpy.c
+@@ -72,6 +72,7 @@
+ 				 PHY_IMASK_ANC)
+ 
+ #define GPY_MAX_LEDS		4
++#define MXL86211C_MAX_LEDS	3
+ #define PHY_LED_POLARITY(idx)	BIT(12 + (idx))
+ #define PHY_LED_HWCONTROL(idx)	BIT(8 + (idx))
+ #define PHY_LED_ON(idx)		BIT(idx)
+@@ -1210,6 +1211,42 @@ static int gpy_led_polarity_set(struct p
+ 	return -EINVAL;
+ }
+ 
++static int mxl86211c_led_brightness_set(struct phy_device *phydev,
++					u8 index, enum led_brightness value)
++{
++	if (index >= MXL86211C_MAX_LEDS)
++		return -EINVAL;
++
++	return gpy_led_brightness_set(phydev, index, value);
++}
++
++static int mxl86211c_led_hw_is_supported(struct phy_device *phydev,
++					 u8 index, unsigned long rules)
++{
++	if (index >= MXL86211C_MAX_LEDS)
++		return -EINVAL;
++
++	return gpy_led_hw_is_supported(phydev, index, rules);
++}
++
++static int mxl86211c_led_hw_control_get(struct phy_device *phydev,
++					u8 index, unsigned long *rules)
++{
++	if (index >= MXL86211C_MAX_LEDS)
++		return -EINVAL;
++
++	return gpy_led_hw_control_get(phydev, index, rules);
++}
++
++static int mxl86211c_led_hw_control_set(struct phy_device *phydev,
++					u8 index, unsigned long rules)
++{
++	if (index >= MXL86211C_MAX_LEDS)
++		return -EINVAL;
++
++	return gpy_led_hw_control_set(phydev, index, rules);
++}
++
+ static unsigned int gpy_inband_caps(struct phy_device *phydev,
+ 				    phy_interface_t interface)
+ {
+@@ -1576,11 +1613,10 @@ static struct phy_driver gpy_drivers[] =
+ 		.set_wol	= gpy_set_wol,
+ 		.get_wol	= gpy_get_wol,
+ 		.set_loopback	= gpy_loopback,
+-		.led_brightness_set = gpy_led_brightness_set,
+-		.led_hw_is_supported = gpy_led_hw_is_supported,
+-		.led_hw_control_get = gpy_led_hw_control_get,
+-		.led_hw_control_set = gpy_led_hw_control_set,
+-		.led_polarity_set = gpy_led_polarity_set,
++		.led_brightness_set = mxl86211c_led_brightness_set,
++		.led_hw_is_supported = mxl86211c_led_hw_is_supported,
++		.led_hw_control_get = mxl86211c_led_hw_control_get,
++		.led_hw_control_set = mxl86211c_led_hw_control_set,
+ 		.update_stats	= gpy_update_stats,
+ 		.get_phy_stats	= gpy_get_phy_stats,
+ 	},

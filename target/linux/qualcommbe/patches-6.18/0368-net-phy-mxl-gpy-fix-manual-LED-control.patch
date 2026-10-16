@@ -1,0 +1,28 @@
+From 1e202180010bc0b9d5de208ee885afa182f31c62 Mon Sep 17 00:00:00 2001
+From: Robert Marko <robert.marko@sartura.hr>
+Date: Fri, 9 Oct 2026 13:23:57 +0200
+Subject: [PATCH 368/369] net: phy: mxl-gpy: fix manual LED control
+
+Clear the hardware-control bit whenever setting a GPY LED manually.
+
+Previously the bit remained set when turning an LED on, leaving the
+
+hardware LED function in control of its state.
+
+Signed-off-by: Robert Marko <robert.marko@sartura.hr>
+---
+ drivers/net/phy/mxl-gpy.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+--- a/drivers/net/phy/mxl-gpy.c
++++ b/drivers/net/phy/mxl-gpy.c
+@@ -1062,8 +1062,7 @@ static int gpy_led_brightness_set(struct
+ 
+ 	/* clear HWCONTROL and set manual LED state */
+ 	ret = phy_modify(phydev, PHY_LED,
+-			 ((value == LED_OFF) ? PHY_LED_HWCONTROL(index) : 0) |
+-			 PHY_LED_ON(index),
++			 PHY_LED_HWCONTROL(index) | PHY_LED_ON(index),
+ 			 (value == LED_OFF) ? 0 : PHY_LED_ON(index));
+ 	if (ret)
+ 		return ret;

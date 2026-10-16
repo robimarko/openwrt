@@ -1,0 +1,134 @@
+From eb89fa953716825dbf906165540bab78e65db5e8 Mon Sep 17 00:00:00 2001
+From: Robert Marko <robert.marko@sartura.hr>
+Date: Fri, 9 Oct 2026 13:22:55 +0200
+Subject: [PATCH 364/367] net: phy: mxl-gpy: add MxL86211C VDDP supply
+
+Optionally read the VDDP supply voltage and configure the MxL86211C
+MDIO, MDC, and MDINT pads for the matching 1.8 V or 3.3 V level.
+
+Enable an explicitly provided VDDP regulator for the PHY lifetime. Existing
+device trees do not describe the supply, so preserve the hardware reset
+default when it is absent.
+
+Keep the shared GPY driver buildable without regulator support.
+
+Signed-off-by: Robert Marko <robert.marko@sartura.hr>
+---
+ drivers/net/phy/mxl-gpy.c | 78 ++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 77 insertions(+), 1 deletion(-)
+
+--- a/drivers/net/phy/mxl-gpy.c
++++ b/drivers/net/phy/mxl-gpy.c
+@@ -14,6 +14,7 @@
+ #include <linux/polynomial.h>
+ #include <linux/property.h>
+ #include <linux/netdevice.h>
++#include <linux/regulator/consumer.h>
+ 
+ /* PHY ID */
+ #define PHY_ID_GPYx15B_MASK	0xFFFFFFFC
+@@ -110,6 +111,10 @@
+ #define VSPEC1_SGMII_ANEN_ANRS	(VSPEC1_SGMII_CTRL_ANEN | \
+ 				 VSPEC1_SGMII_CTRL_ANRS)
+ 
++/* Packet Manager Control */
++#define VSPEC1_PM_CTRL		0x0c
++#define VSPEC1_PM_CTRL_MDIO_VOL	BIT(14)
++
+ /* Temperature sensor */
+ #define VSPEC1_TEMP_STA	0x0E
+ #define VSPEC1_TEMP_STA_DATA	GENMASK(9, 0)
+@@ -140,6 +145,7 @@ struct gpy_priv {
+ 	u8 fw_minor;
+ 	u32 wolopts;
+ 	u64 rx_errors;
++	struct regulator *vddp;
+ 
+ 	/* It takes 3 seconds to fully switch out of loopback mode before
+ 	 * it can safely re-enter loopback mode. Record the time when
+@@ -390,6 +396,76 @@ static int gpy_probe(struct phy_device *
+ 	return 0;
+ }
+ 
++static int mxl86211c_configure_mdio_voltage(struct phy_device *phydev,
++					    struct regulator *vddp)
++{
++	int voltage;
++	int val;
++
++	voltage = regulator_get_voltage(vddp);
++	if (voltage < 0)
++		return voltage;
++
++	switch (voltage) {
++	case 1800000:
++		val = VSPEC1_PM_CTRL_MDIO_VOL;
++		break;
++	case 3300000:
++		val = 0;
++		break;
++	default:
++		phydev_err(phydev, "unsupported VDDP voltage: %d\n", voltage);
++		return -EINVAL;
++	}
++
++	return phy_modify_mmd(phydev, MDIO_MMD_VEND1, VSPEC1_PM_CTRL,
++			      VSPEC1_PM_CTRL_MDIO_VOL, val);
++}
++
++static void mxl86211c_disable_vddp(void *data)
++{
++	regulator_disable(data);
++}
++
++static int mxl86211c_probe(struct phy_device *phydev)
++{
++	struct device *dev = &phydev->mdio.dev;
++	struct gpy_priv *priv;
++	struct regulator *vddp;
++	int ret;
++
++	vddp = devm_regulator_get_optional(dev, "vddp");
++	if (PTR_ERR_OR_ZERO(vddp) == -ENODEV)
++		vddp = NULL;
++	else if (IS_ERR(vddp))
++		return dev_err_probe(dev, PTR_ERR(vddp),
++				     "failed to get VDDP supply\n");
++
++	if (vddp) {
++		ret = regulator_enable(vddp);
++		if (ret)
++			return dev_err_probe(dev, ret,
++					     "failed to enable VDDP supply\n");
++
++		ret = devm_add_action_or_reset(dev, mxl86211c_disable_vddp, vddp);
++		if (ret)
++			return ret;
++
++		ret = mxl86211c_configure_mdio_voltage(phydev, vddp);
++		if (ret)
++			return ret;
++	}
++
++	ret = gpy_probe(phydev);
++	if (ret)
++		return ret;
++
++	priv = phydev->priv;
++	priv->vddp = vddp;
++
++	return 0;
++}
++
+ static bool gpy_sgmii_need_reaneg(struct phy_device *phydev)
+ {
+ 	struct gpy_priv *priv = phydev->priv;
+@@ -1406,7 +1482,7 @@ static struct phy_driver gpy_drivers[] =
+ 		.name		= "Maxlinear Ethernet MxL86211C",
+ 		.get_features	= genphy_c45_pma_read_abilities,
+ 		.config_init	= gpy21x_config_init,
+-		.probe		= gpy_probe,
++		.probe		= mxl86211c_probe,
+ 		.inband_caps	= gpy_inband_caps,
+ 		.config_inband	= gpy_config_inband,
+ 		.suspend	= genphy_suspend,
